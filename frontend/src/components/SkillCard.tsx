@@ -1,7 +1,8 @@
 import type { Skill } from '../types'
+import ContributionItem from './ContributionItem'
 
 function plural(n: number, word: string) {
-  return `${n} ${word}${n === 1 ? '' : 's'}`
+  return `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`
 }
 
 export default function SkillCard({ skill }: { skill: Skill }) {
@@ -15,32 +16,41 @@ export default function SkillCard({ skill }: { skill: Skill }) {
       </header>
 
       <p className="skill-summary">
-        {plural(skill.repo_count, 'repo')} · {plural(skill.commit_count, 'commit')} · {plural(skill.pr_count, 'PR')}
-        {skill.first_active && skill.last_active && (
-          <>
-            {' · '}
-            {new Date(skill.first_active).getFullYear()}–{new Date(skill.last_active).toLocaleDateString()}
-          </>
-        )}
+        {plural(skill.contribution_count, 'contribution')} · {plural(skill.project_count, 'project')} ·{' '}
+        {plural(skill.lines, 'line')}
+        {skill.external_pr_count > 0 && <> · {plural(skill.external_pr_count, 'merged external PR')}</>}
       </p>
 
-      <ul className="evidence-list">
-        {skill.evidence.map((ev) => (
-          <li key={ev.repo_full_name}>
-            <a href={ev.repo_url} target="_blank" rel="noreferrer">
-              {ev.repo_full_name}
-            </a>
-            <span className="muted"> — {plural(ev.commit_count, 'commit')}, {plural(ev.pr_count, 'PR')}</span>
-            {ev.sample_commit_url && (
-              <div className="sample-commit">
-                <a href={ev.sample_commit_url} target="_blank" rel="noreferrer">
-                  {ev.sample_commit_message || 'View commit'}
-                </a>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {skill.detected_via.length > 0 && (
+        <ul className="chips" aria-label="Detected via">
+          {skill.detected_via.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      )}
+
+      <details className="factors">
+        <summary>Why {skill.confidence_tier.toLowerCase()}?</summary>
+        <ul>
+          {skill.factors.map((f) => (
+            <li key={f.label} className={f.met ? 'met' : 'unmet'}>
+              <span aria-hidden>{f.met ? '✓' : '✗'}</span> <strong>{f.label}</strong>
+              <span className="muted"> — {f.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </details>
+
+      {skill.highlights.length > 0 && (
+        <>
+          <h4>Proof</h4>
+          <ul className="contribution-list">
+            {skill.highlights.map((c) => (
+              <ContributionItem key={c.url} contribution={c} />
+            ))}
+          </ul>
+        </>
+      )}
     </article>
   )
 }

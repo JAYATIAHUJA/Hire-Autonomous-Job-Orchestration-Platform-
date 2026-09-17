@@ -2,10 +2,10 @@ import type { Profile } from '../types'
 
 export default function StatsHeader({ profile }: { profile: Profile }) {
   const stats = [
-    { label: 'Repos analyzed', value: profile.total_repos },
+    { label: 'Projects', value: profile.total_projects },
     { label: 'Authored commits', value: profile.total_commits },
-    { label: 'Lines added (est.)', value: profile.total_additions },
-    { label: 'Lines removed (est.)', value: profile.total_deletions },
+    { label: 'Lines of own code analyzed', value: profile.meaningful_lines },
+    { label: 'Merged PRs to others’ repos', value: profile.external_merged_prs },
   ]
 
   return (
@@ -23,7 +23,17 @@ export default function StatsHeader({ profile }: { profile: Profile }) {
           </div>
         ))}
       </div>
-      {profile.languages.length > 0 && <p className="muted">Primary languages: {profile.languages.join(' · ')}</p>}
+      {profile.languages.length > 0 && <p className="muted">Mainly writes: {profile.languages.join(' · ')}</p>}
+      {profile.analysis_mode === 'limited' && (
+        <p className="notice">
+          Limited analysis: without a GitHub token only a few repositories and commits could be read. Add a token for
+          the full picture.
+        </p>
+      )}
+      <p className="muted small">
+        Based on {profile.analyzed_contributions} commits and pull requests whose diffs were read. Lockfiles,
+        generated code and merge commits are ignored.
+      </p>
     </section>
   )
 }

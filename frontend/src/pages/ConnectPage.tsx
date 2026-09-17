@@ -52,12 +52,13 @@ export default function ConnectPage() {
           />
         </label>
         <p className="hint">
-          Without a token GitHub allows 60 requests/hour, enough for small profiles only. The token is used for this
-          one analysis and never stored. GitHub login is coming later.
+          We read the actual diffs of your commits and merged pull requests. Without a token GitHub allows only 60
+          requests/hour, so just 3 repositories are sampled; with a token up to 20 repositories and your merged PRs to
+          other projects are analyzed. The token is used for this one analysis and never stored.
         </p>
         {error && <p className="error">{error}</p>}
         <button type="submit" disabled={loading}>
-          {loading ? 'Analyzing repositories…' : 'Build my profile'}
+          {loading ? 'Reading your commits and pull requests… (can take up to a minute)' : 'Build my profile'}
         </button>
       </form>
     </section>

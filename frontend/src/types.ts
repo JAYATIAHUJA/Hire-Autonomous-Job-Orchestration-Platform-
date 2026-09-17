@@ -1,34 +1,58 @@
 export type ConfidenceTier = 'Strong' | 'Moderate' | 'Limited'
+export type WorkType = 'feature' | 'fix' | 'refactor' | 'test' | 'ci/infra' | 'docs' | 'chore'
 
-export interface Evidence {
+export interface Contribution {
+  kind: 'commit' | 'pr'
   repo_full_name: string
-  repo_url: string
-  commit_count: number
-  pr_count: number
-  sample_commit_url: string | null
-  sample_commit_message: string | null
+  url: string
+  title: string
+  type: WorkType
+  date: string | null
+  meaningful_additions: number
+  meaningful_deletions: number
+  files_touched: number
+  is_external: boolean
+  is_bulk: boolean
+  languages: string[]
+}
+
+export interface Factor {
+  label: string
+  met: boolean
+  detail: string
 }
 
 export interface Skill {
   name: string
   confidence_tier: ConfidenceTier
-  commit_count: number
-  repo_count: number
-  pr_count: number
+  lines: number
+  project_count: number
+  contribution_count: number
+  external_pr_count: number
+  active_months: number
   first_active: string | null
   last_active: string | null
-  evidence: Evidence[]
+  factors: Factor[]
+  detected_via: string[]
+  highlights: Contribution[]
 }
 
-export interface Repo {
+export interface Project {
   full_name: string
   url: string
+  role: string
+  ownership_share: number | null
+  is_external: boolean
+  contribution_count: number
+  meaningful_lines: number
   primary_language: string | null
-  commit_count: number
-  additions: number
-  deletions: number
-  pr_count: number
   last_contribution: string | null
+}
+
+export interface WorkMix {
+  type: WorkType
+  count: number
+  lines: number
 }
 
 export interface TimelinePoint {
@@ -39,13 +63,17 @@ export interface TimelinePoint {
 export interface Profile {
   profile_id: number
   username: string
-  total_repos: number
+  analysis_mode: 'full' | 'limited'
+  total_projects: number
   total_commits: number
-  total_additions: number
-  total_deletions: number
+  analyzed_contributions: number
+  meaningful_lines: number
+  external_merged_prs: number
   languages: string[]
+  work_mix: WorkMix[]
   timeline: TimelinePoint[]
-  repos: Repo[]
+  projects: Project[]
+  top_contributions: Contribution[]
   skills: Skill[]
 }
 

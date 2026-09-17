@@ -1,14 +1,19 @@
 from collections import Counter
 
+from ..analysis.contribution import Contribution
 
-def compute_aggregate_metrics(repo_data: list[dict]) -> dict:
-    months = Counter(date[:7] for r in repo_data for date in r["commit_dates"])
-    return {
-        "total_repos": len(repo_data),
-        "total_commits": sum(r["commit_count"] for r in repo_data),
-        "total_additions": sum(r["additions"] for r in repo_data),
-        "total_deletions": sum(r["deletions"] for r in repo_data),
-        "total_prs": sum(r["pr_count"] for r in repo_data),
-        "languages": sorted({lang for r in repo_data for lang in r["languages"]}),
-        "timeline": [{"month": m, "commits": c} for m, c in sorted(months.items())],
-    }
+WORK_TYPES = ["feature", "fix", "refactor", "test", "ci/infra", "docs", "chore"]
+
+
+def timeline(dates: list[str]) -> list[dict]:
+    months = Counter(d[:7] for d in dates if d)
+    return [{"month": m, "commits": n} for m, n in sorted(months.items())]
+
+
+def work_mix(contributions: list[Contribution]) -> list[dict]:
+    counts: Counter = Counter()
+    lines: Counter = Counter()
+    for c in contributions:
+        counts[c.type] += 1
+        lines[c.type] += c.meaningful_lines
+    return [{"type": t, "count": counts[t], "lines": lines[t]} for t in WORK_TYPES if counts[t]]

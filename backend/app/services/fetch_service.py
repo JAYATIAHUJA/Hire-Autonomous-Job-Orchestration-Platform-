@@ -1,85 +1,125 @@
+import asyncio
 from typing import Optional
 
-from ..config import settings
+from ..analysis.contribution import Contribution, build_contribution
+from ..analysis.roles import project_role
+from ..config import AnalysisLimits, settings
 from ..github_client import GitHubAPIError, GitHubClient
 
-LANGUAGE_MANIFESTS = {
-    "JavaScript": "package.json",
-    "TypeScript": "package.json",
-    "Vue": "package.json",
-    "Python": "requirements.txt",
-    "Jupyter Notebook": "requirements.txt",
-    "Java": "pom.xml",
-    "Kotlin": "build.gradle",
-    "Go": "go.mod",
-    "Ruby": "Gemfile",
-    "Rust": "Cargo.toml",
-}
 
-
-def fetch_user_data(username: str, token: Optional[str], client: Optional[GitHubClient] = None) -> dict:
-    owns_client = client is None
+async def fetch_contributions(username: str, token: Optional[str], client: Optional[GitHubClient] = None) -> dict:
+    """Pull the user's own commits and merged external PRs (with file diffs) and turn them into contributions."""
+    limits = settings.limits(bool(token))
     client = client or GitHubClient(token=token)
-    try:
-        is_self = bool(token) and (client.get_authenticated_login() or "").lower() == username.lower()
-        repos = client.list_user_repos(username, authenticated=is_self)
-        repos = [r for r in repos if not r.get("fork")]
-        repos.sort(key=lambda r: r.get("pushed_at") or "", reverse=True)
-        repos = repos[: settings.max_repos_per_user]
+    async with client:
+        is_self = bool(token) and ((await client.get_authenticated_login()) or "").lower() == username.lower()
+        repos = await client.list_user_repos(username, authenticated=is_self)
+        repos = sorted((r for r in repos if not r.get("fork")), key=lambda r: r.get("pushed_at") or "", reverse=True)
+        repos = repos[: limits.max_repos]
 
-        return {"username": username, "repos": [_fetch_repo(client, r, username) for r in repos]}
-    finally:
-        if owns_client:
-            client.close()
+        repo_results = await asyncio.gather(*(_analyze_repo(client, r, username, limits) for r in repos))
+        analyzed = {r["full_name"].lower() for r in repos}
+        external = await _analyze_external_prs(client, username, limits, skip_repos=analyzed)
 
-
-def _fetch_repo(client: GitHubClient, repo: dict, username: str) -> dict:
-    owner, name = repo["owner"]["login"], repo["name"]
-
-    languages = client.get_repo_languages(owner, name)
-    commits = client.list_user_commits(owner, name, username, max_items=settings.max_commits_per_repo)
-
-    # Per-commit stats cost one request each, so sample and extrapolate.
-    sample = commits[: settings.commit_stats_sample_size]
-    additions = deletions = 0
-    sample_commit = None
-    for c in sample:
-        detail = client.get_commit(owner, name, c["sha"])
-        stats = detail.get("stats", {})
-        additions += stats.get("additions", 0)
-        deletions += stats.get("deletions", 0)
-        message = detail.get("commit", {}).get("message") or ""
-        if sample_commit is None and message:
-            sample_commit = {"url": detail.get("html_url"), "message": message.splitlines()[0][:120]}
-    if sample:
-        scale = len(commits) / len(sample)
-        additions, deletions = int(additions * scale), int(deletions * scale)
-
-    try:
-        pr_count = len(client.list_user_prs(username, owner, name))
-    except GitHubAPIError as e:
-        if e.rate_limited:
-            raise
-        pr_count = 0
-
-    primary_language = max(languages, key=languages.get) if languages else None
-    manifest_path = LANGUAGE_MANIFESTS.get(primary_language)
-    manifest_content = client.get_file_text(owner, name, manifest_path) if manifest_path else None
-
-    dates = [c["commit"]["author"]["date"] for c in commits if (c.get("commit") or {}).get("author")]
-
+    projects = [r["project"] for r in repo_results] + external["projects"]
+    contributions = [c for r in repo_results for c in r["contributions"]] + external["contributions"]
+    activity_dates = [d for r in repo_results for d in r["commit_dates"]] + [c.date for c in external["contributions"] if c.date]
     return {
-        "full_name": repo["full_name"],
-        "url": repo["html_url"],
-        "languages": languages,
-        "primary_language": primary_language,
-        "commit_count": len(commits),
-        "additions": additions,
-        "deletions": deletions,
-        "pr_count": pr_count,
+        "username": username,
+        "analysis_mode": limits.mode,
+        "projects": projects,
+        "contributions": contributions,
+        "activity_dates": activity_dates,
+    }
+
+
+async def _analyze_repo(client: GitHubClient, repo: dict, username: str, limits: AnalysisLimits) -> dict:
+    owner, name, full_name = repo["owner"]["login"], repo["name"], repo["full_name"]
+
+    commits, contributors = await asyncio.gather(
+        client.list_user_commits(owner, name, username, max_items=settings.max_commits_listed_per_repo),
+        client.list_contributors(owner, name),
+    )
+    candidates = [c for c in commits if len(c.get("parents", [])) <= 1][: limits.commits_per_repo]
+    details = await asyncio.gather(*(client.get_commit(owner, name, c["sha"]) for c in candidates))
+
+    contributions: list[Contribution] = []
+    for d in details:
+        commit = d.get("commit") or {}
+        c = build_contribution(
+            kind="commit",
+            repo=full_name,
+            external=False,
+            url=d.get("html_url", ""),
+            message=commit.get("message", ""),
+            date=(commit.get("author") or {}).get("date"),
+            files=d.get("files") or [],
+        )
+        if c:
+            contributions.append(c)
+
+    dates = [c["commit"]["author"]["date"] for c in commits if ((c.get("commit") or {}).get("author") or {}).get("date")]
+    role, share = project_role(username, owner, len(commits), contributors)
+    return {
+        "project": _project(full_name, repo["html_url"], role, share, False, len(commits), contributions, dates),
+        "contributions": contributions,
+        "commit_dates": dates,
+    }
+
+
+async def _analyze_external_prs(client: GitHubClient, username: str, limits: AnalysisLimits, skip_repos: set) -> dict:
+    items = await client.search_external_merged_prs(username, limits.external_prs)
+    items = [i for i in items if _repo_from_api_url(i["repository_url"]).lower() not in skip_repos]
+
+    async def one(item: dict) -> Optional[Contribution]:
+        full_name = _repo_from_api_url(item["repository_url"])
+        owner, name = full_name.split("/", 1)
+        try:
+            files = await client.list_pr_files(owner, name, item["number"])
+        except GitHubAPIError as e:
+            if e.rate_limited:
+                raise
+            return None
+        return build_contribution(
+            kind="pr",
+            repo=full_name,
+            external=True,
+            url=item["html_url"],
+            message=item.get("title", ""),
+            date=(item.get("pull_request") or {}).get("merged_at") or item.get("closed_at"),
+            files=files,
+        )
+
+    contributions = [c for c in await asyncio.gather(*(one(i) for i in items)) if c]
+    by_repo: dict[str, list[Contribution]] = {}
+    for c in contributions:
+        by_repo.setdefault(c.repo, []).append(c)
+    projects = [
+        _project(repo, f"https://github.com/{repo}", "External contributor", None, True, len(cs), cs,
+                 [c.date for c in cs if c.date])
+        for repo, cs in by_repo.items()
+    ]
+    return {"projects": projects, "contributions": contributions}
+
+
+def _project(full_name, url, role, share, external, count, contributions, dates) -> dict:
+    languages: dict[str, int] = {}
+    for c in contributions:
+        for lang, lines in c.language_lines.items():
+            languages[lang] = languages.get(lang, 0) + lines
+    return {
+        "full_name": full_name,
+        "url": url,
+        "role": role,
+        "ownership_share": share,
+        "is_external": external,
+        "contribution_count": count,
+        "meaningful_lines": sum(c.meaningful_lines for c in contributions),
+        "primary_language": max(languages, key=languages.get) if languages else None,
         "first_contribution": min(dates) if dates else None,
         "last_contribution": max(dates) if dates else None,
-        "commit_dates": dates,
-        "sample_commit": sample_commit,
-        "manifest_content": manifest_content,
     }
+
+
+def _repo_from_api_url(url: str) -> str:
+    return url.split("/repos/", 1)[1]
