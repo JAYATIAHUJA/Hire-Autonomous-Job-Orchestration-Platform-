@@ -110,6 +110,49 @@ def test_swipe_left_skips_the_card_without_consent(client):
     assert board["total"] == 0
 
 
+def test_deck_stays_a_full_page_as_the_candidate_swipes(client):
+    first = client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}&limit=3").json()
+    assert len(first["jobs"]) == 3
+
+    for job in first["jobs"]:
+        client.post(
+            "/api/applications/swipe",
+            json={"job_id": job["job_id"], "direction": "left", "candidate_ref": CANDIDATE},
+        )
+
+    # Exclusion happens in SQL, so the next page is still full rather than short.
+    second = client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}&limit=3").json()
+    assert len(second["jobs"]) == 3
+    assert not {job["job_id"] for job in second["jobs"]} & {job["job_id"] for job in first["jobs"]}
+
+
+def test_deck_is_per_candidate(client):
+    client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}")
+    client.post(
+        "/api/applications/swipe",
+        json={"job_id": "blr_swig_001", "direction": "right", "candidate_ref": CANDIDATE},
+    )
+
+    mine = client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}").json()
+    theirs = client.get("/api/applications/deck?candidate_ref=someone-else").json()
+
+    assert "blr_swig_001" not in {job["job_id"] for job in mine["jobs"]}
+    assert "blr_swig_001" in {job["job_id"] for job in theirs["jobs"]}
+    assert client.get("/api/applications/board?candidate_ref=someone-else").json()["total"] == 0
+
+
+def test_events_are_returned_in_the_order_they_happened(client):
+    client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}")
+    application_id = swipe_right(client, "blr_swig_001").json()["application"]["application_id"]
+
+    client.post(f"/api/applications/{application_id}/stage", json={"to_stage": "interview_scheduled"})
+    client.post(f"/api/applications/{application_id}/stage", json={"to_stage": "rejected"})
+    client.post(f"/api/applications/{application_id}/stage", json={"to_stage": "applied"})
+
+    stages = [event["to_stage"] for event in client.get(f"/api/applications/{application_id}").json()["events"]]
+    assert stages == ["applied", "interview_scheduled", "rejected", "applied"]
+
+
 def test_swipe_rejects_unknown_job_and_bad_direction(client):
     assert swipe_right(client, "does_not_exist").status_code == 404
 
