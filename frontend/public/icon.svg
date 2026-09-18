@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="HIRE">
+  <rect width="512" height="512" rx="96" fill="#4f46e5"/>
+  <path d="M150 140v232M150 256h120M270 140v232" stroke="#ffffff" stroke-width="40" stroke-linecap="round" fill="none"/>
+  <circle cx="366" cy="186" r="26" fill="#a5b4fc"/>
+  <path d="M366 236v136" stroke="#a5b4fc" stroke-width="40" stroke-linecap="round"/>
+</svg>
