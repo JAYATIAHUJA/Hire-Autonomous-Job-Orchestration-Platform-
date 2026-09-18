@@ -15,6 +15,12 @@ export default function App() {
           <NavLink to="/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Verified Jobs Feed (Phase 2)
           </NavLink>
+          <NavLink to="/swipe" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            Swipe Deck (Phase 3)
+          </NavLink>
+          <NavLink to="/pipeline" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            Pipeline
+          </NavLink>
           <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="nav-link nav-link-ext">
             API Docs ↗
           </a>
