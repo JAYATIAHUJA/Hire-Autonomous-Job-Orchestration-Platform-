@@ -18,9 +18,23 @@ const MOVE_TARGETS: Record<string, { stage: PipelineStage; label: string }[]> = 
 
 const DEMO_REPLY = {
   uid: `demo-${Date.now()}`,
-  from_address: 'Talent Team <careers@swiggy.com>',
-  subject: 'Interview invitation — Backend Software Engineer',
+  from_address: 'Talent Team <careers@example.com>',
+  subject: 'Interview invitation',
   body: 'Thanks for applying. We would like to invite you to a technical interview — please share your availability this week.',
+}
+
+// A canned employer would match nobody's board, so the demo reply is written as if
+// it came from the oldest card still sitting in Applied.
+function replyForCard(card: ApplicationCard) {
+  const domain = card.employer_domain || 'example.com'
+  return {
+    uid: `demo-${Date.now()}`,
+    from_address: `Talent Team <careers@${domain}>`,
+    subject: `Interview invitation — ${card.role_title}`,
+    body:
+      `Thanks for applying to ${card.employer_name}. We would like to invite you to a technical ` +
+      'interview — please share your availability this week.',
+  }
 }
 
 export default function PipelinePage() {
@@ -32,20 +46,30 @@ export default function PipelinePage() {
   const [syncing, setSyncing] = useState(false)
   const [openCard, setOpenCard] = useState<string | null>(null)
   const [reply, setReply] = useState(DEMO_REPLY)
+  const [replyEdited, setReplyEdited] = useState(false)
   const [showReplayForm, setShowReplayForm] = useState(false)
+
+  // Keep the untouched demo reply pointed at a card the matcher can actually find.
+  function editReply(patch: Partial<typeof DEMO_REPLY>) {
+    setReplyEdited(true)
+    setReply((current) => ({ ...current, ...patch }))
+  }
 
   const loadBoard = useCallback(async () => {
     if (!candidateRef) return
     setLoading(true)
     try {
-      setBoard(await getBoard(candidateRef))
+      const next = await getBoard(candidateRef)
+      setBoard(next)
+      const queue = next.columns.find((column) => column.stage === 'applied')?.cards ?? []
+      if (queue.length && !replyEdited) setReply(replyForCard(queue[queue.length - 1]))
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load the board.')
     } finally {
       setLoading(false)
     }
-  }, [candidateRef])
+  }, [candidateRef, replyEdited])
 
   useEffect(() => {
     loadBoard()
@@ -128,15 +152,15 @@ export default function PipelinePage() {
         <div className="connect-form">
           <label>
             From
-            <input value={reply.from_address} onChange={(e) => setReply({ ...reply, from_address: e.target.value })} />
+            <input value={reply.from_address} onChange={(e) => editReply({ from_address: e.target.value })} />
           </label>
           <label>
             Subject
-            <input value={reply.subject} onChange={(e) => setReply({ ...reply, subject: e.target.value })} />
+            <input value={reply.subject} onChange={(e) => editReply({ subject: e.target.value })} />
           </label>
           <label>
             Body
-            <textarea rows={3} value={reply.body} onChange={(e) => setReply({ ...reply, body: e.target.value })} />
+            <textarea rows={3} value={reply.body} onChange={(e) => editReply({ body: e.target.value })} />
           </label>
           <button
             type="button"
