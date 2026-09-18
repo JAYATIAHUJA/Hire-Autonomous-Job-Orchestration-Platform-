@@ -59,6 +59,18 @@ def get_job_by_id(db: Session, job_id: str) -> Optional[JobContract]:
     return to_job_contract(job) if job else None
 
 
+def get_job_by_description_hash(db: Session, hash_val: str) -> Optional[JobContract]:
+    """Retrieve the job a cached description hash belongs to, if one is stored."""
+    job = (
+        db.query(models.Job)
+        .options(joinedload(models.Job.company))
+        .filter(models.Job.raw_description_hash == hash_val)
+        .order_by(models.Job.created_at.desc())
+        .first()
+    )
+    return to_job_contract(job) if job else None
+
+
 def get_jobs_feed(
     db: Session,
     min_legitimacy: float = 0.60,

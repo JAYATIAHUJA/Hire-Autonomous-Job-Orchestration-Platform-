@@ -15,7 +15,7 @@ export default function App() {
           <NavLink to="/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
             Verified Jobs Feed (Phase 2)
           </NavLink>
-          <a href="http://localhost:8001/docs" target="_blank" rel="noreferrer" className="nav-link nav-link-ext">
+          <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="nav-link nav-link-ext">
             API Docs ↗
           </a>
         </nav>

@@ -12,7 +12,12 @@ from ..db import get_db
 from ..jobs.ghost_filter.scorer import score_job
 from ..jobs.ingestion.hasher import compute_description_hash
 from ..jobs.pipeline import process_and_ingest_job_items, run_discovery_cycle
-from ..jobs.repository import get_job_by_id, get_jobs_feed, lookup_cache
+from ..jobs.repository import (
+    get_job_by_description_hash,
+    get_job_by_id,
+    get_jobs_feed,
+    lookup_cache,
+)
 from ..jobs.schemas import (
     CacheCheckRequest,
     CacheCheckResponse,
@@ -76,24 +81,13 @@ def check_jd_cache(payload: CacheCheckRequest, db: Session = Depends(get_db)):
         hash_val = compute_description_hash(payload.raw_description)
 
     entry = lookup_cache(db, hash_val)
-    if entry:
-        # Find any matching job record for convenience
-        matching_job = (
-            db.query(router.dependencies)
-            if False else None
-        )
-        return CacheCheckResponse(
-            cached=True,
-            hash=hash_val,
-            job_id=None,
-            job=None,
-        )
+    job = get_job_by_description_hash(db, hash_val)
 
     return CacheCheckResponse(
-        cached=False,
+        cached=entry is not None,
         hash=hash_val,
-        job_id=None,
-        job=None,
+        job_id=job.job_id if job else None,
+        job=job,
     )
 
 
