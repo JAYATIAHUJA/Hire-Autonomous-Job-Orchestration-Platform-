@@ -11,6 +11,7 @@ import math
 import os
 import re
 import sqlite3
+from contextlib import closing
 from dataclasses import dataclass
 from typing import Any, Optional
 
@@ -65,7 +66,7 @@ class FingerprintDatabase:
         return conn
 
     def _init_db(self) -> None:
-        with self._get_conn() as conn:
+        with closing(self._get_conn()) as conn, conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS node_fingerprints (
                     source TEXT NOT NULL,
@@ -79,7 +80,7 @@ class FingerprintDatabase:
             conn.commit()
 
     def save_fingerprint(self, source: str, target_field: str, selector: str, fp: DOMFingerprint) -> None:
-        with self._get_conn() as conn:
+        with closing(self._get_conn()) as conn, conn:
             conn.execute("""
                 INSERT INTO node_fingerprints (source, target_field, last_known_selector, fingerprint_json, updated_at)
                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -91,7 +92,7 @@ class FingerprintDatabase:
             conn.commit()
 
     def get_fingerprint(self, source: str, target_field: str) -> Optional[tuple[str, DOMFingerprint]]:
-        with self._get_conn() as conn:
+        with closing(self._get_conn()) as conn:
             row = conn.execute("""
                 SELECT last_known_selector, fingerprint_json
                 FROM node_fingerprints
