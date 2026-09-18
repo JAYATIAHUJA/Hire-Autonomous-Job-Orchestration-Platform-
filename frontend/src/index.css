@@ -853,7 +853,24 @@ button:disabled { opacity: 0.6; cursor: progress; }
 /* Phones: full-bleed deck and thumb-sized controls. */
 @media (max-width: 560px) {
   .app-header { padding: 14px 0; }
-  .header-nav { gap: 8px; font-size: 0.85rem; }
+  /* One scrollable row of tabs beats five stacked, half-broken words. */
+  .header-nav {
+    gap: 6px;
+    font-size: 0.85rem;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .header-nav::-webkit-scrollbar { display: none; }
+  .nav-link { flex: none; white-space: nowrap; padding: 8px 10px; }
+  /* A solid bar, so the thumb controls never sit on top of the card. */
+  .swipe-controls {
+    background: var(--bg);
+    padding: 10px 0 4px;
+    margin-top: 12px;
+  }
   .deck { min-height: 440px; }
   .swipe-btn { flex: 1; }
   .swipe-controls { position: sticky; bottom: 12px; }
