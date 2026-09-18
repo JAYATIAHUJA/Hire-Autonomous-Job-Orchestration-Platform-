@@ -25,6 +25,13 @@ GENERIC_MAIL_DOMAINS = {
     "yahoo.co.in", "proton.me", "protonmail.com", "icloud.com", "rediffmail.com",
 }
 
+# Two-label public suffixes. Without these, "swiggy.co.in" would reduce to "co.in"
+# and match every other Indian company, attaching replies to the wrong card.
+MULTI_LABEL_SUFFIXES = {
+    "co.in", "co.uk", "co.jp", "co.kr", "co.nz", "co.za", "com.au", "com.br", "com.mx",
+    "com.sg", "ac.in", "ac.uk", "edu.in", "gov.in", "net.in", "org.in", "org.uk",
+}
+
 # Words that carry no identity once an employer name is split into tokens.
 COMPANY_STOPWORDS = {
     "the", "inc", "inc.", "llc", "ltd", "ltd.", "limited", "pvt", "private",
@@ -42,11 +49,16 @@ def sender_domain(from_address: str) -> Optional[str]:
 
 
 def _root_domain(domain: Optional[str]) -> Optional[str]:
-    """'careers.swiggy.com' and 'swiggy.com' should match each other."""
+    """'careers.swiggy.com' and 'swiggy.com' should match each other - but 'a.co.in'
+    and 'b.co.in' must not, so two-label public suffixes keep a third label."""
     if not domain:
         return None
-    parts = domain.lower().split(".")
-    return ".".join(parts[-2:]) if len(parts) >= 2 else domain.lower()
+    parts = domain.lower().strip(".").split(".")
+    if len(parts) < 2:
+        return domain.lower()
+    if ".".join(parts[-2:]) in MULTI_LABEL_SUFFIXES:
+        return ".".join(parts[-3:]) if len(parts) >= 3 else None
+    return ".".join(parts[-2:])
 
 
 def company_tokens(name: str) -> list[str]:

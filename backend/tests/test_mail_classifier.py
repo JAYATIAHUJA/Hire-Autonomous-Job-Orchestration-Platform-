@@ -72,6 +72,22 @@ def test_company_tokens_drop_boilerplate():
     assert "technologies" not in company_tokens("Acme Technologies Pvt Ltd")
 
 
+def test_public_suffix_domains_do_not_cross_match_employers():
+    mine = FakeApplication("app_cccccccccccccccc", "Acme Labs", "acme.co.in")
+    other = FakeApplication("app_dddddddddddddddd", "Rival Corp", "rival.co.in")
+
+    matched, how = match_application(
+        {"subject": "Next steps", "body": "", "from_address": "hr@careers.acme.co.in"}, [mine, other]
+    )
+    assert matched is mine and "sender domain" in how
+
+    # A stranger on the same public suffix must not attach to either card.
+    stranger, how = match_application(
+        {"subject": "Next steps", "body": "", "from_address": "hr@someone-else.co.in"}, [mine, other]
+    )
+    assert stranger is None
+
+
 def test_match_prefers_application_id_then_domain_then_name():
     swiggy = FakeApplication("app_aaaaaaaaaaaaaaaa", "Swiggy Engineering", "swiggy.com")
     zepto = FakeApplication("app_bbbbbbbbbbbbbbbb", "Zepto", "zeptonow.com")
