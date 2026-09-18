@@ -49,15 +49,16 @@ export default function SwipePage() {
       busyRef.current = true
 
       setFlyOut(direction)
-      // Let the card leave the screen before it is removed from the stack.
-      window.setTimeout(() => {
-        setDeck((current) => current.slice(1))
-        setDrag(NO_DRAG)
-        setFlyOut(null)
-      }, 220)
+      const pending = swipeJob(job.job_id, direction, candidateRef)
+
+      // Let the card fly off screen, then settle the deck on what the server said.
+      // The card is only dropped once the swipe is recorded, so a failed request
+      // snaps it back instead of losing it.
+      await new Promise((resolve) => window.setTimeout(resolve, 220))
 
       try {
-        const result = await swipeJob(job.job_id, direction, candidateRef)
+        const result = await pending
+        setDeck((current) => current.filter((card) => card.job_id !== job.job_id))
         if (direction === 'right') {
           setReceipt(result.consent)
         } else {
@@ -67,9 +68,9 @@ export default function SwipePage() {
         setError(null)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'That swipe did not reach the server.')
-        // Put the card back rather than silently losing it.
-        setDeck((current) => [job, ...current])
       } finally {
+        setDrag(NO_DRAG)
+        setFlyOut(null)
         busyRef.current = false
       }
     },
