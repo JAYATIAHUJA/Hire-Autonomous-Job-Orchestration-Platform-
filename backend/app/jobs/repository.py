@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Iterable, Optional
 from sqlalchemy.orm import Session, joinedload
 
 from . import models
@@ -76,10 +76,13 @@ def get_jobs_feed(
     min_legitimacy: float = 0.60,
     limit: int = 20,
     page: int = 1,
+    exclude_job_ids: Optional[Iterable[str]] = None,
 ) -> tuple[list[JobContract], int]:
     """Retrieve clean, ghost-filtered jobs feed for Student C's swipe UI.
     
     Filters out listings with legitimacy below min_legitimacy (purges ghost_score >= 700).
+    ``exclude_job_ids`` drops jobs the caller has already dealt with, in SQL, so the
+    swipe deck still comes back a full page long however much the candidate has swiped.
     """
     offset = max(0, (page - 1) * limit)
     query = (
@@ -92,6 +95,10 @@ def get_jobs_feed(
         )
         .order_by(models.Job.ghost_score.asc(), models.Job.created_at.desc())
     )
+
+    excluded = set(exclude_job_ids or ())
+    if excluded:
+        query = query.filter(~models.Job.job_id.in_(excluded))
 
     total = query.count()
     rows = query.offset(offset).limit(limit).all()

@@ -27,8 +27,7 @@ from ..applications.schemas import (
 from ..db import get_db
 from ..jobs.pipeline import run_discovery_cycle
 from ..jobs.repository import get_job_by_id, get_jobs_feed
-from ..mail.imap_client import ImapNotConfigured
-from ..mail.poller import run_sync_round
+from ..mail.imap_client import ImapNotConfigured, fetch_recruiter_messages
 from ..mail.sync import sync_messages
 
 router = APIRouter(prefix="/api", tags=["applications"])
@@ -41,21 +40,24 @@ async def get_deck(
     min_legitimacy: float = Query(default=0.60, ge=0.0, le=1.0),
     db: Session = Depends(get_db),
 ):
-    """Ghost-filtered cards the candidate has not swiped yet, newest decisions first."""
-    # Pull a wider slice than requested: already-swiped cards are removed below.
-    jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit * 3, page=1)
-    if total == 0:
-        await run_discovery_cycle(db, limit=20)
-        jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit * 3, page=1)
-
+    """Ghost-filtered cards the candidate has not swiped yet, safest listings first."""
     seen = repository.swiped_job_ids(db, candidate_ref)
-    remaining = [job for job in jobs if job.job_id not in seen]
+    jobs, total = get_jobs_feed(
+        db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen
+    )
+
+    # An empty store means discovery has never run; seed it and deal again.
+    if total == 0 and not seen:
+        await run_discovery_cycle(db, limit=20)
+        jobs, total = get_jobs_feed(
+            db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen
+        )
 
     return DeckResponse(
         candidate_ref=candidate_ref,
-        total=len(remaining),
+        total=total,
         min_legitimacy=min_legitimacy,
-        jobs=remaining[:limit],
+        jobs=jobs,
     )
 
 
@@ -159,10 +161,10 @@ async def trigger_mail_sync(payload: MailSyncRequest, db: Session = Depends(get_
         return MailSyncResponse(source="inline", **stats)
 
     try:
-        stats = await asyncio.to_thread(run_sync_round, payload.limit)
+        messages = await asyncio.to_thread(fetch_recruiter_messages, None, payload.limit)
     except ImapNotConfigured as exc:
         raise HTTPException(status_code=503, detail=str(exc))
     except Exception as exc:  # noqa: BLE001 - surface mailbox failures to the caller
         raise HTTPException(status_code=502, detail=f"Mailbox read failed: {exc}")
 
-    return MailSyncResponse(source="imap", **stats)
+    return MailSyncResponse(source="imap", **sync_messages(db, messages))
