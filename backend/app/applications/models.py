@@ -2,7 +2,7 @@
 
 import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from ..db import Base
@@ -17,6 +17,9 @@ class Application(Base):
     """One card on the pipeline board: a candidate's swipe on a single job."""
 
     __tablename__ = "applications"
+    # One card per (candidate, job): the repository checks first, this makes it true
+    # even if two swipes race each other.
+    __table_args__ = (UniqueConstraint("candidate_ref", "job_id", name="uq_application_candidate_job"),)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     application_id = Column(String, unique=True, nullable=False, index=True)
@@ -41,7 +44,7 @@ class Application(Base):
         "PipelineEvent",
         back_populates="application",
         cascade="all, delete-orphan",
-        order_by="PipelineEvent.occurred_at",
+        order_by="PipelineEvent.occurred_at, PipelineEvent.id",
     )
 
 

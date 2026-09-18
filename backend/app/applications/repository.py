@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from . import models
@@ -194,7 +195,17 @@ def record_swipe(
             detail="Card dismissed - no data shared.",
         )
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # Two swipes on the same card raced each other; the unique constraint caught
+        # the second one, so return the card the winner created.
+        db.rollback()
+        winner = find_by_job(db, candidate_ref, job_id)
+        if winner:
+            return winner, True
+        raise
+
     db.refresh(app)
     return app, False
 
