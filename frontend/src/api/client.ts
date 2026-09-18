@@ -1,4 +1,15 @@
-import type { AnalyzeResponse, Profile } from '../types'
+import type {
+  AnalyzeResponse,
+  ApplicationCard,
+  BoardResponse,
+  ConsentReceipt,
+  DeckResponse,
+  MailSyncResponse,
+  PipelineStage,
+  Profile,
+  RecruiterMessage,
+  SwipeResponse,
+} from '../types'
 
 const BASE_URL = '/api/profile'
 
@@ -59,4 +70,60 @@ export async function scoreJobOnDemand(
     body: JSON.stringify(payload),
   })
   return handle<import('../types').ScoreJobResponse>(res)
+}
+
+/* ---- Objective 3: swipe deck, consent log and pipeline board ---- */
+
+export async function getDeck(candidateRef: string, limit = 20, minLegitimacy = 0.6): Promise<DeckResponse> {
+  const params = new URLSearchParams({
+    candidate_ref: candidateRef,
+    limit: String(limit),
+    min_legitimacy: String(minLegitimacy),
+  })
+  return handle<DeckResponse>(await fetch(`/api/applications/deck?${params.toString()}`))
+}
+
+export async function swipeJob(
+  jobId: string,
+  direction: 'left' | 'right',
+  candidateRef: string,
+  purpose?: string,
+): Promise<SwipeResponse> {
+  const res = await fetch('/api/applications/swipe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ job_id: jobId, direction, candidate_ref: candidateRef, purpose: purpose || null }),
+  })
+  return handle<SwipeResponse>(res)
+}
+
+export async function getBoard(candidateRef: string): Promise<BoardResponse> {
+  const params = new URLSearchParams({ candidate_ref: candidateRef })
+  return handle<BoardResponse>(await fetch(`/api/applications/board?${params.toString()}`))
+}
+
+export async function getConsentReceipt(applicationId: string): Promise<ConsentReceipt> {
+  return handle<ConsentReceipt>(await fetch(`/api/applications/${encodeURIComponent(applicationId)}/consent`))
+}
+
+export async function moveApplicationStage(
+  applicationId: string,
+  toStage: PipelineStage,
+  detail?: string,
+): Promise<ApplicationCard> {
+  const res = await fetch(`/api/applications/${encodeURIComponent(applicationId)}/stage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ to_stage: toStage, detail: detail || null }),
+  })
+  return handle<ApplicationCard>(res)
+}
+
+export async function syncRecruiterMail(messages?: RecruiterMessage[]): Promise<MailSyncResponse> {
+  const res = await fetch('/api/mail/sync', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(messages && messages.length ? { messages } : {}),
+  })
+  return handle<MailSyncResponse>(res)
 }
