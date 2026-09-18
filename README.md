@@ -2,6 +2,8 @@
 
 **Objective 1: GitHub proof-of-work profile.** HIRE reads the actual diffs of a developer's commits and merged pull requests and builds a skills profile where every skill is backed by the developer's *own* changes: the files they touched, the libraries they imported and the dependencies they added. Each skill links to concrete commits/PRs and shows a transparent evidence checklist instead of an opaque score. Background and rationale: [`deep-research-report.md`](deep-research-report.md).
 
+**Objective 3: client interface and pipeline tracker.** A mobile-first PWA deals the ghost-filtered listings out as swipeable cards. A swipe right is the affirmative consent action: it writes a signed log naming the employer, the purpose and the moment consent was given, and puts a card on the pipeline board. A background IMAP service then reads recruiter replies and moves that card from **Applied** to **Interview Scheduled** or **Rejected** on its own.
+
 ## Architecture
 
 ```
@@ -27,6 +29,23 @@ frontend (React + Vite + TS)  --/api-->  backend (FastAPI)  -->  GitHub REST API
 | API | `routers/profile.py` | `POST /api/profile/analyze` `{username, token?}` → `{profile_id}` · `GET /api/profile/{id}` |
 
 To teach it a new framework or tool, add an entry to `backend/app/skill_rules.json` (`imports`, `dependencies`, `paths`, `categories`).
+
+### How a swipe becomes a tracked application (Objective 3)
+
+| Step | File | What it does |
+|---|---|---|
+| Deck | `routers/applications.py` | `GET /api/applications/deck` serves ghost-filtered jobs minus everything this candidate already swiped. |
+| Consent | `applications/consent.py` | A swipe right mints a receipt — consent id, subject, **named employer**, job, purpose, UTC timestamp — signed HMAC-SHA256 over a canonical JSON encoding. Re-verified on every read. |
+| Board | `applications/board.py` | Stage vocabulary and the transition table. Manual moves and automated (mail-driven) moves have separate rules: the mail reader can close a card, never reopen one. |
+| Storage | `applications/models.py`, `repository.py` | `Application` (the card), `ConsentLog` (the receipt), `PipelineEvent` (audit trail of every move), `ProcessedMessage` (so a re-poll never double-moves a card). |
+| Reply parsing | `mail/imap_client.py` | Stdlib `imaplib` + `email`: reads the mailbox **read-only**, decodes headers, prefers the text/plain part. Any IMAP inbox and an app password will do. |
+| Classification | `mail/classifier.py` | Weighted phrase matching scores rejection and interview language separately, so "Unfortunately that slot is taken" still reads as an interview and "thanks for interviewing, but…" still reads as a rejection. |
+| Matching | `mail/sync.py` | Attributes a reply to a card: quoted application id, then sender domain vs employer domain, then employer name in the subject/body. |
+| Background service | `mail/poller.py` | Polls the mailbox on an interval alongside the API when `IMAP_ENABLED=true`; blocking IMAP work runs in a worker thread. |
+| PWA | `frontend/public/manifest.webmanifest`, `public/sw.js` | Installable, portrait, standalone. App shell is cache-first, `/api` reads are network-first with a cached fallback. |
+| UI | `frontend/src/pages/SwipePage.tsx`, `PipelinePage.tsx` | Drag-to-swipe deck (pointer events, ← → keys, buttons) and the three-column board with per-card consent badge and audit trail. |
+
+Endpoints: `GET /api/applications/deck` · `POST /api/applications/swipe` · `GET /api/applications/board` · `GET /api/applications/{id}` · `GET /api/applications/{id}/consent` · `POST /api/applications/{id}/stage` · `POST /api/mail/sync`.
 
 ## Running locally
 
@@ -55,6 +74,25 @@ npm run dev
 
 Open http://localhost:5173. The dev server proxies `/api` to the backend on port 8000.
 
+The swipe deck is at `/swipe` and the pipeline board at `/pipeline`. The service worker only registers in a production build (`npm run build && npm run preview`), so a cached shell never hides your edits during `npm run dev`.
+
+## Recruiter mailbox (Objective 3)
+
+The background reader is off by default. To switch it on, set these in `backend/.env` and restart the API:
+
+```
+IMAP_ENABLED=true
+IMAP_HOST=imap.gmail.com
+IMAP_USER=you@example.com
+IMAP_PASSWORD=your-app-password     # an app password, never your login password
+IMAP_SEARCH=UNSEEN
+IMAP_POLL_SECONDS=300
+```
+
+The mailbox is opened read-only, so nothing is ever marked as seen or deleted. Without it, `POST /api/mail/sync` still works: post `{"messages": [...]}` to replay replies through the same classifier and matcher — the **Replay a recruiter reply** panel on the board does exactly that.
+
+`CONSENT_SIGNING_SECRET` signs the consent receipts. Change it in production; rotating it means receipts signed with the old secret no longer verify.
+
 ## GitHub access and rate limits
 
 OAuth login is **not built yet**. For now, enter a GitHub username and optionally a personal access token (PAT). The token is used only for that analysis and never stored.
@@ -69,3 +107,5 @@ Limits are configurable in `.env` (see `.env.example`).
 - GitHub OAuth login (replaces the PAT field)
 - Re-analysis / caching per user instead of a new profile each run
 - LLM-written contribution summaries and resume bullets that must cite the stored commits/PRs (Objective 2)
+- Sending the application itself (the consent receipt is written, the outbound submission is still manual)
+- Push notifications when the IMAP reader moves a card while the PWA is closed
