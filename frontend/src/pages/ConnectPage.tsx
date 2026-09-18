@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { analyzeProfile, ApiError } from '../api/client'
 
 export default function ConnectPage() {
@@ -30,6 +30,19 @@ export default function ConnectPage() {
 
   return (
     <section className="connect-page">
+      <div className="card jobs-quick-banner">
+        <div className="banner-left">
+          <span className="banner-badge">NEW: Phase 2 Active</span>
+          <h3>Looking for verified tech jobs?</h3>
+          <p className="muted">
+            Skip ghost jobs, fake listings, and resume blackholes. Explore real openings purged of phantom postings.
+          </p>
+        </div>
+        <Link to="/jobs" className="btn-jobs-banner">
+          Find Jobs Feed ➔
+        </Link>
+      </div>
+
       <h1>Turn your GitHub into a proof-of-work profile</h1>
       <p className="subtitle">
         We read your repositories, commits and pull requests and turn them into a skills profile where every

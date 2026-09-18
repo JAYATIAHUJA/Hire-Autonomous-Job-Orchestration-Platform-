@@ -81,3 +81,74 @@ export interface AnalyzeResponse {
   profile_id: number
   username: string
 }
+
+export interface CompanyContract {
+  name: string
+  domain: string | null
+  external_layoff_flag: boolean
+}
+
+export interface RoleContract {
+  title: string
+  location: string
+  salary_range: string | null
+}
+
+export interface GhostJobMetricsContract {
+  ghost_score: number
+  risk_band: 'Low' | 'Moderate' | 'High'
+  legitimacy_probability: number
+  posting_age_days: number
+  repost_count: number
+}
+
+export interface ParsedRequirementsContract {
+  primary_skills: string[]
+  experience_level: string
+  raw_description_hash: string
+}
+
+export interface JobContract {
+  job_id: string
+  company: CompanyContract
+  role: RoleContract
+  ghost_job_metrics: GhostJobMetricsContract
+  parsed_requirements: ParsedRequirementsContract
+  created_at: string
+}
+
+export interface JobFeedResponse {
+  total: number
+  page: number
+  limit: number
+  min_legitimacy: number
+  jobs: JobContract[]
+}
+
+export interface ScoreJobRequest {
+  posting_age_days: number
+  repost_count: number
+  raw_description: string
+  salary_range?: string | null
+  company_name?: string
+  company_domain?: string | null
+  external_layoff_flag?: boolean | null
+}
+
+export interface ScoreJobResponse {
+  ghost_score: number
+  risk_band: string
+  legitimacy_probability: number
+  is_ghost: boolean
+  posting_age_days: number
+  repost_count: number
+  features: {
+    x_age: number
+    x_repost: number
+    x_quality: number
+    x_salary: number
+    x_news: number
+    layoff_detail: string | null
+    detected_skills: string[]
+  }
+}

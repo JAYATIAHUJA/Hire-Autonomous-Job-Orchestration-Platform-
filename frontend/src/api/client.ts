@@ -32,3 +32,31 @@ export async function analyzeProfile(username: string, token?: string): Promise<
 export async function getProfile(profileId: string): Promise<Profile> {
   return handle<Profile>(await fetch(`${BASE_URL}/${encodeURIComponent(profileId)}`))
 }
+
+export async function getJobFeed(
+  limit: number = 20,
+  page: number = 1,
+  minLegitimacy: number = 0.6,
+): Promise<import('../types').JobFeedResponse> {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    page: String(page),
+    min_legitimacy: String(minLegitimacy),
+  })
+  return handle<import('../types').JobFeedResponse>(await fetch(`/api/jobs/feed?${params.toString()}`))
+}
+
+export async function getJobDetail(jobId: string): Promise<import('../types').JobContract> {
+  return handle<import('../types').JobContract>(await fetch(`/api/jobs/${encodeURIComponent(jobId)}`))
+}
+
+export async function scoreJobOnDemand(
+  payload: import('../types').ScoreJobRequest,
+): Promise<import('../types').ScoreJobResponse> {
+  const res = await fetch('/api/jobs/score', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  return handle<import('../types').ScoreJobResponse>(res)
+}

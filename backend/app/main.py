@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .db import init_db
-from .routers import profile
+from .routers import jobs, profile
 
 
 @asynccontextmanager
@@ -14,7 +14,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="HIRE — Proof of Work API", lifespan=lifespan)
+app = FastAPI(title="Hire-Unplug — Autonomous Job Orchestration Platform", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,6 +24,8 @@ app.add_middleware(
 )
 
 app.include_router(profile.router)
+app.include_router(jobs.router)
+app.include_router(jobs.router, prefix="/api")
 
 
 @app.get("/health")

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getProfile } from '../api/client'
 import CommitTimelineChart from '../components/CommitTimelineChart'
 import ContributionItem from '../components/ContributionItem'
@@ -27,6 +27,19 @@ export default function ProfilePage() {
   return (
     <div className="profile-page">
       <StatsHeader profile={profile} />
+
+      <div className="card proof-jobs-cta">
+        <div className="proof-jobs-cta-text">
+          <span className="banner-badge">Verified Skills Ready</span>
+          <h3>Deploy your Proof-of-Work to Verified Jobs</h3>
+          <p className="muted">
+            Match your code-backed skills with 100% ghost-free, verified engineering roles.
+          </p>
+        </div>
+        <Link to="/jobs" className="btn-browse-jobs">
+          Explore Verified Jobs ➔
+        </Link>
+      </div>
 
       {profile.top_contributions.length > 0 && (
         <section className="card">
