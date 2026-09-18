@@ -20,5 +20,6 @@ def get_db():
 def init_db():
     from . import models  # noqa: F401  (registers tables on Base.metadata)
     from .jobs import models as job_models  # noqa: F401
+    from .applications import models as application_models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

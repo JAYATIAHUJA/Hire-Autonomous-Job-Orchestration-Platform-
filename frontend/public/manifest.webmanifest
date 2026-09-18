@@ -1,0 +1,22 @@
+{
+  "name": "HIRE-UNPLUG — Autonomous Job Orchestration",
+  "short_name": "HIRE",
+  "description": "Swipe verified, ghost-filtered jobs and track every reply on one pipeline board.",
+  "start_url": "/swipe",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12131a",
+  "theme_color": "#4f46e5",
+  "categories": ["productivity", "business"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Swipe deck", "url": "/swipe" },
+    { "name": "Pipeline board", "url": "/pipeline" }
+  ]
+}

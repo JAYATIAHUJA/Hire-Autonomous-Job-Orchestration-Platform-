@@ -29,6 +29,23 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:5173"]
 
+    # Signs the consent receipt written on every swipe right. Override in production:
+    # rotating this secret invalidates verification of receipts signed before it.
+    consent_signing_secret: str = "hire-unplug-dev-consent-secret"
+
+    # Background recruiter-mailbox reader. Disabled by default so local runs and
+    # tests never reach for a mailbox; the /api/mail/sync endpoint works either way.
+    imap_enabled: bool = False
+    imap_host: str = ""
+    imap_port: int = 993
+    imap_user: str = ""
+    imap_password: str = ""
+    imap_mailbox: str = "INBOX"
+    imap_use_ssl: bool = True
+    imap_search: str = "UNSEEN"
+    imap_poll_seconds: int = 300
+    imap_fetch_limit: int = 25
+
     def limits(self, has_token: bool) -> AnalysisLimits:
         if has_token:
             return AnalysisLimits("full", self.full_max_repos, self.full_commits_per_repo, self.full_external_prs)

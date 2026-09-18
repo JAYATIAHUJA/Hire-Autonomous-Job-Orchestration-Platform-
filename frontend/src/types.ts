@@ -152,3 +152,88 @@ export interface ScoreJobResponse {
     detected_skills: string[]
   }
 }
+
+/* ---- Objective 3: swipe deck, signed consent and the pipeline board ---- */
+
+export type PipelineStage = 'applied' | 'interview_scheduled' | 'rejected' | 'skipped'
+
+export interface ConsentReceipt {
+  consent_id: string
+  subject: string
+  employer_name: string
+  purpose: string
+  granted_at: string
+  algorithm: string
+  signature: string
+  payload: Record<string, unknown>
+  verified: boolean
+}
+
+export interface PipelineEvent {
+  from_stage: string | null
+  to_stage: string
+  source: 'swipe' | 'imap' | 'manual'
+  detail: string | null
+  occurred_at: string | null
+}
+
+export interface ApplicationCard {
+  application_id: string
+  job_id: string
+  candidate_ref: string
+  employer_name: string
+  employer_domain: string | null
+  role_title: string
+  location: string | null
+  stage: PipelineStage
+  stage_label: string
+  swipe_direction: 'left' | 'right'
+  created_at: string | null
+  updated_at: string | null
+  last_event_summary: string | null
+  consent: ConsentReceipt | null
+  events: PipelineEvent[]
+}
+
+export interface SwipeResponse {
+  application: ApplicationCard
+  consent: ConsentReceipt | null
+  already_recorded: boolean
+}
+
+export interface BoardColumn {
+  stage: PipelineStage
+  label: string
+  count: number
+  cards: ApplicationCard[]
+}
+
+export interface BoardResponse {
+  candidate_ref: string
+  total: number
+  columns: BoardColumn[]
+}
+
+export interface DeckResponse {
+  candidate_ref: string
+  total: number
+  min_legitimacy: number
+  jobs: JobContract[]
+}
+
+export interface RecruiterMessage {
+  uid: string
+  from_address: string
+  subject: string
+  body: string
+}
+
+export interface MailSyncResponse {
+  source: 'imap' | 'inline'
+  fetched: number
+  matched: number
+  moved: number
+  skipped: number
+  errors: string[]
+  moves: Record<string, unknown>[]
+}

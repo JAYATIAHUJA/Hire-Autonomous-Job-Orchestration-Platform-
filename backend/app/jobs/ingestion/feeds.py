@@ -152,7 +152,9 @@ async def fetch_public_feed_jobs(limit: int = 20) -> list[dict[str, Any]]:
                         jobs.append({
                             "source_id": f"remoteok_{item.get('id', '')}",
                             "company_name": item.get("company", "Remote Co"),
-                            "company_domain": (item.get("company_slug") or "remote.co") + ".com",
+                            # A shared placeholder domain would make unrelated employers
+                            # look identical to the recruiter-reply matcher, so leave it unset.
+                            "company_domain": (item["company_slug"] + ".com") if item.get("company_slug") else None,
                             "external_layoff_flag": False,
                             "title": item.get("position", "Software Engineer"),
                             "location": item.get("location") or "Remote",
