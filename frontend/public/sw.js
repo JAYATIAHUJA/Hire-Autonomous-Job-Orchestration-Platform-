@@ -9,7 +9,7 @@ const VERSION = 'hire-v1'
 const SHELL_CACHE = `${VERSION}-shell`
 const API_CACHE = `${VERSION}-api`
 
-const SHELL_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg']
+const SHELL_ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/icon-192.png']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
