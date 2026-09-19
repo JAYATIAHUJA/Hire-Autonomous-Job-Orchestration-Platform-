@@ -11,7 +11,9 @@ import type {
   SwipeResponse,
 } from '../types'
 
-const BASE_URL = '/api/profile'
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
+const url = (path: string) => `${API_BASE}${path}`
+const BASE_URL = `${API_BASE}/api/profile`
 
 export class ApiError extends Error {
   status: number
@@ -54,17 +56,17 @@ export async function getJobFeed(
     page: String(page),
     min_legitimacy: String(minLegitimacy),
   })
-  return handle<import('../types').JobFeedResponse>(await fetch(`/api/jobs/feed?${params.toString()}`))
+  return handle<import('../types').JobFeedResponse>(await fetch(url(`/api/jobs/feed?${params.toString()}`)))
 }
 
 export async function getJobDetail(jobId: string): Promise<import('../types').JobContract> {
-  return handle<import('../types').JobContract>(await fetch(`/api/jobs/${encodeURIComponent(jobId)}`))
+  return handle<import('../types').JobContract>(await fetch(url(`/api/jobs/${encodeURIComponent(jobId)}`)))
 }
 
 export async function scoreJobOnDemand(
   payload: import('../types').ScoreJobRequest,
 ): Promise<import('../types').ScoreJobResponse> {
-  const res = await fetch('/api/jobs/score', {
+  const res = await fetch(url('/api/jobs/score'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -80,7 +82,7 @@ export async function getDeck(candidateRef: string, limit = 20, minLegitimacy = 
     limit: String(limit),
     min_legitimacy: String(minLegitimacy),
   })
-  return handle<DeckResponse>(await fetch(`/api/applications/deck?${params.toString()}`))
+  return handle<DeckResponse>(await fetch(url(`/api/applications/deck?${params.toString()}`)))
 }
 
 export async function swipeJob(
@@ -89,7 +91,7 @@ export async function swipeJob(
   candidateRef: string,
   purpose?: string,
 ): Promise<SwipeResponse> {
-  const res = await fetch('/api/applications/swipe', {
+  const res = await fetch(url('/api/applications/swipe'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ job_id: jobId, direction, candidate_ref: candidateRef, purpose: purpose || null }),
@@ -99,11 +101,11 @@ export async function swipeJob(
 
 export async function getBoard(candidateRef: string): Promise<BoardResponse> {
   const params = new URLSearchParams({ candidate_ref: candidateRef })
-  return handle<BoardResponse>(await fetch(`/api/applications/board?${params.toString()}`))
+  return handle<BoardResponse>(await fetch(url(`/api/applications/board?${params.toString()}`)))
 }
 
 export async function getConsentReceipt(applicationId: string): Promise<ConsentReceipt> {
-  return handle<ConsentReceipt>(await fetch(`/api/applications/${encodeURIComponent(applicationId)}/consent`))
+  return handle<ConsentReceipt>(await fetch(url(`/api/applications/${encodeURIComponent(applicationId)}/consent`)))
 }
 
 export async function moveApplicationStage(
@@ -111,7 +113,7 @@ export async function moveApplicationStage(
   toStage: PipelineStage,
   detail?: string,
 ): Promise<ApplicationCard> {
-  const res = await fetch(`/api/applications/${encodeURIComponent(applicationId)}/stage`, {
+  const res = await fetch(url(`/api/applications/${encodeURIComponent(applicationId)}/stage`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ to_stage: toStage, detail: detail || null }),
@@ -120,7 +122,7 @@ export async function moveApplicationStage(
 }
 
 export async function syncRecruiterMail(messages?: RecruiterMessage[]): Promise<MailSyncResponse> {
-  const res = await fetch('/api/mail/sync', {
+  const res = await fetch(url('/api/mail/sync'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(messages && messages.length ? { messages } : {}),

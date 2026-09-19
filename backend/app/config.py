@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     limited_commits_per_repo: int = 8
     limited_external_prs: int = 5
 
-    cors_origins: list[str] = ["http://localhost:5173"]
+    cors_origins: list[str] = ["*"]
 
     # Signs the consent receipt written on every swipe right. Override in production:
     # rotating this secret invalidates verification of receipts signed before it.

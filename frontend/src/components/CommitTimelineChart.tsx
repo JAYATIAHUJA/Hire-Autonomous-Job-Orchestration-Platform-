@@ -11,8 +11,8 @@ export default function CommitTimelineChart({ timeline }: { timeline: TimelinePo
         <BarChart data={timeline} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
           <XAxis dataKey="month" tick={{ fontSize: 11 }} />
           <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
-          <Tooltip />
-          <Bar dataKey="commits" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+          <Tooltip contentStyle={{ background: '#121316', color: '#fff', borderRadius: 8, border: 'none', fontSize: 12 }} />
+          <Bar dataKey="commits" fill="#121316" radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </section>

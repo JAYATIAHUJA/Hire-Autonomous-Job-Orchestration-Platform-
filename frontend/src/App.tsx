@@ -5,23 +5,27 @@ export default function App() {
     <div className="app-shell">
       <header className="app-header">
         <div className="header-brand-wrap">
-          <Link to="/" className="brand">HIRE-UNPLUG</Link>
+          <Link to="/" className="brand">
+            <span className="brand-dot" />
+            HIRE
+            <span className="brand-badge">UNPLUG</span>
+          </Link>
           <span className="tagline">Autonomous Job Orchestration Platform</span>
         </div>
         <nav className="header-nav">
           <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Proof-of-Work (Phase 1)
+            Proof-of-Work
           </NavLink>
           <NavLink to="/jobs" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Verified Jobs Feed (Phase 2)
+            Verified Jobs
           </NavLink>
           <NavLink to="/swipe" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Swipe Deck (Phase 3)
+            Swipe Deck
           </NavLink>
           <NavLink to="/pipeline" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-            Pipeline
+            Pipeline Board
           </NavLink>
-          <a href="http://localhost:8000/docs" target="_blank" rel="noreferrer" className="nav-link nav-link-ext">
+          <a href="http://localhost:8001/docs" target="_blank" rel="noreferrer" className="nav-link nav-link-ext">
             API Docs ↗
           </a>
         </nav>
