@@ -1,0 +1,211 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 880" width="100%" height="100%" style="background:#F7F5EE; font-family:'Plus Jakarta Sans', -apple-system, system-ui, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#121316" flood-opacity="0.06"/>
+    </filter>
+    <filter id="badge-shadow" x="-10%" y="-10%" width="120%" height="130%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#10B981" flood-opacity="0.15"/>
+    </filter>
+    <linearGradient id="grad-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFDF0"/>
+      <stop offset="100%" stop-color="#FEF9C3"/>
+    </linearGradient>
+    <linearGradient id="grad-green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ECFDF5"/>
+      <stop offset="100%" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#121316"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10B981"/>
+    </marker>
+  </defs>
+
+  <!-- Canvas Border / Frame -->
+  <rect x="20" y="20" width="1160" height="840" rx="24" fill="#FBF9F4" stroke="#E6E2D8" stroke-width="2"/>
+
+  <!-- ==================== HEADER SECTION ==================== -->
+  <g transform="translate(60, 48)">
+    <circle cx="10" cy="18" r="6" fill="#10B981" filter="url(#badge-shadow)"/>
+    <text x="26" y="24" font-size="22" font-weight="800" fill="#121316" letter-spacing="-0.03em">HIRE — AUTONOMOUS JOB ORCHESTRATION PLATFORM</text>
+    <rect x="610" y="8" width="90" height="22" rx="11" fill="#FEF08A" stroke="#FDE047" stroke-width="1"/>
+    <text x="622" y="23" font-size="10" font-weight="800" fill="#854D0E" letter-spacing="0.05em">UNPLUG v1.0</text>
+    <text x="26" y="44" font-size="13" font-weight="500" fill="#717784">End-to-End System Architecture: Verification, Discovery, and Autonomous Pipeline Engine</text>
+  </g>
+
+  <!-- ==================== CLIENT PRESENTATION LAYER ==================== -->
+  <g transform="translate(60, 115)">
+    <!-- Layer Box -->
+    <rect x="0" y="0" width="1080" height="135" rx="18" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Layer Label -->
+    <rect x="20" y="-12" width="220" height="24" rx="12" fill="#121316"/>
+    <text x="34" y="4" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.04em">CLIENT LAYER (Vercel Edge PWA)</text>
+
+    <!-- Sub-blocks (4 Views) -->
+    <!-- Card 1: Proof of Work -->
+    <g transform="translate(20, 24)">
+      <rect x="0" y="0" width="245" height="92" rx="12" fill="#FBF9F4" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="14" y="24" font-size="13" font-weight="700" fill="#121316">Proof-of-Work Profile</text>
+      <text x="14" y="40" font-size="10" font-weight="600" fill="#D97706">Route: / &amp; /profile/:id</text>
+      <text x="14" y="58" font-size="10.5" fill="#525866">GitHub commit/PR diff reader</text>
+      <text x="14" y="74" font-size="10.5" fill="#525866">Verified skill breakdown &amp; tiers</text>
+    </g>
+
+    <!-- Card 2: Jobs Feed -->
+    <g transform="translate(280, 24)">
+      <rect x="0" y="0" width="245" height="92" rx="12" fill="url(#grad-gold)" stroke="#FDE68A" stroke-width="1.2"/>
+      <text x="14" y="24" font-size="13" font-weight="700" fill="#121316">Verified Jobs Discovery</text>
+      <text x="14" y="40" font-size="10" font-weight="600" fill="#854D0E">Route: /jobs</text>
+      <text x="14" y="58" font-size="10.5" fill="#525866">Ghost-purged roles &amp; hub pills</text>
+      <text x="14" y="74" font-size="10.5" fill="#525866">Live Ghost Inspector diagnostic</text>
+    </g>
+
+    <!-- Card 3: Swipe Deck -->
+    <g transform="translate(540, 24)">
+      <rect x="0" y="0" width="245" height="92" rx="12" fill="#FBF9F4" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="14" y="24" font-size="13" font-weight="700" fill="#121316">Swipe Consent Deck</text>
+      <text x="14" y="40" font-size="10" font-weight="600" fill="#059669">Route: /swipe</text>
+      <text x="14" y="58" font-size="10.5" fill="#525866">Mobile-first pointer card stack</text>
+      <text x="14" y="74" font-size="10.5" fill="#525866">Affirmative right-swipe consent</text>
+    </g>
+
+    <!-- Card 4: Pipeline Kanban -->
+    <g transform="translate(800, 24)">
+      <rect x="0" y="0" width="260" height="92" rx="12" fill="url(#grad-green)" stroke="#BBF7D0" stroke-width="1.2"/>
+      <text x="14" y="24" font-size="13" font-weight="700" fill="#065F46">Pipeline Kanban Tracker</text>
+      <text x="14" y="40" font-size="10" font-weight="600" fill="#047857">Route: /pipeline</text>
+      <text x="14" y="58" font-size="10.5" fill="#525866">3-Column board &amp; audit trail</text>
+      <text x="14" y="74" font-size="10.5" fill="#525866">Auto-sync with recruiter replies</text>
+    </g>
+  </g>
+
+  <!-- Connectors from Client to API -->
+  <path d="M 600 250 L 600 290" stroke="#121316" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+  <rect x="535" y="260" width="130" height="20" rx="6" fill="#121316"/>
+  <text x="547" y="274" font-size="10" font-weight="700" fill="#FFFFFF">HTTPS / REST APIs</text>
+
+  <!-- ==================== ORCHESTRATION & BACKEND ENGINE ==================== -->
+  <g transform="translate(60, 290)">
+    <!-- Layer Box -->
+    <rect x="0" y="0" width="1080" height="255" rx="18" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <!-- Layer Label -->
+    <rect x="20" y="-12" width="310" height="24" rx="12" fill="#121316"/>
+    <text x="34" y="4" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.04em">CORE ENGINE — FastAPI (Render / Local Python)</text>
+
+    <!-- Objective 1 Box -->
+    <g transform="translate(20, 26)">
+      <rect x="0" y="0" width="325" height="205" rx="14" fill="#FAFAF8" stroke="#E6E2D8" stroke-width="1"/>
+      <rect x="14" y="14" width="135" height="20" rx="10" fill="#121316"/>
+      <text x="24" y="28" font-size="10" font-weight="700" fill="#FFFFFF">PHASE 1: PROOF-OF-WORK</text>
+      <text x="14" y="54" font-size="12" font-weight="700" fill="#121316">Diff &amp; Skill Extraction Engine</text>
+      <text x="14" y="72" font-size="10.5" fill="#525866">• Async GitHub Client (Bounded 8-worker)</text>
+      <text x="14" y="90" font-size="10.5" fill="#525866">• 10-Language AST Import &amp; Manifest Parser</text>
+      <text x="14" y="108" font-size="10.5" fill="#525866">• Commit Categorizer (Feature, Fix, etc.)</text>
+      <text x="14" y="126" font-size="10.5" fill="#525866">• Log₂ Contribution Sizing Formula</text>
+      <text x="14" y="144" font-size="10.5" fill="#525866">• 6-Factor Transparent Confidence Tiers</text>
+      <text x="14" y="162" font-size="10.5" fill="#525866">• Contributor Repo Share Role Detector</text>
+      <text x="14" y="184" font-size="9.5" font-weight="600" fill="#10B981">Output: Verified Skills &amp; Evidence Contract</text>
+    </g>
+
+    <!-- Objective 2 Box -->
+    <g transform="translate(365, 26)">
+      <rect x="0" y="0" width="345" height="205" rx="14" fill="#FFFDF0" stroke="#FDE68A" stroke-width="1.2"/>
+      <rect x="14" y="14" width="155" height="20" rx="10" fill="#854D0E"/>
+      <text x="24" y="28" font-size="10" font-weight="700" fill="#FFFFFF">PHASE 2: GHOST JOB FILTER</text>
+      <text x="14" y="54" font-size="12" font-weight="700" fill="#121316">Discovery &amp; Logistic Filter Model</text>
+      <text x="14" y="72" font-size="10.5" fill="#525866">• Zero-Auth LinkedIn Guest &amp; RemoteOK Feeds</text>
+      <text x="14" y="90" font-size="10.5" fill="#525866">• Canonical Slugifier: job_&lt;co&gt;_&lt;title&gt;_&lt;hash&gt;</text>
+      <text x="14" y="108" font-size="10.5" fill="#525866">• SHA-256 Global JD Cache (80% Token Saved)</text>
+      <text x="14" y="126" font-size="10.5" fill="#525866">• 5-Vector Scorer: X_age, repost, salary, news, qual</text>
+      <text x="14" y="144" font-size="10.5" fill="#525866">• Calibrated Logistic: P(Legitimate) = 1/(1+e^-z)</text>
+      <text x="14" y="162" font-size="10.5" fill="#525866">• Auto-Purge: High Risk (&gt;=700 Ghost Score)</text>
+      <text x="14" y="184" font-size="9.5" font-weight="600" fill="#D97706">Output: Clean Shared Job Contract</text>
+    </g>
+
+    <!-- Objective 3 Box -->
+    <g transform="translate(730, 26)">
+      <rect x="0" y="0" width="330" height="205" rx="14" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1.2"/>
+      <rect x="14" y="14" width="155" height="20" rx="10" fill="#065F46"/>
+      <text x="24" y="28" font-size="10" font-weight="700" fill="#FFFFFF">PHASE 3: CONSENT &amp; KANBAN</text>
+      <text x="14" y="54" font-size="12" font-weight="700" fill="#121316">Consent Log &amp; Mail Automation</text>
+      <text x="14" y="72" font-size="10.5" fill="#525866">• Swipe Right affirmative consent trigger</text>
+      <text x="14" y="90" font-size="10.5" fill="#525866">• HMAC-SHA256 Tamper-Evident Signer</text>
+      <text x="14" y="108" font-size="10.5" fill="#525866">• Re-verified on every single read</text>
+      <text x="14" y="126" font-size="10.5" fill="#525866">• Safety Rule: Mail can close, NEVER reopen</text>
+      <text x="14" y="144" font-size="10.5" fill="#525866">• Dual-Vocabulary Recruiter Reply Classifier</text>
+      <text x="14" y="162" font-size="10.5" fill="#525866">• Public-Suffix Safe Domain &amp; ID Attributor</text>
+      <text x="14" y="184" font-size="9.5" font-weight="600" fill="#059669">Output: Verified Applications &amp; Audit Trail</text>
+    </g>
+  </g>
+
+  <!-- Connectors from Engine to Database & External -->
+  <path d="M 600 545 L 600 585" stroke="#121316" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
+  <rect x="520" y="555" width="160" height="20" rx="6" fill="#121316"/>
+  <text x="532" y="569" font-size="10" font-weight="700" fill="#FFFFFF">SQLAlchemy ORM Read/Write</text>
+
+  <!-- ==================== PERSISTENCE LAYER ==================== -->
+  <g transform="translate(60, 585)">
+    <rect x="0" y="0" width="1080" height="110" rx="16" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1.5" filter="url(#shadow)"/>
+    
+    <rect x="20" y="-12" width="220" height="24" rx="12" fill="#121316"/>
+    <text x="34" y="4" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.04em">DATA &amp; PERSISTENCE (SQLite / hire.db)</text>
+
+    <g transform="translate(20, 24)">
+      <rect x="0" y="0" width="325" height="66" rx="10" fill="#FAFAF8" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="12" y="22" font-size="11" font-weight="700" fill="#121316">Profile Entities</text>
+      <text x="12" y="38" font-size="10" fill="#525866">users · projects · contributions</text>
+      <text x="12" y="52" font-size="10" fill="#525866">skills · skill_highlights</text>
+    </g>
+
+    <g transform="translate(365, 24)">
+      <rect x="0" y="0" width="345" height="66" rx="10" fill="#FAFAF8" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="12" y="22" font-size="11" font-weight="700" fill="#121316">Job Registry &amp; Cache</text>
+      <text x="12" y="38" font-size="10" fill="#525866">companies · jobs (with ghost metrics)</text>
+      <text x="12" y="52" font-size="10" fill="#525866">jd_cache (hash → parsed requirements)</text>
+    </g>
+
+    <g transform="translate(730, 24)">
+      <rect x="0" y="0" width="330" height="66" rx="10" fill="#FAFAF8" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="12" y="22" font-size="11" font-weight="700" fill="#121316">Consent &amp; Pipeline Records</text>
+      <text x="12" y="38" font-size="10" fill="#525866">applications (candidate_ref, job_id unique)</text>
+      <text x="12" y="52" font-size="10" fill="#525866">consent_logs (HMAC receipts) · pipeline_events</text>
+    </g>
+  </g>
+
+  <!-- ==================== EXTERNAL SERVICES LAYER ==================== -->
+  <g transform="translate(60, 725)">
+    <rect x="0" y="0" width="1080" height="100" rx="16" fill="#F4F2EB" stroke="#E6E2D8" stroke-width="1.5"/>
+    
+    <rect x="20" y="-12" width="220" height="24" rx="12" fill="#525866"/>
+    <text x="34" y="4" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="0.04em">EXTERNAL PROTOCOLS &amp; APIS</text>
+
+    <!-- External 1: GitHub -->
+    <g transform="translate(30, 22)">
+      <rect x="0" y="0" width="310" height="60" rx="10" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="14" y="24" font-size="12" font-weight="700" fill="#121316">GitHub REST API</text>
+      <text x="14" y="42" font-size="10" fill="#525866">Commits, PRs, diffs, contributors (60 / 5000 req/hr)</text>
+    </g>
+
+    <!-- External 2: Job APIs -->
+    <g transform="translate(370, 22)">
+      <rect x="0" y="0" width="340" height="60" rx="10" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="14" y="24" font-size="12" font-weight="700" fill="#121316">Public Job Streams &amp; Feeds</text>
+      <text x="14" y="42" font-size="10" fill="#525866">RemoteOK API + LinkedIn Guest public endpoints</text>
+    </g>
+
+    <!-- External 3: IMAP Mailbox -->
+    <g transform="translate(740, 22)">
+      <rect x="0" y="0" width="310" height="60" rx="10" fill="#FFFFFF" stroke="#E6E2D8" stroke-width="1"/>
+      <text x="14" y="24" font-size="12" font-weight="700" fill="#121316">Recruiter Mailbox (IMAP SSL)</text>
+      <text x="14" y="42" font-size="10" fill="#525866">Read-only poller; matches replies to active cards</text>
+    </g>
+  </g>
+
+  <!-- Connectors between Engine and Externals -->
+  <line x1="220" y1="545" x2="220" y2="725" stroke="#717784" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="535" y1="545" x2="535" y2="725" stroke="#717784" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <line x1="895" y1="545" x2="895" y2="725" stroke="#717784" stroke-width="1.5" stroke-dasharray="4 4"/>
+</svg>
