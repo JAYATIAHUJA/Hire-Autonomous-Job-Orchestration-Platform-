@@ -8,3 +8,6 @@ __pycache__/
 node_modules/
 dist/
 .vercel/
+
+# ATS registry probe cache (scripts/ats_registry/probe.py)
+data/ats-registry/.cache/
