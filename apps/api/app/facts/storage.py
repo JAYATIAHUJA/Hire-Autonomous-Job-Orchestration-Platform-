@@ -10,6 +10,8 @@ from ..config import settings
 class ObjectStore(Protocol):
     def put(self, key: str, data: bytes, content_type: str) -> None: ...
 
+    def get(self, key: str) -> bytes: ...
+
     def delete(self, key: str) -> None: ...
 
 
@@ -29,6 +31,9 @@ class S3ObjectStore:
     def put(self, key: str, data: bytes, content_type: str) -> None:
         self._s3.put_object(Bucket=self._bucket, Key=key, Body=data, ContentType=content_type)
 
+    def get(self, key: str) -> bytes:
+        return self._s3.get_object(Bucket=self._bucket, Key=key)["Body"].read()
+
     def delete(self, key: str) -> None:
         # S3 DeleteObject succeeds for a missing key, so erasure is idempotent.
         self._s3.delete_object(Bucket=self._bucket, Key=key)
@@ -42,6 +47,9 @@ class InMemoryObjectStore:
 
     def put(self, key: str, data: bytes, content_type: str) -> None:
         self.objects[key] = (data, content_type)
+
+    def get(self, key: str) -> bytes:
+        return self.objects[key][0]
 
     def delete(self, key: str) -> None:
         self.objects.pop(key, None)

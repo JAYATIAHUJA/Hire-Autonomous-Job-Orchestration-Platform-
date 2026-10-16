@@ -310,3 +310,29 @@ def test_mail_sync_without_a_mailbox_configured_reports_503(client):
     resp = client.post("/api/mail/sync", json={})
     assert resp.status_code == 503
     assert "IMAP_HOST" in resp.json()["detail"]
+
+
+def test_a_right_swipe_sends_nothing_until_the_candidate_applies(client):
+    job_id = client.get("/api/applications/deck").json()["jobs"][0]["job_id"]
+    card = client.post("/api/applications/swipe", json={"job_id": job_id, "direction": "right"}).json()["application"]
+    assert card["stage"] == "applied" and card["submission_status"] == "not_sent"
+    assert card["apply_url"] is None or card["apply_url"].startswith("http")
+
+    sent = client.post(f"/api/applications/{card['application_id']}/submission", json={"sent": True}).json()
+    assert sent["submission_status"] == "sent" and sent["submit_method"] == "self" and sent["submitted_at"]
+    assert sent["events"][-1]["detail"].startswith("You applied")
+    undone = client.post(f"/api/applications/{card['application_id']}/submission", json={"sent": False}).json()
+    assert undone["submission_status"] == "not_sent"
+
+
+def test_hearing_back_marks_the_application_as_sent(client):
+    job_id = client.get("/api/applications/deck").json()["jobs"][0]["job_id"]
+    card = client.post("/api/applications/swipe", json={"job_id": job_id, "direction": "right"}).json()["application"]
+    moved = client.post(f"/api/applications/{card['application_id']}/stage", json={"to_stage": "interview_scheduled"}).json()
+    assert moved["submission_status"] == "sent"
+
+
+def test_a_left_swipe_cannot_be_marked_as_sent(client):
+    deck = client.get("/api/applications/deck").json()["jobs"]
+    card = client.post("/api/applications/swipe", json={"job_id": deck[0]["job_id"], "direction": "left"}).json()["application"]
+    assert client.post(f"/api/applications/{card['application_id']}/submission", json={"sent": True}).status_code == 404

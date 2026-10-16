@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Navigate, Outlet, useLocation, useSearchParams } from 'react-router-dom'
+import { Alert, Loading } from '../ui/kit'
 import { useAuth } from './AuthContext'
 import { decideRoute, type RouteKind } from './guard'
 
@@ -11,18 +12,22 @@ export function RouteGuard({ route, children }: { route: RouteKind; children?: R
 
   if (decision.kind === 'wait') {
     return (
-      <div className="guard-wait" role="status" aria-live="polite">
-        Loading your account…
+      <div className="center-state">
+        <Loading label="Loading your account…" />
       </div>
     )
   }
   if (decision.kind === 'error') {
     return (
-      <div className="card guard-error" role="alert">
-        <p className="error">Could not reach Hire: {decision.message}</p>
-        <button type="button" onClick={() => refresh()}>
-          Try again
-        </button>
+      <div className="center-state">
+        <div className="card card-pad stack" style={{ maxWidth: 420 }}>
+          <h2>Can’t reach Hire right now</h2>
+          <Alert tone="error">{decision.message}</Alert>
+          <p className="muted small">Check that the API is running, then try again. You have not been logged out.</p>
+          <button type="button" className="btn btn-primary" onClick={() => refresh()}>
+            Try again
+          </button>
+        </div>
       </div>
     )
   }

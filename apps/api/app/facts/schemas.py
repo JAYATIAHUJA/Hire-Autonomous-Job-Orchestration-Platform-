@@ -32,10 +32,26 @@ class ResumeUploadResponse(BaseModel):
     proposals: list[FactOut]
     skipped_duplicates: int
     contains_instructions: bool
+    # Already approved, but not in this resume: kept, listed so the user can drop any.
+    kept_from_before: list[FactOut] = []
 
 
 class FactIdsRequest(BaseModel):
     ids: list[str] = Field(min_length=1, max_length=500)
+
+
+class FactCreate(BaseModel):
+    """A fact the user adds by hand: approved at once, because they are its source."""
+
+    kind: str
+    text: str = Field(min_length=1, max_length=500)
+    # Optional fields, e.g. company and title so an achievement lands under that role.
+    structured: dict[str, Optional[str]] = Field(default_factory=dict)
+
+
+class FactUpdate(BaseModel):
+    text: Optional[str] = Field(default=None, min_length=1, max_length=500)
+    structured: Optional[dict[str, Optional[str]]] = None
 
 
 class FactBatchResponse(BaseModel):

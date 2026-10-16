@@ -97,10 +97,18 @@ Record facts by calling record_resume_facts once. Rules:
 - text is a short plain-English statement of the claim, using the resume's own wording where \
 possible. evidence is a short verbatim quote from the resume that supports it.
 - Fill the structured fields that apply and set the rest to null. Dates as YYYY or YYYY-MM; \
-end_date "present" for a current role. For an achievement, set company and title to the role \
-it belongs to. For a skill, language, project or certification put its name in name; put a \
-language's CEFR level (A1-C2) or stated proficiency in level. For work_authorization put the \
-country and the stated status in text.
+end_date "present" for a current role. Every experience fact must carry company and title, and \
+its dates when the resume gives them.
+- Bullets belong to what they sit under. A bullet under a job is an achievement with company \
+and title set to that job. A bullet under a project is an achievement with name set to that \
+project's name (company and title null). Only awards, rankings, hackathons and other wins not \
+tied to one job or project are achievements with company, title and name all null.
+- A project fact is one line: what it is and what it was built with; put its name in name and \
+its link (GitHub, demo, store page) in url when the resume gives one.
+- Links (LinkedIn, GitHub, portfolio, website, profiles) are link facts with the address in url.
+- For a skill, language or certification put its name in name; put a language's CEFR level \
+(A1-C2) or stated proficiency in level. For work_authorization put the country and the stated \
+status in text.
 - Never invent anything. inferred is false only when the resume states the claim outright. \
 Anything you deduce (a skill implied by a project, a seniority level, a country from a city) \
 gets inferred true. When unsure, leave it out.

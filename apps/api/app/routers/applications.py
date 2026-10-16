@@ -9,15 +9,17 @@ never 403, so its existence isn't revealed.
 """
 
 import asyncio
+import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..applications import repository
 from ..applications.board import BOARD_STAGES, is_valid_stage
 from ..applications.repository import StageTransitionError
 from ..applications.schemas import (
+    SubmissionRequest,
     ApplicationCard,
     BoardResponse,
     ConsentReceipt,
@@ -32,12 +34,40 @@ from ..auth.deps import get_current_user
 from ..auth.models import Account
 from ..config import settings
 from ..db import get_db
+from ..facts import repository as facts_repository
+from ..jobs import matching
+from ..jobs import models as job_models
 from ..jobs.pipeline import run_discovery_cycle
-from ..jobs.repository import get_job_by_id, get_jobs_feed
+from ..jobs.repository import get_job_by_id, get_jobs_feed, to_job_contract
+from ..jobs.schemas import MatchContract
 from ..mail.imap_client import ImapNotConfigured, fetch_recruiter_messages
 from ..mail.sync import mailbox_account_id, sync_messages
 
 router = APIRouter(prefix="/api", tags=["applications"], dependencies=[Depends(get_current_user)])
+
+
+def ranked_deck(db: Session, prefs: dict, min_legitimacy: float, limit: int, seen: set[str]):
+    """Every unswiped live job, scored against the preferences; matches first, then the rest."""
+    rows = (
+        db.query(job_models.Job)
+        .options(joinedload(job_models.Job.company))
+        .filter(job_models.Job.is_active.is_(True), job_models.Job.legitimacy_probability >= min_legitimacy,
+                job_models.Job.ghost_score < 700)
+        .all()
+    )
+    scored = []
+    for job in rows:
+        if job.job_id in seen:
+            continue
+        points, reasons = matching.score(job, prefs)
+        scored.append((points, job.posted_at or job.created_at, job, reasons))
+    scored.sort(key=lambda t: (t[0], t[1] or datetime.datetime.min), reverse=True)
+    out = []
+    for points, _, job, reasons in scored[:limit]:
+        contract = to_job_contract(job)
+        contract.match = MatchContract(score=points, percent=matching.percent(points), reasons=reasons)
+        out.append(contract)
+    return out, len(scored)
 
 
 def _not_found(application_id: str) -> HTTPException:
@@ -52,24 +82,27 @@ async def get_deck(
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_user),
 ):
-    """Ghost-filtered cards the account has not swiped yet, safest listings first."""
+    """Ghost-filtered cards the account has not swiped yet, best fit for their preferences first."""
     seen = repository.swiped_job_ids(db, account.id)
-    jobs, total = get_jobs_feed(
-        db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen
-    )
+    prefs = facts_repository.get_preferences(db, account.id)
 
-    # An empty store means discovery has never run; seed it and deal again.
+    def deal():
+        if prefs and prefs.get("roles"):
+            return ranked_deck(db, prefs, min_legitimacy, limit, seen)
+        return get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen)
+
+    jobs, total = deal()
+    # An empty store means discovery has never run; seed the quick feeds and deal again.
     if total == 0 and not seen:
-        await run_discovery_cycle(db, limit=20)
-        jobs, total = get_jobs_feed(
-            db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen
-        )
+        await run_discovery_cycle(db, limit=20, boards=False)
+        jobs, total = deal()
 
     return DeckResponse(
         candidate_ref=account.ref,
         total=total,
         min_legitimacy=min_legitimacy,
         jobs=jobs,
+        swiped_total=len(seen),
     )
 
 
@@ -165,6 +198,25 @@ def change_stage(
         raise HTTPException(status_code=409, detail=str(exc))
 
     return repository.to_card(app)
+
+
+@router.post("/applications/{application_id}/submission", response_model=ApplicationCard)
+def set_submission(application_id: str, payload: SubmissionRequest, db: Session = Depends(get_db),
+                   account: Account = Depends(get_current_user)):
+    """The candidate applied on the employer's site (or undoes that)."""
+    app = repository.get_application(db, application_id, account.id)
+    if app is None or app.swipe_direction != "right":
+        raise _not_found(application_id)
+    return repository.to_card(repository.mark_submitted(db, app, sent=payload.sent))
+
+
+@router.get("/mail/status")
+def mail_status(db: Session = Depends(get_db), account: Account = Depends(get_current_user)) -> dict[str, bool]:
+    """Whether this account's recruiter replies are read automatically (a mailbox is set up for it)."""
+    connected = bool(settings.imap_enabled and settings.imap_host and settings.imap_user)
+    if connected and settings.imap_candidate_ref:
+        connected = mailbox_account_id(db) == account.id
+    return {"connected": connected}
 
 
 @router.post("/mail/sync", response_model=MailSyncResponse)

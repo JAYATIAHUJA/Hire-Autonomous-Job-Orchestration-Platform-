@@ -11,7 +11,7 @@ from app.config import settings
 from app.main import app
 from auth_helpers import app_db, create_account, login_as, memory_client
 
-PUBLIC_PATHS = {"/health"}
+PUBLIC_PATHS = {"/health", "/v1/public/stats"}  # aggregate numbers only, for the landing page
 PUBLIC_PREFIXES = ("/v1/auth/",)
 REJECTION = "We regret to inform you that we have decided to move forward with other candidates."
 

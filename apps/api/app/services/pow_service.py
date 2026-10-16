@@ -67,6 +67,11 @@ def request_refresh(db: Session, account_id: int, github_username: str, include_
     return run, True
 
 
+def latest_run(db: Session, account_id: int) -> Optional[PowRun]:
+    """The account's newest run in any status, so a client can show it without starting one."""
+    return db.query(PowRun).filter(PowRun.account_id == account_id).order_by(PowRun.id.desc()).first()
+
+
 def get_run(db: Session, account_id: int, run_id: int) -> Optional[PowRun]:
     """Owner-scoped: someone else's run is indistinguishable from a missing one."""
     return db.query(PowRun).filter(PowRun.id == run_id, PowRun.account_id == account_id).first()

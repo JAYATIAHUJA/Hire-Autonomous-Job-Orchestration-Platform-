@@ -14,6 +14,10 @@ TEST_SIGNING_SECRET = "test-only-consent-secret-0123456789abcdef"
 @pytest.fixture(autouse=True)
 def _hermetic_settings(monkeypatch):
     monkeypatch.setattr(settings, "live_feeds_enabled", False)
+    # Tests run on the demo jobs and never read real employer boards.
+    monkeypatch.setattr(settings, "demo_jobs_enabled", True)
+    monkeypatch.setattr(settings, "ats_registry_path", "/nonexistent/registry.json")
+    monkeypatch.setattr(settings, "ats_boards_per_round", 0)
     monkeypatch.setattr(settings, "consent_signing_secret", TEST_SIGNING_SECRET)
 
 

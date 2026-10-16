@@ -30,5 +30,6 @@ def init_db():
     from .auth import models as auth_models  # noqa: F401
     from .profiles import pow_models  # noqa: F401
     from .facts import models as fact_models  # noqa: F401
+    from .apply import models as apply_models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

@@ -9,6 +9,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from ..auth.deps import get_current_user, require_admin
+from ..auth.models import Account
+from ..facts import repository as facts_repository
+from ..jobs import matching
 from ..db import get_db
 from ..jobs.ghost_filter.scorer import score_job
 from ..jobs.ingestion.hasher import compute_description_hash
@@ -19,8 +22,10 @@ from ..jobs.repository import (
     get_jobs_feed,
     lookup_cache,
 )
+from ..jobs import discovery
 from ..jobs.schemas import (
     CacheCheckRequest,
+    DiscoveryStatus,
     CacheCheckResponse,
     IngestResponse,
     JobContract,
@@ -28,6 +33,10 @@ from ..jobs.schemas import (
     ScoreJobRequest,
     ScoreJobResponse,
 )
+
+# Filter words -> the experience labels ingestion assigns.
+LEVELS = {"intern": "Internship", "entry": "Entry-Level (0-2 yrs)", "mid": "Mid-Level (2-5 yrs)",
+          "senior": "Senior (5+ yrs)", "unknown": "Not stated"}
 
 # Job listings are shared, not personal, but only logged-in accounts may read them (T13).
 router = APIRouter(prefix="/jobs", tags=["jobs"], dependencies=[Depends(get_current_user)])
@@ -38,19 +47,35 @@ async def get_feed(
     limit: int = Query(default=20, ge=1, le=100),
     page: int = Query(default=1, ge=1),
     min_legitimacy: float = Query(default=0.60, ge=0.0, le=1.0),
+    q: Optional[str] = Query(default=None, max_length=100, description="Title, company or skill"),
+    city: Optional[str] = Query(default=None, max_length=60),
+    remote: bool = Query(default=False),
+    sort: str = Query(default="trust", pattern="^(trust|newest|match)$"),
+    level: Optional[str] = Query(default=None, description="intern,entry,mid,senior (comma-separated)"),
+    salary_shown: bool = Query(default=False),
+    posted_within: Optional[int] = Query(default=None, ge=1, le=365, description="Days"),
     db: Session = Depends(get_db),
+    account: Account = Depends(get_current_user),
 ):
     """Retrieve clean, ghost-purged job listings for the swipe-to-deploy candidate UI.
     
     Automatically purges listings with ghost scores >= 700 (legitimacy probability < min_legitimacy).
     If the store is empty, automatically triggers an initial discovery cycle.
     """
-    jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=page)
+    levels = [LEVELS[l] for l in (level or "").split(",") if l in LEVELS]
+    rank = None
+    if sort == "match":
+        prefs = facts_repository.get_preferences(db, account.id)
+        rank = (lambda job: matching.score(job, prefs)) if prefs and prefs.get("roles") else None
+    filters = dict(q=q, city=city, remote=remote, newest_first=sort == "newest", levels=levels,
+                   salary_shown=salary_shown, posted_within_days=posted_within, rank=rank)
+    jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=page, **filters)
 
     # Seed automatically if database has no active jobs yet
-    if total == 0 and page == 1:
-        await run_discovery_cycle(db, limit=20)
-        jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=page)
+    if total == 0 and page == 1 and not (q or city or remote or levels or salary_shown or posted_within):
+        # Feeds only: reading employer boards takes minutes and belongs to the worker.
+        await run_discovery_cycle(db, limit=20, boards=False)
+        jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=page, **filters)
 
     return JobFeedResponse(
         total=total,
@@ -59,6 +84,19 @@ async def get_feed(
         min_legitimacy=min_legitimacy,
         jobs=jobs,
     )
+
+
+@router.get("/discovery", response_model=DiscoveryStatus)
+def discovery_status(db: Session = Depends(get_db)):
+    """Where jobs come from, when they were last checked, and whether a check is running."""
+    return discovery.status(db)
+
+
+@router.post("/discovery", response_model=DiscoveryStatus, status_code=202)
+def request_discovery(db: Session = Depends(get_db)):
+    """Ask the worker to check the job boards now (at most one pending request at a time)."""
+    discovery.request_run(db)
+    return discovery.status(db)
 
 
 @router.get("/{job_id}", response_model=JobContract)

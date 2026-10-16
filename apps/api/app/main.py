@@ -6,14 +6,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .applications.consent import ensure_signing_secret
-from .auth import me_router
+from .auth import me_router, presence
 from .auth import router as auth_router
 from .auth.tokens import register_github_providers
 from .config import settings
 from .db import init_db
 from .facts import router as facts
+from .facts import versions as profile_versions
 from .mail.poller import poll_forever
-from .routers import applications, jobs, pow, profile
+from . import outreach
+from .apply import router as apply_router
+from .routers import applications, jobs, pow, profile, public
 
 logger = logging.getLogger("hire")
 
@@ -59,11 +62,16 @@ app.add_middleware(
 
 app.include_router(auth_router.router)
 app.include_router(me_router.router)
+app.include_router(presence.router)
+app.include_router(public.router)
+app.include_router(outreach.router)
+app.include_router(apply_router.router)
 app.include_router(profile.router)
 app.include_router(pow.router)
 app.include_router(jobs.router)
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router)
+app.include_router(profile_versions.router)
 app.include_router(facts.router)
 app.include_router(facts.answer_bank_router)
 

@@ -6,10 +6,12 @@ the Indian tech placement ecosystem (Bengaluru, Hyderabad, Pune, NCR, Remote).
 """
 
 from datetime import datetime, timezone, timedelta
+import re
 from typing import Any, Optional
 import httpx
 
 from ...config import settings
+from .ats_boards import fix_mojibake, is_tech_title, open_to_india, plain_text
 
 
 INDIAN_TECH_FIXTURES: list[dict[str, Any]] = [
@@ -138,9 +140,26 @@ INDIAN_TECH_FIXTURES: list[dict[str, Any]] = [
 ]
 
 
+def _remoteok_date(value: Any) -> Optional[datetime]:
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _age(value: Any) -> int:
+    when = _remoteok_date(value)
+    if when is None:
+        return 10
+    return max(0, (datetime.now(timezone.utc) - when).days)
+
+
 async def fetch_public_feed_jobs(limit: int = 20) -> list[dict[str, Any]]:
     """Fetch job postings from live public feeds with automatic fallback to regional fixtures."""
-    jobs: list[dict[str, Any]] = list(INDIAN_TECH_FIXTURES)
+    # The fixtures are made-up demo jobs: tests use them, real runs never show them.
+    jobs: list[dict[str, Any]] = (
+        [{**job, "source": "sample"} for job in INDIAN_TECH_FIXTURES] if settings.demo_jobs_enabled else []
+    )
     if not settings.live_feeds_enabled:
         return jobs[:limit]
 
@@ -152,26 +171,33 @@ async def fetch_public_feed_jobs(limit: int = 20) -> list[dict[str, Any]]:
                 data = resp.json()
                 # First element is legal disclaimer
                 for item in data[1:]:
-                    if isinstance(item, dict) and item.get("position"):
+                    # Most RemoteOK roles hire in one country (often "USA only"): keep the
+                    # ones an applicant in India can actually take.
+                    if (isinstance(item, dict) and item.get("position") and open_to_india(item.get("location"))
+                            and is_tech_title(item.get("position", ""))):
                         jobs.append({
                             "source_id": f"remoteok_{item.get('id', '')}",
+                            "source": "remoteok",
+                            "apply_url": item.get("url") or item.get("apply_url"),
+                            "posted_at": _remoteok_date(item.get("date")),
+                            "is_remote": True,
                             "company_name": item.get("company", "Remote Co"),
                             # A shared placeholder domain would make unrelated employers
                             # look identical to the recruiter-reply matcher, so leave it unset.
                             "company_domain": (item["company_slug"] + ".com") if item.get("company_slug") else None,
                             "external_layoff_flag": False,
                             "title": item.get("position", "Software Engineer"),
-                            "location": item.get("location") or "Remote",
+                            "location": fix_mojibake(item.get("location") or "") or "Remote (worldwide)",
                             "salary_range": (
                                 f"${item['salary_min']:,} - ${item['salary_max']:,} USD"
                                 if item.get("salary_min") and item.get("salary_max")
                                 else None
                             ),
-                            "posting_age_days": 10,
+                            "posting_age_days": _age(item.get("date")),
                             "repost_count": 0,
                             "experience_level": "Entry-Level / Mid",
                             "primary_skills": item.get("tags", [])[:5],
-                            "raw_description": item.get("description", item.get("position", "")),
+                            "raw_description": plain_text(item.get("description")) or item.get("position", ""),
                         })
                         if len(jobs) >= limit:
                             break

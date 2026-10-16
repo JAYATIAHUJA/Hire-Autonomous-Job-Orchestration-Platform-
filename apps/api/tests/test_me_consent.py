@@ -128,3 +128,33 @@ def test_pow_refresh_accepts_an_empty_body_when_github_is_linked(client):
         assert resp.json()["github_username"] == "priyadev"
     finally:
         github_tokens.set_linked_login_provider(None)
+
+
+def test_latest_pow_run_is_null_until_a_run_exists_and_never_starts_one(client):
+    from app.services import github_tokens
+
+    assert client.get("/v1/profile/pow/latest").json() is None
+    assert client.get("/v1/profile/pow/latest").json() is None  # reading twice still queues nothing
+
+    client.post("/v1/me/consents", json=consent(github=True))
+    github_tokens.set_linked_login_provider(lambda db, account_id: "priyadev")
+    try:
+        run = client.post("/v1/profile/pow/refresh").json()
+    finally:
+        github_tokens.set_linked_login_provider(None)
+    latest = client.get("/v1/profile/pow/latest").json()
+    assert latest["id"] == run["id"] and latest["status"] == "queued"
+
+
+def test_latest_pow_run_is_owner_scoped(client):
+    from app.services import github_tokens
+
+    client.post("/v1/me/consents", json=consent(github=True))
+    github_tokens.set_linked_login_provider(lambda db, account_id: "priyadev")
+    try:
+        client.post("/v1/profile/pow/refresh")
+    finally:
+        github_tokens.set_linked_login_provider(None)
+
+    login_as(client, client.bob)
+    assert client.get("/v1/profile/pow/latest").json() is None

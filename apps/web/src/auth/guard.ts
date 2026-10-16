@@ -14,7 +14,7 @@ export type GuardDecision = { kind: 'wait' } | { kind: 'error'; message: string 
 
 export const LOGIN_PATH = '/login'
 export const ONBOARDING_PATH = '/onboarding'
-export const HOME_PATH = '/swipe' // the existing deck
+export const HOME_PATH = '/' // the home dashboard: it points the user at their next step
 
 export function onboardingComplete(me: Me): boolean {
   return !needsConsent(me) && Boolean(me.onboarding_completed_at)

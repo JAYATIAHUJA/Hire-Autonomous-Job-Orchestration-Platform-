@@ -40,6 +40,11 @@ class Application(Base):
     location = Column(String, nullable=True)
 
     stage = Column(String, nullable=False, default=STAGE_APPLIED, index=True)
+    # Whether the application itself reached the employer (a swipe alone sends nothing):
+    # not_sent | filling | needs_review | sent | failed. submit_method: self | auto.
+    submission_status = Column(String, nullable=False, default="not_sent")
+    submitted_at = Column(DateTime, nullable=True)
+    submit_method = Column(String, nullable=True)
     swipe_direction = Column(String, nullable=False)
     created_at = Column(DateTime, default=_utcnow)
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)

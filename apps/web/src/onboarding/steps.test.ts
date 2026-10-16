@@ -20,11 +20,12 @@ function me(consented: { github: boolean; resume: boolean } | null, version = NO
 }
 
 describe('stepsFor', () => {
-  it('only includes GitHub and resume steps the user consented to', () => {
-    expect(stepsFor(purposes(false, false))).toEqual(['consent', 'preferences', 'answers'])
-    expect(stepsFor(purposes(true, false))).toEqual(['consent', 'github', 'preferences', 'answers'])
-    expect(stepsFor(purposes(false, true))).toEqual(['consent', 'resume', 'facts', 'preferences', 'answers'])
-    expect(stepsFor(purposes(true, true))).toHaveLength(6)
+  it('puts the resume first when allowed, then always polish, profiles, preferences and answers', () => {
+    const always = ['polish', 'presence', 'preferences', 'answers']
+    expect(stepsFor(purposes(false, false))).toEqual(['consent', ...always])
+    expect(stepsFor(purposes(true, false))).toEqual(['consent', ...always])
+    expect(stepsFor(purposes(false, true))).toEqual(['consent', 'resume', 'facts', ...always])
+    expect(stepsFor(purposes(true, true))).toHaveLength(7)
   })
 })
 
@@ -36,16 +37,17 @@ describe('initialStep', () => {
 
   it('resumes a saved step only if it still applies', () => {
     expect(initialStep(me({ github: true, resume: true }), 'facts')).toBe('facts')
-    expect(initialStep(me({ github: false, resume: false }), 'github')).toBe('preferences')
-    expect(initialStep(me({ github: true, resume: false }), null)).toBe('github')
-    expect(initialStep(me({ github: true, resume: false }), 'consent')).toBe('github')
+    expect(initialStep(me({ github: false, resume: false }), 'facts')).toBe('polish')
+    expect(initialStep(me({ github: false, resume: false }), 'github')).toBe('polish') // a step id from an older build
+    expect(initialStep(me({ github: true, resume: false }), null)).toBe('polish')
+    expect(initialStep(me({ github: true, resume: true }), 'consent')).toBe('resume')
   })
 })
 
 describe('nextStep', () => {
   it('walks the list and ends with null', () => {
     const steps = stepsFor(purposes(false, false))
-    expect(nextStep(steps, 'consent')).toBe('preferences')
+    expect(nextStep(steps, 'consent')).toBe('polish')
     expect(nextStep(steps, 'answers')).toBeNull()
   })
 })

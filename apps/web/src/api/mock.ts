@@ -1,6 +1,6 @@
 import { ApiError } from './client'
 import type { AccountApi } from './account'
-import type { AnswerBank, ConsentRecord, FactProposal, Me, PowRun, Preferences } from './v1types'
+import type { AnswerBank, ConsentRecord, FactProposal, Me, OnlinePresence, PowRun, Preferences } from './v1types'
 
 // In-browser stand-in for the /v1 endpoints, enabled with VITE_USE_MOCKS=1.
 // State lives in localStorage so a reload keeps the mock session. Dev only:
@@ -15,6 +15,7 @@ const POW_RUN_MS = 8000
 const LATENCY_MS = 250
 
 type MockState = {
+  presence?: OnlinePresence
   me: Me | null
   otpTries: Record<string, number>
   powRun: { id: string; startedAt: number } | null
@@ -174,6 +175,44 @@ export const mockAccountApi: AccountApi = {
     return delay(result)
   },
 
+  async getLatestPowRun() {
+    const run = load().powRun
+    return run ? mockAccountApi.getPowRun(run.id) : delay(null)
+  },
+
+  getProfile: async () =>
+    delay({
+      profile: {
+        identity: { name: { value: 'Priya Sharma' }, location: { value: 'Bengaluru, India' }, links: [] },
+        experience: [{ text: PROPOSALS[0].text }],
+        education: [{ text: PROPOSALS[1].text }],
+        skills: [{ text: 'TypeScript' }],
+        preferences: load().preferences ?? undefined,
+      },
+      pending_proposals: [],
+      updated_at: new Date().toISOString(),
+    }),
+
+  getPreferences: async () => delay(load().preferences),
+
+  listVersions: async () => delay([]),
+  saveVersion: async (v, id) => delay({ ...v, id: id ?? Date.now() }),
+  deleteVersion: async () => delay(undefined),
+
+  getPresence: async () =>
+    delay(
+      load().presence ?? { github_username: null, github_token_saved: false, linkedin: null, website: null, portfolio: null, others: [] },
+    ),
+
+  async savePresence(changes) {
+    const { github_token, clear_github_token, ...links } = changes
+    const state = update((s) => {
+      const before = s.presence?.github_token_saved ?? false
+      s.presence = { ...links, github_token_saved: clear_github_token ? false : Boolean(github_token) || before }
+    })
+    return delay(state.presence!)
+  },
+
   async uploadResume(file) {
     if (!requireMe(load()).consent?.purposes.resume) throw new ApiError('Resume parsing needs your consent.', 403)
     if (file.size > 5 * 1024 * 1024) throw new ApiError('Resume must be 5 MB or smaller.', 413)
@@ -182,6 +221,10 @@ export const mockAccountApi: AccountApi = {
 
   approveFacts: async () => delay(undefined),
   rejectFacts: async () => delay(undefined),
+  addFact: async (kind, text, structured = {}) =>
+    delay({ id: `f_${Date.now()}`, kind, text, source: 'user_confirmed', status: 'approved', structured: structured as Record<string, string> }),
+  editFact: async (id, change) =>
+    delay({ id, kind: 'skill', text: change.text ?? '', source: 'resume', status: 'approved', structured: {} }),
 
   async savePreferences(prefs) {
     update((s) => {

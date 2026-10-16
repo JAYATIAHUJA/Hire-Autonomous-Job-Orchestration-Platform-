@@ -30,6 +30,24 @@ class ParsedRequirementsContract(BaseModel):
     raw_description_hash: str
 
 
+class SourceContract(BaseModel):
+    """Where the listing came from and where to read / apply on the employer's side."""
+
+    name: Optional[str] = None  # greenhouse | lever | ashby | remoteok | sample
+    apply_url: Optional[str] = None
+    posted_at: Optional[str] = None
+    last_seen_at: Optional[str] = None
+    is_remote: bool = False
+
+
+class MatchContract(BaseModel):
+    """Why a job is in this candidate's deck."""
+
+    score: int = 0
+    percent: int = 0  # 0-100, for the card
+    reasons: list[str] = []
+
+
 class JobContract(BaseModel):
     job_id: str
     company: CompanyContract
@@ -37,6 +55,36 @@ class JobContract(BaseModel):
     ghost_job_metrics: GhostJobMetricsContract
     parsed_requirements: ParsedRequirementsContract
     created_at: str
+    source: SourceContract = SourceContract()
+    # Full text on GET /jobs/{id}; a short preview in lists and the deck.
+    description: Optional[str] = None
+    match: Optional[MatchContract] = None
+
+
+class DiscoveryRunOut(BaseModel):
+    id: int
+    status: str
+    requested_at: Optional[str] = None
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    boards_checked: int = 0
+    boards_failed: int = 0
+    jobs_added: int = 0
+    jobs_updated: int = 0
+    jobs_closed: int = 0
+    ghosts_filtered: int = 0
+
+
+class DiscoveryStatus(BaseModel):
+    """How jobs get here, for the "where do these come from?" panel."""
+
+    active_jobs: int
+    companies_with_jobs: int
+    boards_tracked: int
+    by_source: dict[str, int]
+    interval_minutes: int
+    last_run: Optional[DiscoveryRunOut] = None
+    current_run: Optional[DiscoveryRunOut] = None
 
 
 class JobFeedResponse(BaseModel):

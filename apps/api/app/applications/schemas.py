@@ -53,6 +53,18 @@ class ApplicationCard(BaseModel):
     last_event_summary: Optional[str] = None
     consent: Optional[ConsentReceipt] = None
     events: list[PipelineEventOut] = []
+    submission_status: str = "not_sent"
+    submitted_at: Optional[str] = None
+    submit_method: Optional[str] = None
+    # The employer's posting, where the candidate applies; and whether Hire can fill it.
+    apply_url: Optional[str] = None
+    can_autofill: bool = False
+
+
+class SubmissionRequest(BaseModel):
+    """The candidate says they sent (or did not, after all, send) the application."""
+
+    sent: bool = True
 
 
 class SwipeResponse(BaseModel):
@@ -79,6 +91,8 @@ class DeckResponse(BaseModel):
     total: int
     min_legitimacy: float
     jobs: list[JobContract]
+    # Jobs this account has already swiped either way (for "applied / passed" counts).
+    swiped_total: int = 0
 
 
 class StageChangeRequest(BaseModel):
