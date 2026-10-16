@@ -4,16 +4,24 @@ GET /v1/me lives in ``router.py`` with login; this module holds what the web
 onboarding flow (WP5) writes back.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+import logging
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session as DbSession
 
 from ..config import settings
 from ..db import get_db
 from ..facts import repository as facts_repository
+from ..facts.storage import ObjectStore, get_object_store
 from .deps import get_current_user
+from .erasure import erase_account
+from .sessions import clear_session_cookie
 from .models import Account, PrivacyConsent, utcnow
 from .router import consent_out, to_me
 from .schemas import ConsentOut, ConsentRequest, MeOut, MePatch, Preferences
+
+logger = logging.getLogger("hire.auth")
 
 router = APIRouter(prefix="/v1/me", tags=["me"])
 
@@ -54,6 +62,21 @@ def update_me(payload: MePatch, account: Account = Depends(get_current_user), db
     db.commit()
     db.refresh(account)
     return to_me(account)
+
+
+@router.delete("", status_code=204)
+def delete_me(account: Account = Depends(get_current_user), db: DbSession = Depends(get_db),
+              store: Optional[ObjectStore] = Depends(get_object_store)):
+    """DPDP erasure of the whole account: every personal row and stored file, then the login."""
+    try:
+        erase_account(db, account, store)
+    except Exception as exc:
+        db.rollback()
+        logger.error("account erasure failed for account_id=%s: %s", account.id, exc)
+        raise HTTPException(status_code=503, detail="Erasure could not finish. Please retry.") from exc
+    response = Response(status_code=204)
+    clear_session_cookie(response)
+    return response
 
 
 @router.get("/preferences", response_model=Preferences)
