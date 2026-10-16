@@ -1,0 +1,18 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {"id": "s1", "title": "ML Engineer", "isListed": true, "isRemote": false, "workplaceType": "OnSite",
+     "location": "Delhi", "secondaryLocations": [],
+     "address": {"postalAddress": {"addressLocality": "Delhi", "addressCountry": "India"}},
+     "jobUrl": "https://jobs.ashbyhq.com/sarvam/s1"},
+    {"id": "s2", "title": "Research Scientist", "isListed": true, "isRemote": true, "workplaceType": "Remote",
+     "location": "Europe", "secondaryLocations": [{"location": "HSR Layout", "address": {"postalAddress": {"addressCountry": "IN"}}}],
+     "address": {"postalAddress": {"addressCountry": "European Union"}},
+     "jobUrl": "https://jobs.ashbyhq.com/sarvam/s2"},
+    {"id": "s3", "title": "Unlisted role", "isListed": false, "location": "Bengaluru",
+     "jobUrl": "https://jobs.ashbyhq.com/sarvam/s3"},
+    {"id": "s4", "title": "Designer", "isListed": true, "isRemote": false, "location": "San Francisco",
+     "address": {"postalAddress": {"addressCountry": "United States"}},
+     "jobUrl": "https://jobs.ashbyhq.com/sarvam/s4"}
+  ]
+}

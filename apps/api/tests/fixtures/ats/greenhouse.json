@@ -1,0 +1,9 @@
+{
+  "jobs": [
+    {"id": 101, "title": "Senior Backend Engineer", "company_name": "Rubrik", "location": {"name": "Bengaluru, India"}, "absolute_url": "https://boards.greenhouse.io/rubrik/jobs/101"},
+    {"id": 102, "title": "Site Reliability Engineer", "company_name": "Rubrik", "location": {"name": "Palo Alto, CA"}, "absolute_url": "https://boards.greenhouse.io/rubrik/jobs/102"},
+    {"id": 103, "title": "Account Executive", "company_name": "Rubrik", "location": {"name": "Indianapolis, Indiana"}, "absolute_url": "https://boards.greenhouse.io/rubrik/jobs/103"},
+    {"id": 104, "title": "Developer Advocate", "company_name": "Rubrik", "location": {"name": "Remote - India"}, "absolute_url": "https://boards.greenhouse.io/rubrik/jobs/104"}
+  ],
+  "meta": {"total": 4}
+}

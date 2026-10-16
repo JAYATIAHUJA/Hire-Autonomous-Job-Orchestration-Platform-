@@ -1,0 +1,8 @@
+[
+  {"id": "a1", "text": "Android Engineer", "country": "IN", "workplaceType": "onsite",
+   "categories": {"location": "bangalore", "allLocations": ["bangalore"]}, "hostedUrl": "https://jobs.lever.co/cred/a1"},
+  {"id": "a2", "text": "Data Analyst", "country": "", "workplaceType": "remote",
+   "categories": {"location": "Remote"}, "hostedUrl": "https://jobs.lever.co/cred/a2"},
+  {"id": "a3", "text": "Finance Manager", "workplaceType": "onsite",
+   "categories": {"location": "hyderabad", "allLocations": ["hyderabad", "pune"]}, "hostedUrl": "https://jobs.lever.co/cred/a3"}
+]

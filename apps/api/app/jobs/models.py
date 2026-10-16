@@ -1,7 +1,7 @@
 """SQLAlchemy models for normalized Job entities, Companies, and Global JD Cache."""
 
 import datetime
-from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import relationship
 
 from ..db import Base
@@ -14,9 +14,15 @@ class Company(Base):
     name = Column(String, nullable=False, index=True)
     domain = Column(String, nullable=True, index=True)
     external_layoff_flag = Column(Boolean, default=False)
+    # Public job board, from the ATS registry (app/jobs/ats_registry.py).
+    ats_vendor = Column(String, nullable=True)  # greenhouse | lever | ashby
+    ats_board_token = Column(String, nullable=True)
+    ats_checked_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     jobs = relationship("Job", back_populates="company", cascade="all, delete-orphan")
+
+    __table_args__ = (Index("ix_companies_ats_board", "ats_vendor", "ats_board_token", unique=True),)
 
 
 class Job(Base):
