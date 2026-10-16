@@ -96,6 +96,22 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = ""
     smtp_starttls: bool = True
+    # Object store (ADR-009): SeaweedFS in dev, AWS S3 in prod. S3 API only.
+    s3_endpoint: str = ""
+    s3_bucket: str = ""
+    s3_access_key: str = ""
+    s3_secret_key: str = ""
+    s3_region: str = "ap-south-1"
+
+    # Anthropic (app/llm). The model id lives here only; call sites never name a model.
+    anthropic_api_key: str = ""
+    llm_model: str = "claude-opus-5-5"
+    llm_effort: str = "medium"
+    llm_max_tokens: int = 16000
+    llm_timeout_seconds: float = 120.0
+    llm_max_retries: int = 3
+    # Server-side refusal fallback (beta). Turn off if a proxy rejects the field.
+    llm_refusal_fallback: bool = True
 
     def limits(self, has_token: bool) -> AnalysisLimits:
         if has_token:
