@@ -19,6 +19,13 @@ x-api-env: &api-env
   CORS_ORIGINS: '["http://localhost:5173"]'
   LIVE_FEEDS_ENABLED: ${LIVE_FEEDS_ENABLED:-false}
   MOCK_ATS_BASE_URL: http://mock-ats:8000
+  # Login (WP1). ENV=dev enables /v1/auth/dev-login and console OTP codes; OAuth is optional locally.
+  ENV: dev
+  TOKEN_ENCRYPTION_KEY: ${TOKEN_ENCRYPTION_KEY:-}
+  GITHUB_OAUTH_CLIENT_ID: ${GITHUB_OAUTH_CLIENT_ID:-}
+  GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET:-}
+  GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
+  GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
 
 services:
   db:

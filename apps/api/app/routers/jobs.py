@@ -8,6 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
+from ..auth.deps import get_current_user, require_admin
 from ..db import get_db
 from ..jobs.ghost_filter.scorer import score_job
 from ..jobs.ingestion.hasher import compute_description_hash
@@ -28,7 +29,8 @@ from ..jobs.schemas import (
     ScoreJobResponse,
 )
 
-router = APIRouter(prefix="/jobs", tags=["jobs"])
+# Job listings are shared, not personal, but only logged-in accounts may read them (T13).
+router = APIRouter(prefix="/jobs", tags=["jobs"], dependencies=[Depends(get_current_user)])
 
 
 @router.get("/feed", response_model=JobFeedResponse)
@@ -123,12 +125,13 @@ def score_single_job(payload: ScoreJobRequest):
     )
 
 
-@router.post("/ingest", response_model=IngestResponse)
+@router.post("/ingest", response_model=IngestResponse, dependencies=[Depends(require_admin)])
 async def trigger_ingest(
     limit: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """Trigger an autonomous job discovery and ghost filtering batch."""
+    """Trigger an autonomous job discovery and ghost filtering batch. Admin only: it spends
+    outbound requests and writes to the shared job store."""
     stats = await run_discovery_cycle(db, limit=limit)
     return IngestResponse(
         status="completed",

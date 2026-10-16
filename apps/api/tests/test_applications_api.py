@@ -8,7 +8,10 @@ from app.applications import models as application_models  # noqa: F401
 from app.db import Base, get_db
 from app.jobs import models as job_models  # noqa: F401
 from app.main import app
+from auth_helpers import create_account, login_as, login_new_account
 
+# Ignored by the API since WP1 (the logged-in account is the candidate); still sent,
+# as the current web client does, to prove it changes nothing.
 CANDIDATE = "oshisharma1222"
 
 
@@ -27,6 +30,7 @@ def client():
 
     app.dependency_overrides[get_db] = override_db
     test_client = TestClient(app)
+    test_client.account = login_new_account(test_client, "oshi@example.com")
     yield test_client
     app.dependency_overrides.clear()
 
@@ -65,7 +69,8 @@ def test_swipe_right_writes_a_signed_consent_log(client):
     assert consent["verified"] is True
     assert consent["algorithm"] == "HMAC-SHA256"
     assert consent["employer_name"] == "Swiggy Engineering"
-    assert consent["subject"] == CANDIDATE
+    # The receipt names the account, not free text the client typed.
+    assert consent["subject"] == client.account.ref == f"account:{client.account.id}"
     assert consent["purpose"]
     assert consent["granted_at"]
     assert consent["payload"]["job_id"] == "blr_swig_001"
@@ -165,11 +170,13 @@ def test_deck_is_per_candidate(client):
     )
 
     mine = client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}").json()
-    theirs = client.get("/api/applications/deck?candidate_ref=someone-else").json()
-
     assert "blr_swig_001" not in {job["job_id"] for job in mine["jobs"]}
+
+    login_as(client, create_account(client, "someone-else@example.com"))
+    # Even naming the first candidate, the second account sees only its own deck and board.
+    theirs = client.get(f"/api/applications/deck?candidate_ref={CANDIDATE}").json()
     assert "blr_swig_001" in {job["job_id"] for job in theirs["jobs"]}
-    assert client.get("/api/applications/board?candidate_ref=someone-else").json()["total"] == 0
+    assert client.get(f"/api/applications/board?candidate_ref={CANDIDATE}").json()["total"] == 0
 
 
 def test_events_are_returned_in_the_order_they_happened(client):

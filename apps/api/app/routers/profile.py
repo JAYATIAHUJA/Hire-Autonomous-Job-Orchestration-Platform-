@@ -7,6 +7,8 @@ and map failures to HTTP responses. All real work lives in ``services`` and ``pr
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from ..auth.deps import get_current_user
+from ..auth.models import Account
 from ..db import get_db
 from ..github_client import GitHubAPIError
 from ..profiles import builder, repository, serializer
@@ -14,11 +16,13 @@ from ..profiles.errors import http_error_for
 from ..schemas import AnalyzeRequest, AnalyzeResponse, ProfileOut
 from ..services.fetch_service import fetch_contributions
 
-router = APIRouter(prefix="/api/profile", tags=["profile"])
+router = APIRouter(prefix="/api/profile", tags=["profile"], dependencies=[Depends(get_current_user)])
 
 
 @router.post("/analyze", response_model=AnalyzeResponse)
-async def analyze_profile(payload: AnalyzeRequest, db: Session = Depends(get_db)):
+async def analyze_profile(
+    payload: AnalyzeRequest, db: Session = Depends(get_db), account: Account = Depends(get_current_user)
+):
     username = payload.username.strip()
     if not username:
         raise HTTPException(status_code=422, detail="Username is required.")
@@ -32,13 +36,15 @@ async def analyze_profile(payload: AnalyzeRequest, db: Session = Depends(get_db)
     if not data["projects"]:
         raise HTTPException(status_code=404, detail="No non-fork repositories or merged pull requests found.")
 
-    user = repository.save(db, builder.build_profile(username, data))
+    profile = builder.build_profile(username, data)
+    profile.account_id = account.id
+    user = repository.save(db, profile)
     return AnalyzeResponse(profile_id=user.id, username=user.username)
 
 
 @router.get("/{profile_id}", response_model=ProfileOut)
-def get_profile(profile_id: int, db: Session = Depends(get_db)):
-    user = repository.load(db, profile_id)
+def get_profile(profile_id: int, db: Session = Depends(get_db), account: Account = Depends(get_current_user)):
+    user = repository.load(db, profile_id, account.id)
     if not user:
         raise HTTPException(status_code=404, detail="Profile not found.")
     return serializer.serialize_profile(user)

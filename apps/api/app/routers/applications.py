@@ -3,9 +3,13 @@
 Objective 3's client-facing surface: the PWA reads its card deck here, posts each
 swipe (right being the affirmative consent action), renders the Kanban board, and
 can trigger a recruiter-mailbox sync on demand instead of waiting for the poller.
+
+Every route belongs to the logged-in account. Another account's card answers 404,
+never 403, so its existence isn't revealed.
 """
 
 import asyncio
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -24,25 +28,32 @@ from ..applications.schemas import (
     SwipeRequest,
     SwipeResponse,
 )
+from ..auth.deps import get_current_user
+from ..auth.models import Account
 from ..config import settings
 from ..db import get_db
 from ..jobs.pipeline import run_discovery_cycle
 from ..jobs.repository import get_job_by_id, get_jobs_feed
 from ..mail.imap_client import ImapNotConfigured, fetch_recruiter_messages
-from ..mail.sync import sync_messages
+from ..mail.sync import mailbox_account_id, sync_messages
 
-router = APIRouter(prefix="/api", tags=["applications"])
+router = APIRouter(prefix="/api", tags=["applications"], dependencies=[Depends(get_current_user)])
+
+
+def _not_found(application_id: str) -> HTTPException:
+    return HTTPException(status_code=404, detail=f"Application '{application_id}' not found.")
 
 
 @router.get("/applications/deck", response_model=DeckResponse)
 async def get_deck(
-    candidate_ref: str = Query(..., description="GitHub handle or email of the candidate"),
+    candidate_ref: Optional[str] = Query(default=None, description="Deprecated and ignored"),
     limit: int = Query(default=20, ge=1, le=100),
     min_legitimacy: float = Query(default=0.60, ge=0.0, le=1.0),
     db: Session = Depends(get_db),
+    account: Account = Depends(get_current_user),
 ):
-    """Ghost-filtered cards the candidate has not swiped yet, safest listings first."""
-    seen = repository.swiped_job_ids(db, candidate_ref)
+    """Ghost-filtered cards the account has not swiped yet, safest listings first."""
+    seen = repository.swiped_job_ids(db, account.id)
     jobs, total = get_jobs_feed(
         db, min_legitimacy=min_legitimacy, limit=limit, page=1, exclude_job_ids=seen
     )
@@ -55,7 +66,7 @@ async def get_deck(
         )
 
     return DeckResponse(
-        candidate_ref=candidate_ref,
+        candidate_ref=account.ref,
         total=total,
         min_legitimacy=min_legitimacy,
         jobs=jobs,
@@ -63,15 +74,11 @@ async def get_deck(
 
 
 @router.post("/applications/swipe", response_model=SwipeResponse)
-def swipe(payload: SwipeRequest, db: Session = Depends(get_db)):
+def swipe(payload: SwipeRequest, db: Session = Depends(get_db), account: Account = Depends(get_current_user)):
     """Record a swipe. Right is the affirmative action and writes a signed consent log."""
     direction = payload.direction.strip().lower()
     if direction not in {"left", "right"}:
         raise HTTPException(status_code=422, detail="Direction must be 'left' or 'right'.")
-
-    candidate_ref = payload.candidate_ref.strip()
-    if not candidate_ref:
-        raise HTTPException(status_code=422, detail="candidate_ref is required to record consent.")
 
     job = get_job_by_id(db, payload.job_id)
     if not job:
@@ -79,7 +86,8 @@ def swipe(payload: SwipeRequest, db: Session = Depends(get_db)):
 
     app, already = repository.record_swipe(
         db,
-        candidate_ref=candidate_ref,
+        account_id=account.id,
+        candidate_ref=account.ref,
         job_id=job.job_id,
         direction=direction,
         employer_name=job.company.name,
@@ -95,27 +103,32 @@ def swipe(payload: SwipeRequest, db: Session = Depends(get_db)):
 
 @router.get("/applications/board", response_model=BoardResponse)
 def get_board(
-    candidate_ref: str = Query(..., description="Whose pipeline to render"),
+    candidate_ref: Optional[str] = Query(default=None, description="Deprecated and ignored"),
     db: Session = Depends(get_db),
+    account: Account = Depends(get_current_user),
 ):
-    """The candidate's Kanban board: Applied, Interview Scheduled, Rejected."""
-    return repository.get_board(db, candidate_ref)
+    """The account's Kanban board: Applied, Interview Scheduled, Rejected."""
+    return repository.get_board(db, account.id, account.ref)
 
 
 @router.get("/applications/{application_id}", response_model=ApplicationCard)
-def get_application(application_id: str, db: Session = Depends(get_db)):
-    app = repository.get_application(db, application_id)
+def get_application(
+    application_id: str, db: Session = Depends(get_db), account: Account = Depends(get_current_user)
+):
+    app = repository.get_application(db, application_id, account.id)
     if not app:
-        raise HTTPException(status_code=404, detail=f"Application '{application_id}' not found.")
+        raise _not_found(application_id)
     return repository.to_card(app)
 
 
 @router.get("/applications/{application_id}/consent", response_model=ConsentReceipt)
-def get_consent(application_id: str, db: Session = Depends(get_db)):
+def get_consent(
+    application_id: str, db: Session = Depends(get_db), account: Account = Depends(get_current_user)
+):
     """The signed consent receipt, re-verified against its signature on read."""
-    app = repository.get_application(db, application_id)
+    app = repository.get_application(db, application_id, account.id)
     if not app:
-        raise HTTPException(status_code=404, detail=f"Application '{application_id}' not found.")
+        raise _not_found(application_id)
 
     receipt = repository.to_consent_receipt(app.consent)
     if not receipt:
@@ -127,17 +140,22 @@ def get_consent(application_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("/applications/{application_id}/stage", response_model=ApplicationCard)
-def change_stage(application_id: str, payload: StageChangeRequest, db: Session = Depends(get_db)):
+def change_stage(
+    application_id: str,
+    payload: StageChangeRequest,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_user),
+):
     """Move a card by hand, for when the candidate hears back outside the mailbox."""
+    app = repository.get_application(db, application_id, account.id)
+    if not app:
+        raise _not_found(application_id)
+
     to_stage = payload.to_stage.strip().lower()
     if not is_valid_stage(to_stage) or to_stage not in BOARD_STAGES:
         raise HTTPException(
             status_code=422, detail="to_stage must be one of: " + ", ".join(BOARD_STAGES)
         )
-
-    app = repository.get_application(db, application_id)
-    if not app:
-        raise HTTPException(status_code=404, detail=f"Application '{application_id}' not found.")
 
     try:
         app = repository.move_stage(
@@ -150,20 +168,22 @@ def change_stage(application_id: str, payload: StageChangeRequest, db: Session =
 
 
 @router.post("/mail/sync", response_model=MailSyncResponse)
-async def trigger_mail_sync(payload: MailSyncRequest, db: Session = Depends(get_db)):
-    """Run a recruiter-reply sync now.
+async def trigger_mail_sync(
+    payload: MailSyncRequest, db: Session = Depends(get_db), account: Account = Depends(get_current_user)
+):
+    """Run a recruiter-reply sync now, for the logged-in account's board only.
 
-    With no body, reads the configured IMAP mailbox. Posting ``messages`` replays a
-    batch of replies instead, which is how the demo (and the tests) drive the board
-    without a live inbox.
+    With no body, reads the configured IMAP mailbox - only if it is this account's.
+    Posting ``messages`` replays a batch of replies instead, which is how the demo
+    (and the tests) drive the board without a live inbox.
     """
     if payload.messages:
-        if not payload.candidate_ref:
-            raise HTTPException(status_code=422, detail="candidate_ref is required with messages.")
-        stats = sync_messages(
-            db, [m.model_dump() for m in payload.messages], candidate_ref=payload.candidate_ref
-        )
+        stats = sync_messages(db, [m.model_dump() for m in payload.messages], account_id=account.id)
         return MailSyncResponse(source="inline", **stats)
+
+    # The server mailbox belongs to one account; nobody else may read or apply it.
+    if settings.imap_candidate_ref and mailbox_account_id(db) != account.id:
+        raise HTTPException(status_code=404, detail="No mailbox is configured for this account.")
 
     try:
         messages = await asyncio.to_thread(fetch_recruiter_messages, None, payload.limit)
@@ -172,6 +192,4 @@ async def trigger_mail_sync(payload: MailSyncRequest, db: Session = Depends(get_
     except Exception as exc:  # noqa: BLE001 - surface mailbox failures to the caller
         raise HTTPException(status_code=502, detail=f"Mailbox read failed: {exc}")
 
-    return MailSyncResponse(
-        source="imap", **sync_messages(db, messages, candidate_ref=settings.imap_candidate_ref)
-    )
+    return MailSyncResponse(source="imap", **sync_messages(db, messages, account_id=account.id))

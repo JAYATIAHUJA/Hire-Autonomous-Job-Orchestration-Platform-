@@ -18,9 +18,10 @@ from app.mail import imap_client
 from app.mail.imap_client import ImapConfig, fetch_recruiter_messages, message_key
 from app.mail.sync import match_application
 from app.main import app
+from auth_helpers import app_db, create_account, login_as
 
-ALICE = "alice"
-BOB = "bob"
+ALICE = "alice@example.com"
+BOB = "bob@example.com"
 
 
 @pytest.fixture
@@ -37,25 +38,31 @@ def session_and_client():
             db.close()
 
     app.dependency_overrides[get_db] = override_db
-    yield Session, TestClient(app)
+    client = TestClient(app)
+    client.accounts = {email: create_account(client, email) for email in (ALICE, BOB)}
+    login_as(client, client.accounts[ALICE])
+    yield Session, client
     app.dependency_overrides.clear()
 
 
 def _apply(client, candidate: str, job_id: str) -> str:
-    client.get(f"/api/applications/deck?candidate_ref={candidate}")
-    resp = client.post(
-        "/api/applications/swipe",
-        json={"job_id": job_id, "direction": "right", "candidate_ref": candidate},
-    )
+    login_as(client, client.accounts[candidate])
+    client.get("/api/applications/deck")
+    resp = client.post("/api/applications/swipe", json={"job_id": job_id, "direction": "right"})
     return resp.json()["application"]["application_id"]
 
 
 def _sync(client, candidate: str, *messages: dict) -> dict:
-    return client.post("/api/mail/sync", json={"candidate_ref": candidate, "messages": list(messages)}).json()
+    login_as(client, client.accounts[candidate])
+    return client.post("/api/mail/sync", json={"messages": list(messages)}).json()
 
 
 def _stage(client, application_id: str) -> str:
-    return client.get(f"/api/applications/{application_id}").json()["stage"]
+    # Read straight from the database: the card may belong to someone other than the
+    # account the client is logged in as.
+    with app_db(client) as db:
+        row = db.query(application_models.Application).filter_by(application_id=application_id).one()
+        return row.stage
 
 
 REJECTION = "We regret to inform you that we have decided to move forward with other candidates."
@@ -160,12 +167,29 @@ def test_b7_a_reply_only_moves_the_mailbox_owners_card(session_and_client):
 
 
 def test_b7_inline_sync_requires_a_candidate(session_and_client):
+    # Since WP1 the candidate is the logged-in account: no session, no sync.
     _, client = session_and_client
+    client.cookies.clear()
     resp = client.post(
         "/api/mail/sync",
         json={"messages": [{"uid": "1", "from_address": "x@y.com", "subject": "s", "body": REJECTION}]},
     )
-    assert resp.status_code == 422
+    assert resp.status_code == 401
+
+
+def test_b7_naming_another_candidate_in_the_body_cannot_move_their_card(session_and_client):
+    _, client = session_and_client
+    alice_app = _apply(client, ALICE, "blr_swig_001")
+
+    login_as(client, client.accounts[BOB])
+    stats = client.post(
+        "/api/mail/sync",
+        json={"candidate_ref": f"account:{client.accounts[ALICE].id}",
+              "messages": [{"uid": "1", "from_address": "careers@swiggy.com", "subject": "Update", "body": REJECTION}]},
+    ).json()
+
+    assert stats["moved"] == 0
+    assert _stage(client, alice_app) == "applied"
 
 
 def test_b7_rejected_cards_do_not_absorb_matches(session_and_client):

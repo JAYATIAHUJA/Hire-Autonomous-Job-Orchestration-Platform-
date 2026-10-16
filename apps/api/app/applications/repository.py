@@ -93,30 +93,35 @@ def to_card(app: models.Application) -> ApplicationCard:
     )
 
 
-def get_application(db: Session, application_id: str) -> Optional[models.Application]:
-    return (
-        db.query(models.Application)
-        .options(joinedload(models.Application.consent), joinedload(models.Application.events))
-        .filter(models.Application.application_id == application_id)
-        .first()
-    )
-
-
-def find_by_job(db: Session, candidate_ref: str, job_id: str) -> Optional[models.Application]:
+def get_application(db: Session, application_id: str, account_id: int) -> Optional[models.Application]:
+    """The owner's application, or None - also when it exists but belongs to someone else,
+    so callers answer 404 and never reveal that another person's card exists."""
     return (
         db.query(models.Application)
         .options(joinedload(models.Application.consent), joinedload(models.Application.events))
         .filter(
-            models.Application.candidate_ref == candidate_ref,
+            models.Application.application_id == application_id,
+            models.Application.account_id == account_id,
+        )
+        .first()
+    )
+
+
+def find_by_job(db: Session, account_id: int, job_id: str) -> Optional[models.Application]:
+    return (
+        db.query(models.Application)
+        .options(joinedload(models.Application.consent), joinedload(models.Application.events))
+        .filter(
+            models.Application.account_id == account_id,
             models.Application.job_id == job_id,
         )
         .first()
     )
 
 
-def swiped_job_ids(db: Session, candidate_ref: str) -> set[str]:
+def swiped_job_ids(db: Session, account_id: int) -> set[str]:
     """Every job the candidate has already ruled on, so the deck never repeats one."""
-    rows = db.query(models.Application.job_id).filter(models.Application.candidate_ref == candidate_ref).all()
+    rows = db.query(models.Application.job_id).filter(models.Application.account_id == account_id).all()
     return {r[0] for r in rows}
 
 
@@ -146,6 +151,7 @@ def record_event(
 def record_swipe(
     db: Session,
     *,
+    account_id: int,
     candidate_ref: str,
     job_id: str,
     direction: str,
@@ -157,16 +163,17 @@ def record_swipe(
 ) -> tuple[models.Application, bool]:
     """Apply a swipe. Right consents and enters the board; left skips the card.
 
-    Idempotent per (candidate, job): swiping the same card twice returns the
+    Idempotent per (account, job): swiping the same card twice returns the
     existing application instead of issuing a second consent receipt.
     """
-    existing = find_by_job(db, candidate_ref, job_id)
+    existing = find_by_job(db, account_id, job_id)
     if existing:
         return existing, True
 
     applied = direction == "right"
     app = models.Application(
         application_id=new_application_id(),
+        account_id=account_id,
         candidate_ref=candidate_ref,
         job_id=job_id,
         employer_name=employer_name,
@@ -191,6 +198,7 @@ def record_swipe(
             models.ConsentLog(
                 consent_id=payload["consent_id"],
                 application_db_id=app.id,
+                account_id=account_id,
                 subject=payload["subject"],
                 employer_name=payload["employer_name"],
                 purpose=payload["purpose"],
@@ -218,7 +226,7 @@ def record_swipe(
         # Two swipes on the same card raced each other; the unique constraint caught
         # the second one, so return the card the winner created.
         db.rollback()
-        winner = find_by_job(db, candidate_ref, job_id)
+        winner = find_by_job(db, account_id, job_id)
         if winner:
             return winner, True
         raise
@@ -266,13 +274,13 @@ def move_stage(
     return app
 
 
-def get_board(db: Session, candidate_ref: str) -> BoardResponse:
-    """The candidate's Kanban board, one column per tracked stage."""
+def get_board(db: Session, account_id: int, candidate_ref: str) -> BoardResponse:
+    """The account's Kanban board, one column per tracked stage."""
     apps = (
         db.query(models.Application)
         .options(joinedload(models.Application.consent), joinedload(models.Application.events))
         .filter(
-            models.Application.candidate_ref == candidate_ref,
+            models.Application.account_id == account_id,
             models.Application.stage.in_(BOARD_STAGES),
         )
         .order_by(models.Application.updated_at.desc())
@@ -293,7 +301,7 @@ def get_board(db: Session, candidate_ref: str) -> BoardResponse:
     )
 
 
-def open_applications(db: Session, candidate_ref: str) -> list[models.Application]:
+def open_applications(db: Session, account_id: int) -> list[models.Application]:
     """One candidate's cards a recruiter reply could still act on, most recent first.
 
     Scoped to the candidate, and limited to stages an automated move can leave:
@@ -304,7 +312,7 @@ def open_applications(db: Session, candidate_ref: str) -> list[models.Applicatio
         db.query(models.Application)
         .options(joinedload(models.Application.consent), joinedload(models.Application.events))
         .filter(
-            models.Application.candidate_ref == candidate_ref,
+            models.Application.account_id == account_id,
             models.Application.stage.in_(movable),
         )
         .order_by(models.Application.updated_at.desc())
@@ -327,10 +335,12 @@ def mark_message_processed(
     matched_application_id: Optional[str],
     subject: Optional[str] = None,
     from_address: Optional[str] = None,
+    account_id: Optional[int] = None,
 ) -> None:
     db.merge(
         models.ProcessedMessage(
             message_uid=uid,
+            account_id=account_id,
             classification=classification,
             matched_application_id=matched_application_id,
             subject=subject,

@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .applications.consent import ensure_signing_secret
+from .auth import router as auth_router
 from .config import settings
 from .db import init_db
 from .mail.poller import poll_forever
@@ -46,10 +47,13 @@ app = FastAPI(title="Hire-Unplug — Autonomous Job Orchestration Platform", lif
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    # Session cookies cross origins only to an explicit allow-list, never to "*".
+    allow_credentials="*" not in settings.cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(auth_router.router)
 app.include_router(profile.router)
 app.include_router(jobs.router)
 app.include_router(jobs.router, prefix="/api")

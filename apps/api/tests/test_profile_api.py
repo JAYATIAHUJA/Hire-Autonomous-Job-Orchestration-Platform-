@@ -11,6 +11,7 @@ from app.github_client import GitHubClient
 from app.main import app
 from app.routers import profile as profile_router
 from app.services import fetch_service
+from auth_helpers import login_new_account
 
 REPOS = [
     {"name": "shop", "full_name": "ana/shop", "html_url": "https://github.com/ana/shop", "fork": False,
@@ -98,6 +99,7 @@ def client(monkeypatch):
     app.dependency_overrides[get_db] = override_db
     test_client = TestClient(app)
     test_client.requested = requested
+    login_new_account(test_client, "ana@example.com")
     yield test_client
     app.dependency_overrides.clear()
 

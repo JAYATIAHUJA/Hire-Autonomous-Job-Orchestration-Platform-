@@ -14,3 +14,4 @@ with a new one; don't rewrite history.
 | [007](007-one-durable-run-engine.md) | One durable Run engine; never auto-replay a crashed run | Accepted |
 | [008](008-launch-decisions.md) | Launch decisions: models, market, disclosure, pricing, licence, runtime | Accepted |
 | [009](009-dev-stack-object-store.md) | Dev object store: SeaweedFS instead of MinIO | Accepted |
+| [010](010-auth-sessions.md) | Accounts, opaque cookie sessions, CSRF header, owner scoping | Accepted |

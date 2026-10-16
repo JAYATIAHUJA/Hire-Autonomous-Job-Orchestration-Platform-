@@ -55,6 +55,35 @@ class Settings(BaseSettings):
     imap_poll_seconds: int = 300
     imap_fetch_limit: int = 25
 
+    # --- Accounts and sessions (WP1, ADR-010) ---
+    # "dev" turns on POST /v1/auth/dev-login and prints OTP codes to the console.
+    # Anything else is treated as production.
+    env: str = "prod"
+    session_cookie_name: str = "hire_session"
+    session_ttl_days: int = 30
+    # Browsers treat http://localhost as a secure context, so this stays on in dev too.
+    session_cookie_secure: bool = True
+    # Fernet key that encrypts stored OAuth tokens. Required for GitHub login.
+    token_encryption_key: str = ""
+    # Where OAuth providers send the browser back to (this API, or the web app's proxy to it).
+    auth_callback_base_url: str = "http://localhost:8100"
+    # Where the browser lands after an OAuth login.
+    web_app_url: str = "http://localhost:5173"
+    github_oauth_client_id: str = ""
+    github_oauth_client_secret: str = ""
+    google_oauth_client_id: str = ""
+    google_oauth_client_secret: str = ""
+    # Accounts with these (verified) emails get the admin role.
+    admin_emails: list[str] = []
+    # OTP mail: "console" or "smtp". Empty picks console when ENV=dev, else smtp.
+    otp_sender: str = ""
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
+    smtp_starttls: bool = True
+
     def limits(self, has_token: bool) -> AnalysisLimits:
         if has_token:
             return AnalysisLimits("full", self.full_max_repos, self.full_commits_per_repo, self.full_external_prs)

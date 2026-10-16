@@ -14,8 +14,9 @@ def save(db: Session, user: models.User) -> models.User:
     return user
 
 
-def load(db: Session, profile_id: int) -> Optional[models.User]:
-    """Load a profile with every relationship the serializer needs, in one round of queries."""
+def load(db: Session, profile_id: int, account_id: int) -> Optional[models.User]:
+    """Load the account's profile with every relationship the serializer needs, in one round
+    of queries. Another account's profile loads as None, so callers answer 404."""
     return (
         db.query(models.User)
         .options(
@@ -23,6 +24,6 @@ def load(db: Session, profile_id: int) -> Optional[models.User]:
             selectinload(models.User.contributions),
             selectinload(models.User.skills).selectinload(models.Skill.highlights),
         )
-        .filter(models.User.id == profile_id)
+        .filter(models.User.id == profile_id, models.User.account_id == account_id)
         .first()
     )
