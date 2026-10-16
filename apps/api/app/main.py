@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .applications.consent import ensure_signing_secret
+from .auth import me_router
 from .auth import router as auth_router
 from .auth.tokens import register_github_providers
 from .config import settings
@@ -57,6 +58,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router.router)
+app.include_router(me_router.router)
 app.include_router(profile.router)
 app.include_router(pow.router)
 app.include_router(jobs.router)

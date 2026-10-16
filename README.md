@@ -13,11 +13,11 @@ The full plan lives outside this repo, in `../PLAN.md`. Decisions are recorded a
 
 | Area | State |
 |---|---|
-| `apps/api` | The original Hire FastAPI backend (PoW engine, jobs, ghost filter, swipe/consent, Kanban, IMAP). Bugs B1–B4, B6, B8 and B10 are fixed and have regression tests. Postgres via Alembic. |
-| `apps/web` | The original Hire React PWA (profile, jobs, swipe deck, pipeline). |
-| `apps/api/app/worker.py` | Background worker: periodic job discovery. The job queue and the Run engine arrive in Phase 4. |
+| `apps/api` | FastAPI backend: PoW engine, jobs, ghost filter, swipe/consent receipts, Kanban, IMAP. Accounts and login (GitHub, Google, email OTP) with every route owner-scoped (ADR-010). GitHub analysis as a background job with progress and an Evidence Index. Resume parsing into fact proposals you approve, an answer bank, DPDP consent records and full account erasure (`DELETE /v1/me`). Postgres via Alembic (0001–0007). |
+| `apps/web` | React PWA: login, DPDP privacy notice and consent, first-run onboarding (GitHub, resume, preferences, answer bank), then profile, jobs, swipe deck and pipeline. |
+| `apps/api/app/worker.py` | Background worker: periodic job discovery and queued GitHub (PoW) analyses. The Run engine arrives in Phase 4. |
 | `apps/supervisor`, `apps/computer` | Built from CopilotKit/OpenBot at a pinned revision (MIT). They become real forks in Phase 4. |
-| `lab/mock-ats` | A Greenhouse-shaped mock employer board, for testing the apply engine without real employers. |
+| `lab/mock-ats`, `lab/fixtures` | A mock employer board plus 20 saved real application forms (Greenhouse, Lever, Ashby) served offline, for testing the apply engine without real employers. |
 | `packages/*` | Not created yet. Domain code is split out of `apps/api` in Phase 1. |
 
 ## Run it
@@ -34,7 +34,7 @@ python scripts/dev.py --down
 |---|---|
 | Web (Vite dev server) | http://localhost:5173 |
 | API | http://localhost:8100 (docs at `/docs`) |
-| Mock ATS | http://localhost:8180/boards/acme/jobs/4001 |
+| Mock ATS | http://localhost:8180/boards/acme/jobs/4001 · form lab: http://localhost:8180/fixtures |
 | Postgres | `localhost:54329` (user/password/db: `hire`) |
 | Redis | `localhost:63790` |
 | S3 (SeaweedFS) | http://localhost:58333 (bucket `hire-dev`) |

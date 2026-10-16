@@ -9,6 +9,7 @@ in .env are never overwritten.
 """
 
 import argparse
+import base64
 import secrets
 import subprocess
 import sys
@@ -19,6 +20,8 @@ ENV_FILE = ROOT / ".env"
 
 GENERATED = {
     "CONSENT_SIGNING_SECRET": lambda: secrets.token_hex(32),
+    # Fernet key (32 random bytes, url-safe base64) for stored GitHub OAuth tokens.
+    "TOKEN_ENCRYPTION_KEY": lambda: base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
     "S3_ACCESS_KEY": lambda: "hire",
     "S3_SECRET_KEY": lambda: secrets.token_hex(24),
     "COMPUTER_SUPERVISOR_TOKEN": lambda: secrets.token_hex(32),

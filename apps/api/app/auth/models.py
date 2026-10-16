@@ -9,7 +9,7 @@ Datetimes are stored as naive UTC so SQLite and Postgres compare them the same w
 
 import datetime
 
-from sqlalchemy import CheckConstraint, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import JSON, CheckConstraint, Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from ..db import Base
@@ -33,9 +33,19 @@ class Account(Base):
     role = Column(String, nullable=False, default="user")
     created_at = Column(DateTime, nullable=False, default=utcnow)
     deleted_at = Column(DateTime, nullable=True)
+    # Set when the user finishes the first-run onboarding wizard (web route guard).
+    onboarding_completed_at = Column(DateTime, nullable=True)
 
     identities = relationship("AuthIdentity", back_populates="account", cascade="all, delete-orphan")
     sessions = relationship("Session", back_populates="account", cascade="all, delete-orphan")
+    consents = relationship(
+        "PrivacyConsent", back_populates="account", cascade="all, delete-orphan",
+        order_by="(PrivacyConsent.accepted_at.desc(), PrivacyConsent.id.desc())",
+    )
+
+    @property
+    def current_consent(self) -> "PrivacyConsent | None":
+        return self.consents[0] if self.consents else None
 
     @property
     def ref(self) -> str:
@@ -81,6 +91,26 @@ class Session(Base):
     user_agent = Column(String, nullable=True)
 
     account = relationship("Account", back_populates="sessions")
+
+
+class PrivacyConsent(Base):
+    """One acceptance of the DPDP privacy notice, append-only. The newest row is the
+    account's current consent; changing a toggle (or withdrawing) writes a new row, so
+    the history of what was agreed, to which notice text, is kept until erasure."""
+
+    __tablename__ = "privacy_consents"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
+    notice_version = Column(String(32), nullable=False)
+    # sha256 (hex) of the exact notice text the user was shown.
+    notice_hash = Column(String(64), nullable=False)
+    # {"github": bool, "resume": bool, "email": bool}
+    purposes = Column(JSON, nullable=False)
+    accepted_at = Column(DateTime, nullable=False, default=utcnow)
+    user_agent = Column(String, nullable=True)
+
+    account = relationship("Account", back_populates="consents")
 
 
 class OtpCode(Base):

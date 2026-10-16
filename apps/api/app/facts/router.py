@@ -11,6 +11,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
 from sqlalchemy.orm import Session
 
+from ..auth.consents import require_resume_consent
 from ..auth.deps import Account, get_current_user
 from ..db import get_db
 from ..llm.client import LLMClient, LLMError, LLMRefusal, get_llm_client
@@ -38,7 +39,7 @@ answer_bank_router = APIRouter(prefix="/v1/me/answer-bank", tags=["facts"])
 @router.post("/resume", response_model=ResumeUploadResponse)
 def upload_resume(
     file: UploadFile = File(...),
-    account: Account = Depends(get_current_user),
+    account: Account = Depends(require_resume_consent),
     db: Session = Depends(get_db),
     llm: LLMClient = Depends(get_llm_client),
     store: Optional[ObjectStore] = Depends(get_object_store),

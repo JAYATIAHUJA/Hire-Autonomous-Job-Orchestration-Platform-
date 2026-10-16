@@ -244,6 +244,23 @@ def refresh_profile(db: Session, account_id: int) -> CandidateProfile:
     return row
 
 
+def get_preferences(db: Session, account_id: int) -> dict[str, Any]:
+    row = get_profile_row(db, account_id)
+    return dict((row.data or {}).get("preferences") or {}) if row else {}
+
+
+def set_preferences(db: Session, account_id: int, preferences: dict[str, Any]) -> dict[str, Any]:
+    """Store job preferences on the candidate profile; refresh_profile keeps them."""
+    row = get_profile_row(db, account_id)
+    if row is None:
+        row = CandidateProfile(account_id=account_id, data={})
+        db.add(row)
+    row.data = {**(row.data or {}), "preferences": preferences}  # new dict: JSON columns track assignment
+    row.updated_at = _utcnow()
+    db.flush()
+    return preferences
+
+
 def get_answer_bank(db: Session, account_id: int) -> list[AnswerBankEntry]:
     return db.query(AnswerBankEntry).filter(AnswerBankEntry.account_id == account_id).order_by(
         AnswerBankEntry.key

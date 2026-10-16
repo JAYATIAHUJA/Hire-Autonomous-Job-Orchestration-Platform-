@@ -12,7 +12,9 @@ class AnalysisLimits:
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env")
+    # The repo-root .env (written by scripts/dev.py) also carries keys for other
+    # services; ignore them rather than refusing to start from the repo root.
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "sqlite:///./hire.db"
     github_api_base: str = "https://api.github.com"
@@ -96,6 +98,9 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = ""
     smtp_starttls: bool = True
+    # The DPDP privacy notice in force (apps/web/src/privacy/notice.ts NOTICE_VERSION).
+    # Consent given to an older version no longer counts; bump both together.
+    privacy_notice_version: str = "v1"
     # Object store (ADR-009): SeaweedFS in dev, AWS S3 in prod. S3 API only.
     s3_endpoint: str = ""
     s3_bucket: str = ""

@@ -8,3 +8,11 @@ __pycache__/
 node_modules/
 dist/
 .vercel/
+
+<<<<<<< HEAD
+# ATS registry probe cache (scripts/ats_registry/probe.py)
+data/ats-registry/.cache/
+=======
+# Applicant profile, resumes and apply runs (scripts/apply). Personal data: never commit.
+data/private/
+>>>>>>> origin/apply-greenhouse
