@@ -1,0 +1,198 @@
+{
+ "url": "https://jobs.ashbyhq.com/atlan/254c1250-953b-4323-8d18-9fe5e41d8d7d/application",
+ "captured_from": "https://jobs.ashbyhq.com/atlan/254c1250-953b-4323-8d18-9fe5e41d8d7d/application",
+ "final_url": "https://jobs.ashbyhq.com/atlan/254c1250-953b-4323-8d18-9fe5e41d8d7d/application",
+ "captured_at": "2026-10-16T11:48:59+00:00",
+ "ats": "ashby",
+ "company": "atlan",
+ "req_id": "254c1250-953b-4323-8d18-9fe5e41d8d7d",
+ "title": "Senior Security Engineer - Corporate Security @ Atlan",
+ "location": "India (remote)",
+ "variant": "jobs.ashbyhq.com application tab",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 21,
+ "required_count": 9,
+ "file_inputs": 3,
+ "notable_fields": [
+  "cover_letter_upload",
+  "salary_ctc",
+  "linkedin_url",
+  "consent_privacy",
+  "multi_file_upload",
+  "dropdowns",
+  "radio_or_checkbox",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "_systemfield_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full Name"
+  },
+  {
+   "name": "_systemfield_email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email"
+  },
+  {
+   "name": "1d552bfa-e57f-455b-aea7-98899bc492d0",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone"
+  },
+  {
+   "name": "smsConsent",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Yes - I consent to receiving SMS text messages"
+  },
+  {
+   "name": "smsConsent",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "No - I do not consent to receiving SMS text messages"
+  },
+  {
+   "name": "whatsAppConsent",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Yes - I consent to receiving WhatsApp messages"
+  },
+  {
+   "name": "whatsAppConsent",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "No - I do not consent to receiving WhatsApp messages"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "Start typing..."
+  },
+  {
+   "name": "_systemfield_resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": true,
+   "label": "Resume"
+  },
+  {
+   "name": "07454f09-43e6-4b91-bc26-32ca9b5d5249",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Cover Letter"
+  },
+  {
+   "name": "25f315e3-c7c1-45d5-9c20-6ec1797813b0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "LinkedIn profile"
+  },
+  {
+   "name": "cbbd5a13-01f9-4540-b40d-813d3291d939",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Please list your most recent Employer here."
+  },
+  {
+   "name": "82a4f449-afbd-4af0-9a50-47d27383b8aa",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "d08ece9c-97f3-454a-baf9-b23b31480c66",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "7a81f921-67d4-459d-b97f-30e8577209aa",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "What are your compensation expectations for this role?"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "Start typing..."
+  },
+  {
+   "name": "e7d1a19f-cf86-4871-8332-71d9cf6f7548",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "How do you use AI and code in your security work today? Describe one specific automation, agent, or internal tool you personally built for a security use case -"
+  },
+  {
+   "name": "64cb1fd2-8c54-421e-b18d-4e1b3958d834",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "What's the broadest corporate security scope you've personally owned - which domains (identity, DLP, device security, access/ZTNA, vendor risk), and which of th"
+  },
+  {
+   "name": "e72e18b6-fd09-4e75-9799-934f3b5dbd16",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "Acknowledge/ Confirm",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Acknowledge/ Confirm"
+  }
+ ]
+}

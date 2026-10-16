@@ -1,0 +1,204 @@
+{
+ "url": "https://job-boards.greenhouse.io/inmobi/jobs/8169105",
+ "captured_from": "https://job-boards.greenhouse.io/inmobi/jobs/8169105",
+ "final_url": "https://job-boards.greenhouse.io/inmobi/jobs/8169105",
+ "captured_at": "2026-10-16T11:47:11+00:00",
+ "ats": "greenhouse",
+ "company": "inmobi",
+ "req_id": "8169105",
+ "title": "Job Application for Account Manager - Performance Marketing - Search Ads at InMobi",
+ "location": "India",
+ "variant": "job-boards.greenhouse.io",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 22,
+ "required_count": 20,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "notice_period",
+  "salary_ctc",
+  "github_or_portfolio",
+  "dropdowns",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "first_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "First Name*"
+  },
+  {
+   "name": "last_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Last Name*"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Email*"
+  },
+  {
+   "name": "country",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Country*"
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "iti-0__search-input",
+   "tag": "input",
+   "type": "search",
+   "role": "combobox",
+   "required": false,
+   "label": "Search"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone*"
+  },
+  {
+   "name": "candidate-location",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Location (City)*"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "question_68917315",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "What is your present CTC*"
+  },
+  {
+   "name": "question_68917316",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "What is your notice period ?*"
+  },
+  {
+   "name": "question_68917317",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "What is your present location ?*"
+  },
+  {
+   "name": "question_68917318",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Do you have experience in Search advertising?*"
+  },
+  {
+   "name": "question_69228798",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you have hands-on, day-to-day experience managing campaigns in Google Ads, Bing Ads/Microsoft Advertising, or SA360? (Yes/No)*"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_69228799",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Is your current or most recent role primarily client-facing (owning advertiser or agency relationships), rather than backend campaign execution ?*"
+  },
+  {
+   "name": "lab_field_3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_69228800",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "How many years of experience do you have in search engine marketing (SEM) account management, and which platform(s) have you worked in most?*"
+  },
+  {
+   "name": "question_69228801",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Briefly describe the type of client portfolio you've managed (e.g., number of accounts, average account size, enterprise/corporate vs. SMB, single-market vs. cr"
+  },
+  {
+   "name": "question_69228802",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Describe a time you identified and pitched a budget upsell or optimization opportunity to a client. What was the outcome?*"
+  },
+  {
+   "name": "question_69228803",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Describe a time you tried to convince a client to adopt a search/campaign optimization recommendation and they were initially resistant. What was your approach,"
+  }
+ ]
+}

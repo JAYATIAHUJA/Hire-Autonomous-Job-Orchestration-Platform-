@@ -1,0 +1,289 @@
+{
+ "url": "https://boards.greenhouse.io/zscaler/jobs/5232603007",
+ "captured_from": "https://boards.greenhouse.io/zscaler/jobs/5232603007",
+ "final_url": "https://job-boards.greenhouse.io/zscaler/jobs/5232603007",
+ "captured_at": "2026-10-16T11:47:51+00:00",
+ "ats": "greenhouse",
+ "company": "zscaler",
+ "req_id": "5232603007",
+ "title": "Job Application for Designated Support Engineer III at Zscaler",
+ "location": "Bangalore, IND",
+ "variant": "boards.greenhouse.io hosted URL (redirects to job-boards)",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 32,
+ "required_count": 25,
+ "file_inputs": 2,
+ "notable_fields": [
+  "cover_letter_upload",
+  "work_authorisation",
+  "eeo_demographics",
+  "location",
+  "linkedin_url",
+  "github_or_portfolio",
+  "consent_privacy",
+  "multi_file_upload",
+  "dropdowns",
+  "radio_or_checkbox",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "first_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "First Name*"
+  },
+  {
+   "name": "last_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Last Name*"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Email*"
+  },
+  {
+   "name": "country",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Country*"
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "iti-0__search-input",
+   "tag": "input",
+   "type": "search",
+   "role": "combobox",
+   "required": false,
+   "label": "Search"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone*"
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "cover_letter",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "question_12851292007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Website"
+  },
+  {
+   "name": "question_12851293007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn Profile"
+  },
+  {
+   "name": "question_12851294007[]",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "How did you learn about this job?*"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_12851295007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "If you selected Other please tell us how you learned about this job."
+  },
+  {
+   "name": "question_12851296007",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you have the legal right to work in the country where you are applying to work?*"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_12851297007",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you, now or in the future, require a work permit, visa, or additional right to work support for the country where you are applying to work?*"
+  },
+  {
+   "name": "lab_field_3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_12851298007",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": "If yes, please advise what support is needed:"
+  },
+  {
+   "name": "question_12851299007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "In what city and state is your primary residence? (e.g. San Jose, CA)*"
+  },
+  {
+   "name": "question_12851300007",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you currently work for, or have you previously worked for Zscaler?*"
+  },
+  {
+   "name": "lab_field_4",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_12851301007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current Company*"
+  },
+  {
+   "name": "question_12851302007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current Title*"
+  },
+  {
+   "name": "question_12851303007[]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "I Agree"
+  },
+  {
+   "name": "question_12851304007[]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "I Agree"
+  },
+  {
+   "name": "question_12851305007",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Have you been involved in procurement or contract award activities involving Zscaler as a government employee or official?*"
+  },
+  {
+   "name": "lab_field_5",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_12851306007",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Home Address*"
+  },
+  {
+   "name": "4014225007",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Sex*"
+  },
+  {
+   "name": "lab_field_6",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "gdpr_demographic_data_consent_given",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "By checking this box, I consent to Zscaler collecting, storing, and processing my responses to the demographic data surveys above.*"
+  }
+ ]
+}

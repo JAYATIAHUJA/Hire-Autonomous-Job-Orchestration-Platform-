@@ -1,0 +1,90 @@
+{
+ "url": "https://jobs.ashbyhq.com/sarvam/c0406fe0-c8c0-44aa-aa3e-b879f2bf1049/application",
+ "captured_from": "https://jobs.ashbyhq.com/sarvam/c0406fe0-c8c0-44aa-aa3e-b879f2bf1049/application",
+ "final_url": "https://jobs.ashbyhq.com/sarvam/c0406fe0-c8c0-44aa-aa3e-b879f2bf1049/application",
+ "captured_at": "2026-10-16T11:49:14+00:00",
+ "ats": "ashby",
+ "company": "sarvam",
+ "req_id": "c0406fe0-c8c0-44aa-aa3e-b879f2bf1049",
+ "title": "Engagement Manager, Chanakya @ Sarvam",
+ "location": "Delhi, India",
+ "variant": "jobs.ashbyhq.com application tab",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 8,
+ "required_count": 4,
+ "file_inputs": 2,
+ "notable_fields": [
+  "linkedin_url",
+  "github_or_portfolio",
+  "multi_file_upload",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "_systemfield_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Name"
+  },
+  {
+   "name": "_systemfield_email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email"
+  },
+  {
+   "name": "6f9c9903-0146-41b7-b6eb-35575104087b",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone number"
+  },
+  {
+   "name": "_systemfield_resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": true,
+   "label": "Resume"
+  },
+  {
+   "name": "21ee1315-088b-47f1-bfe9-091e141792f3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn Url"
+  },
+  {
+   "name": "54de20b6-3976-4b62-a281-dddf833950aa",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Github Url"
+  },
+  {
+   "name": "3880a764-8b4d-40e0-a580-338c758111d9",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": "Why do you want to work at Sarvam AI?"
+  }
+ ]
+}

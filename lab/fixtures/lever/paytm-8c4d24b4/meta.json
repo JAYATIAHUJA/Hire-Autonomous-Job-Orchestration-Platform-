@@ -1,0 +1,341 @@
+{
+ "url": "https://jobs.lever.co/paytm/8c4d24b4-62d4-466d-9daa-b3c7804c5a67/apply",
+ "captured_from": "https://jobs.lever.co/paytm/8c4d24b4-62d4-466d-9daa-b3c7804c5a67/apply",
+ "final_url": "https://jobs.lever.co/paytm/8c4d24b4-62d4-466d-9daa-b3c7804c5a67/apply",
+ "captured_at": "2026-10-16T11:48:31+00:00",
+ "ats": "lever",
+ "company": "paytm",
+ "req_id": "8c4d24b4-62d4-466d-9daa-b3c7804c5a67",
+ "title": "Paytm - Analytics Lead - UPI Product | Experience : 7-9 yrs",
+ "location": "Noida, India",
+ "variant": "jobs.lever.co apply page",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 39,
+ "required_count": 16,
+ "file_inputs": 1,
+ "notable_fields": [
+  "eeo_demographics",
+  "location",
+  "linkedin_url",
+  "github_or_portfolio",
+  "dropdowns",
+  "radio_or_checkbox",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "opportunityLocationId",
+   "tag": "select",
+   "type": "select-one",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Resume/CV ✱ATTACH RESUME/CVCouldn't auto-read resume.Analyzing resume...Success!"
+  },
+  {
+   "name": "name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full name✱"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email✱"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Phone ✱"
+  },
+  {
+   "name": "location",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current location ✱No location found. Try entering a different locationLoading"
+  },
+  {
+   "name": "org",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current company ✱"
+  },
+  {
+   "name": "urls[LinkedIn]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn URL"
+  },
+  {
+   "name": "urls[Github]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Github URL"
+  },
+  {
+   "name": "urls[Twitter]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Other website"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field0]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Immediate Joiner"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Within 30 days"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "30 - 60 Days"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "60 - 90 Days"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field2]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field3]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field4]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field5]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "cards[eab2039f-b7ab-4b2e-9e72-c0be6e087013][field6]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "select",
+   "type": "select-one",
+   "role": "",
+   "required": false,
+   "label": "What is your location?Select...AfghanistanAlbaniaAlgeriaAmerican SamoaAndorraAngolaAnguillaAntarcticaAntigua and BarbudaArgentinaArmeniaArubaAustraliaAustriaAze"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "17 or younger"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "18-20"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "21-29"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "30-39"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "40-49"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "50-59"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "60 or older"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "White / Caucasian"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Hispanic, Latino, or Spanish origin"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Black or African American"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Asian"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Native Hawaiian or other Pacific Islander"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Indigenous Peoples, First Nations, Native American, or Alaska Native"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Middle Eastern or North African"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field1]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Some other race, ethnicity, or origin"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Female"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Male"
+  },
+  {
+   "name": "surveysResponses[32eab309-5358-408c-9667-a127f551c172][responses][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Non-binary"
+  }
+ ]
+}

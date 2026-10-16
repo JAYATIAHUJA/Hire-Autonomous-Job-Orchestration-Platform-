@@ -1,0 +1,243 @@
+{
+ "url": "https://jobs.lever.co/meesho/7d9af9b5-c1c7-48ec-bbb5-9b25e49f6596/apply",
+ "captured_from": "https://jobs.lever.co/meesho/7d9af9b5-c1c7-48ec-bbb5-9b25e49f6596/apply",
+ "final_url": "https://jobs.lever.co/meesho/7d9af9b5-c1c7-48ec-bbb5-9b25e49f6596/apply",
+ "captured_at": "2026-10-16T11:48:23+00:00",
+ "ats": "lever",
+ "company": "meesho",
+ "req_id": "7d9af9b5-c1c7-48ec-bbb5-9b25e49f6596",
+ "title": "Meesho - AM/ Manager - Risk & Decision Science",
+ "location": "Bangalore, India",
+ "variant": "jobs.lever.co apply page",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 27,
+ "required_count": 20,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "linkedin_url",
+  "github_or_portfolio",
+  "dropdowns",
+  "radio_or_checkbox",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Resume/CV ✱ATTACH RESUME/CVCouldn't auto-read resume.Analyzing resume...Success!"
+  },
+  {
+   "name": "name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full name✱"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email✱"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Phone ✱"
+  },
+  {
+   "name": "location",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Current location No location found. Try entering a different locationLoading"
+  },
+  {
+   "name": "org",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current company ✱"
+  },
+  {
+   "name": "urls[LinkedIn]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn URL"
+  },
+  {
+   "name": "urls[Naukri]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Naukri URL"
+  },
+  {
+   "name": "urls[GitHub]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "GitHub URL"
+  },
+  {
+   "name": "urls[Portfolio]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Portfolio URL"
+  },
+  {
+   "name": "urls[Other ]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Other URL"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Male"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Female"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Other"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field0]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Prefer not to disclose"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field1]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Yes"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "No"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Yes"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "No"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Not Applicable"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field4]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field5]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field6]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field7]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Yes"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field7]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "No"
+  },
+  {
+   "name": "cards[0df5c2d9-314f-429b-9e06-d9758e4b9b4b][field8]",
+   "tag": "select",
+   "type": "select-one",
+   "role": "",
+   "required": true,
+   "label": ""
+  }
+ ]
+}

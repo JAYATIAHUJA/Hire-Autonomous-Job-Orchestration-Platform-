@@ -1,0 +1,195 @@
+{
+ "url": "https://jobs.ashbyhq.com/notion/79c18580-c927-456c-9d5f-72efbc6c43cb/application",
+ "captured_from": "https://jobs.ashbyhq.com/notion/79c18580-c927-456c-9d5f-72efbc6c43cb/application",
+ "final_url": "https://jobs.ashbyhq.com/notion/79c18580-c927-456c-9d5f-72efbc6c43cb/application",
+ "captured_at": "2026-10-16T11:49:36+00:00",
+ "ats": "ashby",
+ "company": "notion",
+ "req_id": "79c18580-c927-456c-9d5f-72efbc6c43cb",
+ "title": "Forward Deployed Engineer, India @ Notion",
+ "location": "Hyderabad, India",
+ "variant": "jobs.ashbyhq.com application tab",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 21,
+ "required_count": 5,
+ "file_inputs": 2,
+ "notable_fields": [
+  "linkedin_url",
+  "github_or_portfolio",
+  "multi_file_upload",
+  "dropdowns",
+  "radio_or_checkbox",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "_systemfield_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full Name"
+  },
+  {
+   "name": "_systemfield_email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email"
+  },
+  {
+   "name": "8039f8aa-c269-467e-bdea-dec068474224",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "Start typing..."
+  },
+  {
+   "name": "_systemfield_resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": true,
+   "label": "Resume"
+  },
+  {
+   "name": "dbb7e595-3d7b-4a1f-b0b6-76497b74b4cb",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "LinkedIn Profile"
+  },
+  {
+   "name": "8c431589-b95f-4491-9e56-3108761d930d_b0a5aba8-dbb7-41a9-b548-f72cc3e48956",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "He/Him"
+  },
+  {
+   "name": "8c431589-b95f-4491-9e56-3108761d930d_b0a5aba8-dbb7-41a9-b548-f72cc3e48956",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "She/Her"
+  },
+  {
+   "name": "8c431589-b95f-4491-9e56-3108761d930d_b0a5aba8-dbb7-41a9-b548-f72cc3e48956",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "They/Them"
+  },
+  {
+   "name": "8c431589-b95f-4491-9e56-3108761d930d_b0a5aba8-dbb7-41a9-b548-f72cc3e48956",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Prefer not to say"
+  },
+  {
+   "name": "8c431589-b95f-4491-9e56-3108761d930d_b0a5aba8-dbb7-41a9-b548-f72cc3e48956",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": false,
+   "label": "Not represented here"
+  },
+  {
+   "name": "e01a85db-feaa-42b3-a9ad-69b1dcbbab3f",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "790b5934-74f5-46f5-897a-675b7f37f2f3",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "LinkedIn",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn"
+  },
+  {
+   "name": "Glassdoor",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Glassdoor"
+  },
+  {
+   "name": "Notion Blog",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Notion Blog"
+  },
+  {
+   "name": "Notion Employee",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Notion Employee"
+  },
+  {
+   "name": "Notion Website",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Notion Website"
+  },
+  {
+   "name": "Billboard/Outdoor Ads",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Billboard/Outdoor Ads"
+  },
+  {
+   "name": "Conference or Meetup",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Conference or Meetup"
+  }
+ ]
+}

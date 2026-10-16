@@ -1,0 +1,320 @@
+{
+ "absolute_url": "https://job-boards.eu.greenhouse.io/groww/jobs/5000706101",
+ "data_compliance": [
+  {
+   "type": "gdpr",
+   "requires_consent": false,
+   "requires_processing_consent": false,
+   "requires_retention_consent": false,
+   "retention_period": null,
+   "demographic_data_consent_applies": false
+  }
+ ],
+ "internal_job_id": 4533181101,
+ "location": {
+  "name": "Bengaluru, India"
+ },
+ "metadata": [
+  {
+   "id": 9193480101,
+   "name": "Designation",
+   "value": "Finance Content Creator",
+   "value_type": "short_text"
+  }
+ ],
+ "id": 5000706101,
+ "updated_at": "2026-10-09T03:18:37-04:00",
+ "requisition_id": "GRID-17916",
+ "title": "Finance Content Creator",
+ "company_name": "Groww",
+ "first_published": "2026-10-09T03:18:37-04:00",
+ "language": "en",
+ "application_deadline": null,
+ "departments": [
+  {
+   "id": 4033749101,
+   "name": "Growth",
+   "child_ids": [
+    4092641101,
+    4092642101,
+    4037712101,
+    4037713101,
+    4033753101,
+    4033750101,
+    4033755101,
+    4033754101,
+    4033752101,
+    4033751101
+   ],
+   "parent_id": null
+  }
+ ],
+ "offices": [
+  {
+   "id": 4018978101,
+   "name": "Bengaluru-VTP",
+   "location": "Bengaluru-VTP, India",
+   "child_ids": [],
+   "parent_id": 4018977101
+  }
+ ],
+ "ai_disclaimer": null,
+ "include_ai_disclaimer": null,
+ "ai_opt_out_request_url": "http://s101.recruiting.eu.greenhouse.io/ai_opt_out_request/job_post/5000706101/ai_opt_out",
+ "compliance": null,
+ "demographic_questions": null,
+ "questions": [
+  {
+   "description": null,
+   "label": "First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "first_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Last Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "last_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Email",
+   "required": true,
+   "fields": [
+    {
+     "name": "email",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Phone",
+   "required": true,
+   "fields": [
+    {
+     "name": "phone",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Resume/CV",
+   "required": true,
+   "fields": [
+    {
+     "name": "resume",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "resume_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "LinkedIn Profile Link",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_9797358101",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is the notice period in your current employment?",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_9797359101",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Available to join immediate",
+       "value": 72968952101
+      },
+      {
+       "label": "Less than 30 days",
+       "value": 72968953101
+      },
+      {
+       "label": "30 days",
+       "value": 72968954101
+      },
+      {
+       "label": "Between 30-60 days",
+       "value": 72968955101
+      },
+      {
+       "label": "60 days",
+       "value": 72968956101
+      },
+      {
+       "label": "90 days",
+       "value": 72968957101
+      },
+      {
+       "label": "More than 90 days",
+       "value": 72968958101
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you have a relative/ family member working currently in Groww?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_9797360101",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Have you previously been employed by Groww in any capacity (e.g., full-time, intern, contractor)?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_9797361101",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you provide your consent for us to conduct your background verification (BGV) and reference checks?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_9797362101",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Please share your portfolio link?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_9801730101",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Please note that this is a contractual role based in Bangalore. Could you please confirm if you are comfortable with these terms?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_9801731101",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "location_questions": [
+  {
+   "description": null,
+   "label": "Longitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "longitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Latitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "latitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Location",
+   "required": true,
+   "fields": [
+    {
+     "name": "location",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  }
+ ]
+}

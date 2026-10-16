@@ -1,0 +1,197 @@
+{
+ "url": "https://job-boards.eu.greenhouse.io/groww/jobs/5000706101",
+ "captured_from": "https://job-boards.eu.greenhouse.io/groww/jobs/5000706101",
+ "final_url": "https://job-boards.eu.greenhouse.io/groww/jobs/5000706101",
+ "captured_at": "2026-10-16T11:47:01+00:00",
+ "ats": "greenhouse",
+ "company": "groww",
+ "req_id": "5000706101",
+ "title": "Job Application for Finance Content Creator at Groww",
+ "location": "Bengaluru, India",
+ "variant": "job-boards.eu.greenhouse.io (EU data region)",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 21,
+ "required_count": 17,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "notice_period",
+  "linkedin_url",
+  "github_or_portfolio",
+  "consent_privacy",
+  "dropdowns",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "first_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "First Name*"
+  },
+  {
+   "name": "last_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Last Name*"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Email*"
+  },
+  {
+   "name": "country",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Country*"
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "iti-0__search-input",
+   "tag": "input",
+   "type": "search",
+   "role": "combobox",
+   "required": false,
+   "label": "Search"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone*"
+  },
+  {
+   "name": "candidate-location",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Location (City)*"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "question_9797358101",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn Profile Link"
+  },
+  {
+   "name": "question_9797359101",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "What is the notice period in your current employment?"
+  },
+  {
+   "name": "question_9797360101",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you have a relative/ family member working currently in Groww?*"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_9797361101",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Have you previously been employed by Groww in any capacity (e.g., full-time, intern, contractor)?*"
+  },
+  {
+   "name": "lab_field_3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_9797362101",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you provide your consent for us to conduct your background verification (BGV) and reference checks?*"
+  },
+  {
+   "name": "lab_field_4",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_9801730101",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Please share your portfolio link?*"
+  },
+  {
+   "name": "question_9801731101",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Please note that this is a contractual role based in Bangalore. Could you please confirm if you are comfortable with these terms?*"
+  },
+  {
+   "name": "lab_field_5",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  }
+ ]
+}

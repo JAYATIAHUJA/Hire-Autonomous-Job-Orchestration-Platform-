@@ -1,0 +1,396 @@
+{
+ "absolute_url": "https://job-boards.greenhouse.io/hackerrank/jobs/8127535",
+ "data_compliance": [
+  {
+   "type": "gdpr",
+   "requires_consent": false,
+   "requires_processing_consent": false,
+   "requires_retention_consent": false,
+   "retention_period": null,
+   "demographic_data_consent_applies": false
+  }
+ ],
+ "internal_job_id": 3519596,
+ "location": {
+  "name": "Hybrid in Bangalore, India"
+ },
+ "metadata": [
+  {
+   "id": 49285989,
+   "name": "Team Name",
+   "value": "Support",
+   "value_type": "short_text"
+  },
+  {
+   "id": 64163573,
+   "name": "Featured",
+   "value": null,
+   "value_type": "yes_no"
+  }
+ ],
+ "id": 8127535,
+ "updated_at": "2026-10-09T11:31:20-04:00",
+ "requisition_id": "26Q3-641",
+ "title": "Customer Experience Engineer, L1",
+ "company_name": "HackerRank Careers",
+ "first_published": "2026-08-27T10:16:44-04:00",
+ "language": "en",
+ "application_deadline": null,
+ "departments": [
+  {
+   "id": 206790,
+   "name": "Go To Market",
+   "child_ids": [],
+   "parent_id": null
+  }
+ ],
+ "offices": [
+  {
+   "id": 209290,
+   "name": "Hybrid in Bengaluru, India ",
+   "location": null,
+   "child_ids": [],
+   "parent_id": null
+  }
+ ],
+ "ai_disclaimer": null,
+ "include_ai_disclaimer": null,
+ "ai_opt_out_request_url": null,
+ "compliance": null,
+ "demographic_questions": null,
+ "questions": [
+  {
+   "description": null,
+   "label": "First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "first_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Last Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "last_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Email",
+   "required": true,
+   "fields": [
+    {
+     "name": "email",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Phone",
+   "required": true,
+   "fields": [
+    {
+     "name": "phone",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Resume/CV",
+   "required": true,
+   "fields": [
+    {
+     "name": "resume",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "resume_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is your total years of experience? (excluding internships)",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572534",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "0-3",
+       "value": 748131896
+      },
+      {
+       "label": "4-6",
+       "value": 748131897
+      },
+      {
+       "label": "6+",
+       "value": 748131898
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "This role requires a rotational role covering a 24x7 support window, including mornings, evenings, and weekends. Shifts rotate weekly. Are you fully flexible to work any shift assigned?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572535",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": " Are you familiar with REST APIs and what HTTP status codes mean?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572536",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Are you comfortable writing customer-facing responses in English clearly and professionally?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572537",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Describe a situation where you had to explain a technical problem to someone non-technical. How did you approach it and what was the outcome?\n",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572538",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Tell me about a time you had to figure something out without a clear answer. How did you navigate it?\n",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572539",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Describe your experience with APIs, log reading, SQL, or debugging, even if from coursework, internship, or personal projects.\n",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572540",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "If you had 10 open tickets and a P0 came in, what would you do? Walk me through your thinking.\n",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572541",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "How do you currently use AI tools in your work or learning? Give specific examples.\n",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572542",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Where are you currently located?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572543",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Would you be open to relocating to Bangalore?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572544",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes, I am open to relocating",
+       "value": 748131899
+      },
+      {
+       "label": "No, I am not open to relocating",
+       "value": 748131900
+      },
+      {
+       "label": "I already live in Bangalore",
+       "value": 748131901
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Can you work in the Bangalore office 3 days a week at a minimum?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572545",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What are your salary expectations around the role? (mention in numbers)",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572546",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is your notice period?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572547",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "15 days",
+       "value": 748131902
+      },
+      {
+       "label": "30 days",
+       "value": 748131903
+      },
+      {
+       "label": "45 days",
+       "value": 748131904
+      },
+      {
+       "label": "60 days",
+       "value": 748131905
+      },
+      {
+       "label": "90 days",
+       "value": 748131906
+      },
+      {
+       "label": "Already Serving Notice",
+       "value": 748131907
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "LinkedIn Profile",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68572548",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  }
+ ],
+ "location_questions": []
+}

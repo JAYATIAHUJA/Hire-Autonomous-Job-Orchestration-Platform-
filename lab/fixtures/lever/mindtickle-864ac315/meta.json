@@ -1,0 +1,173 @@
+{
+ "url": "https://jobs.lever.co/mindtickle/864ac315-d7c5-4cd5-ab44-0e33d08f48f1/apply",
+ "captured_from": "https://jobs.lever.co/mindtickle/864ac315-d7c5-4cd5-ab44-0e33d08f48f1/apply",
+ "final_url": "https://jobs.lever.co/mindtickle/864ac315-d7c5-4cd5-ab44-0e33d08f48f1/apply",
+ "captured_at": "2026-10-16T11:48:38+00:00",
+ "ats": "lever",
+ "company": "mindtickle",
+ "req_id": "864ac315-d7c5-4cd5-ab44-0e33d08f48f1",
+ "title": "Mindtickle - AI Product Engineer",
+ "location": "Pune, India",
+ "variant": "jobs.lever.co apply page",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 18,
+ "required_count": 3,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "linkedin_url",
+  "github_or_portfolio",
+  "consent_privacy",
+  "dropdowns",
+  "radio_or_checkbox",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "opportunityLocationId",
+   "tag": "select",
+   "type": "select-one",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Resume/CV ✱ATTACH RESUME/CVCouldn't auto-read resume.Analyzing resume...Success!"
+  },
+  {
+   "name": "name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full name✱"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email✱"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Phone ✱"
+  },
+  {
+   "name": "location",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Current location No location found. Try entering a different locationLoading"
+  },
+  {
+   "name": "org",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Current company"
+  },
+  {
+   "name": "urls[LinkedIn]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn URL"
+  },
+  {
+   "name": "urls[Twitter]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Twitter URL"
+  },
+  {
+   "name": "urls[GitHub]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "GitHub URL"
+  },
+  {
+   "name": "urls[Portfolio]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Portfolio URL"
+  },
+  {
+   "name": "urls[Other]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Other website"
+  },
+  {
+   "name": "cards[8f476a8c-490c-49a7-aee3-ce1b26f66200][field0]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[8f476a8c-490c-49a7-aee3-ce1b26f66200][field1]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[8f476a8c-490c-49a7-aee3-ce1b26f66200][field2]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[8f476a8c-490c-49a7-aee3-ce1b26f66200][field3]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[8f476a8c-490c-49a7-aee3-ce1b26f66200][field4]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "consent[marketing]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": false,
+   "label": "Yes, Mindtickle can contact me about future job opportunities for up to 2 yearsPrivacy policy"
+  }
+ ]
+}

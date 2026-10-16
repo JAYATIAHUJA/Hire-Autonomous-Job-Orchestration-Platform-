@@ -1,0 +1,268 @@
+{
+ "url": "https://job-boards.greenhouse.io/hackerrank/jobs/8127535",
+ "captured_from": "https://job-boards.greenhouse.io/hackerrank/jobs/8127535",
+ "final_url": "https://job-boards.greenhouse.io/hackerrank/jobs/8127535",
+ "captured_at": "2026-10-16T11:47:31+00:00",
+ "ats": "greenhouse",
+ "company": "hackerrank",
+ "req_id": "8127535",
+ "title": "Job Application for Customer Experience Engineer, L1 at HackerRank Careers",
+ "location": "Hybrid in Bangalore, India",
+ "variant": "job-boards.greenhouse.io",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 30,
+ "required_count": 28,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "notice_period",
+  "salary_ctc",
+  "linkedin_url",
+  "dropdowns",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "first_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "First Name*"
+  },
+  {
+   "name": "last_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Last Name*"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Email*"
+  },
+  {
+   "name": "country",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Country*"
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "iti-0__search-input",
+   "tag": "input",
+   "type": "search",
+   "role": "combobox",
+   "required": false,
+   "label": "Search"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone*"
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "question_68572534",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "What is your total years of experience? (excluding internships)*"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572535",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "This role requires a rotational role covering a 24x7 support window, including mornings, evenings, and weekends. Shifts rotate weekly. Are you fully flexible to"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572536",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Are you familiar with REST APIs and what HTTP status codes mean?*"
+  },
+  {
+   "name": "lab_field_3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572537",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Are you comfortable writing customer-facing responses in English clearly and professionally?*"
+  },
+  {
+   "name": "lab_field_4",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572538",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Describe a situation where you had to explain a technical problem to someone non-technical. How did you approach it and what was the outcome? *"
+  },
+  {
+   "name": "question_68572539",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Tell me about a time you had to figure something out without a clear answer. How did you navigate it? *"
+  },
+  {
+   "name": "question_68572540",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "Describe your experience with APIs, log reading, SQL, or debugging, even if from coursework, internship, or personal projects. *"
+  },
+  {
+   "name": "question_68572541",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "If you had 10 open tickets and a P0 came in, what would you do? Walk me through your thinking. *"
+  },
+  {
+   "name": "question_68572542",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": "How do you currently use AI tools in your work or learning? Give specific examples. *"
+  },
+  {
+   "name": "question_68572543",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Where are you currently located?*"
+  },
+  {
+   "name": "question_68572544",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Would you be open to relocating to Bangalore?*"
+  },
+  {
+   "name": "lab_field_5",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572545",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Can you work in the Bangalore office 3 days a week at a minimum?*"
+  },
+  {
+   "name": "lab_field_6",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572546",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "What are your salary expectations around the role? (mention in numbers)*"
+  },
+  {
+   "name": "question_68572547",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "What is your notice period?*"
+  },
+  {
+   "name": "lab_field_7",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_68572548",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "LinkedIn Profile*"
+  }
+ ]
+}

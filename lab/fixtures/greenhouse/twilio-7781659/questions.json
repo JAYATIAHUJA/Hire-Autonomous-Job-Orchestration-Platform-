@@ -1,0 +1,377 @@
+{
+ "absolute_url": "https://job-boards.greenhouse.io/twilio/jobs/7781659",
+ "data_compliance": [
+  {
+   "type": "gdpr",
+   "requires_consent": false,
+   "requires_processing_consent": false,
+   "requires_retention_consent": false,
+   "retention_period": null,
+   "demographic_data_consent_applies": true
+  }
+ ],
+ "internal_job_id": 3405783,
+ "location": {
+  "name": "Remote - India"
+ },
+ "metadata": [
+  {
+   "id": 259693,
+   "name": "Job Code",
+   "value": "TP2EG5332-1",
+   "value_type": "single_select"
+  }
+ ],
+ "id": 7781659,
+ "updated_at": "2026-10-15T10:33:42-04:00",
+ "requisition_id": "50323",
+ "title": "Applications Engineer 2",
+ "company_name": "Twilio",
+ "first_published": "2026-06-30T01:16:56-04:00",
+ "language": "en",
+ "application_deadline": null,
+ "departments": [
+  {
+   "id": 33864,
+   "name": "Sales Operations",
+   "child_ids": [],
+   "parent_id": 70465
+  }
+ ],
+ "offices": [
+  {
+   "id": 85541,
+   "name": "Remote - India",
+   "location": null,
+   "child_ids": [],
+   "parent_id": 74919
+  }
+ ],
+ "ai_disclaimer": null,
+ "include_ai_disclaimer": null,
+ "ai_opt_out_request_url": null,
+ "compliance": null,
+ "demographic_questions": {
+  "header": "International - Self-Identification of Demographic Information",
+  "description": "<p style=\"text-align: left;\">Twilio invites you to self-identify certain personal demographic information to help continue our mission to foster inclusivity in our workplace. Completing this survey is voluntary, but we do hope that you will participate because your responses help us measure the effectiveness of our outreach and recruitment activities. Responding is completely optional and voluntary and will not be used for the purposes of any employment decision. Any information you provide is confidential and is not accessible by recruiters, hiring managers or the interview team at any time. This data is collected, stored and otherwise processed in accordance with legal requirements.</p>\n<p style=\"text-align: left;\">We hope you will join us in our commitment and enthusiasm for making Twilio a place where everyone belongs!</p>",
+  "questions": [
+   {
+    "id": 353,
+    "label": "Voluntary Self-Identification of Gender",
+    "required": true,
+    "type": "multi_value_multi_select",
+    "answer_options": [
+     {
+      "id": 1753,
+      "label": "Male",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 1754,
+      "label": "Female",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 4745,
+      "label": "Transgender",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 4746,
+      "label": "Gender Nonconforming ",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 3552,
+      "label": "I don't wish to answer",
+      "free_form": false,
+      "decline_to_answer": true
+     }
+    ]
+   }
+  ]
+ },
+ "questions": [
+  {
+   "description": null,
+   "label": "First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "first_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Last Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "last_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Preferred First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "preferred_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Email",
+   "required": true,
+   "fields": [
+    {
+     "name": "email",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Phone",
+   "required": true,
+   "fields": [
+    {
+     "name": "phone",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Resume/CV",
+   "required": true,
+   "fields": [
+    {
+     "name": "resume",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "resume_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Cover Letter",
+   "required": false,
+   "fields": [
+    {
+     "name": "cover_letter",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "cover_letter_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "LinkedIn Profile",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_65239476",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": "<p><em>Please click all that apply</em></p>",
+   "label": "How did you hear about Twilio?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_65239477[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "Careers Website",
+       "value": 675018163
+      },
+      {
+       "label": "LinkedIn",
+       "value": 675018164
+      },
+      {
+       "label": "Twitter",
+       "value": 675018165
+      },
+      {
+       "label": "Glassdoor",
+       "value": 675018166
+      },
+      {
+       "label": "Indeed",
+       "value": 675018167
+      },
+      {
+       "label": "Twilio Blog",
+       "value": 675018168
+      },
+      {
+       "label": "Conference or Event",
+       "value": 675018169
+      },
+      {
+       "label": "Content (e.g. videos, ads, billboards etc)",
+       "value": 675018170
+      },
+      {
+       "label": "Other",
+       "value": 675018171
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Are you legally authorized to work in the country in which this role is located?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_65239478",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is the source of your right to work where this role is listed?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_65239479",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Citizen or permanent resident where this role is listed",
+       "value": 675018172
+      },
+      {
+       "label": "Citizen of a country with an unlimited right to work where this role is listed",
+       "value": 675018173
+      },
+      {
+       "label": "Valid visa with permission to work with any employer where this role is listed",
+       "value": 675018174
+      },
+      {
+       "label": "I do not currently have an unlimited right to work where this role is listed and will require sponsorship",
+       "value": 675018175
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": "<p><a href=\"https://www.twilio.com/en-us/legal/privacy/Global-Applicant-Privacy-Notice\" target=\"_blank\" rel=\"noopener\" data-saferedirecturl=\"https://www.google.com/url?q=https://www.twilio.com/en-us/legal/privacy/Global-Applicant-Privacy-Notice&amp;source=gmail&amp;ust=1709314682155000&amp;usg=AOvVaw1NNgXTFu_UXYAYbZY8SC-a\">Twilio Applicant Privacy Policy</a></p>",
+   "label": "By clicking the \"Acknowledge\" button, you acknowledge that Twilio processes data in accordance with the Twilio Applicant Privacy Policy.",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_65239480[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "Acknowledge",
+       "value": 675018176
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": "<p><a href=\"https://www.twilio.com/en-us/company/jobs/candidate-ai-policy\" target=\"_blank\" rel=\"noopener\">Candidate AI Responsible Use Policy</a></p>",
+   "label": "By checking this box, I confirm I have read, reviewed and understood the guidelines outlined in the Candidate AI Responsible Use Policy. I affirm that all the information and materials I submit throughout my application and candidacy will reflect my own work and experience.",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_65239481[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "Acknowledge",
+       "value": 675018177
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "location_questions": [
+  {
+   "description": null,
+   "label": "Longitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "longitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Latitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "latitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Location",
+   "required": true,
+   "fields": [
+    {
+     "name": "location",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  }
+ ]
+}

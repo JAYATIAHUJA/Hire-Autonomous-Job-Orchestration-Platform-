@@ -1,0 +1,105 @@
+{
+ "url": "https://jobs.lever.co/pocketfm/2436065b-281d-4347-8366-9a60b99dc5a5/apply",
+ "captured_from": "https://jobs.lever.co/pocketfm/2436065b-281d-4347-8366-9a60b99dc5a5/apply",
+ "final_url": "https://jobs.lever.co/pocketfm/2436065b-281d-4347-8366-9a60b99dc5a5/apply",
+ "captured_at": "2026-10-16T11:48:52+00:00",
+ "ats": "lever",
+ "company": "pocketfm",
+ "req_id": "2436065b-281d-4347-8366-9a60b99dc5a5",
+ "title": "Pocket Entertainment Corp - Director - Analytics",
+ "location": "Bangalore, India",
+ "variant": "jobs.lever.co apply page",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 10,
+ "required_count": 6,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "linkedin_url",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Resume/CV ✱ATTACH RESUME/CVCouldn't auto-read resume.Analyzing resume...Success!"
+  },
+  {
+   "name": "name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full name✱"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email✱"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Phone ✱"
+  },
+  {
+   "name": "location",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current location ✱No location found. Try entering a different locationLoading"
+  },
+  {
+   "name": "org",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current company ✱"
+  },
+  {
+   "name": "urls[LinkedIn]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "LinkedIn URL✱"
+  },
+  {
+   "name": "cards[c788e0b8-401a-423f-a924-60d01a6a0f9f][field0]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Type your response"
+  },
+  {
+   "name": "cards[55126eb1-ecde-461c-8abe-7b28b5b5a89b][field0]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[55126eb1-ecde-461c-8abe-7b28b5b5a89b][field1]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": false,
+   "label": ""
+  }
+ ]
+}

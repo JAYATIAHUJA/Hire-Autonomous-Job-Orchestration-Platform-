@@ -1,0 +1,478 @@
+{
+ "absolute_url": "https://job-boards.greenhouse.io/zscaler/jobs/5232603007",
+ "data_compliance": [
+  {
+   "type": "gdpr",
+   "requires_consent": false,
+   "requires_processing_consent": false,
+   "requires_retention_consent": false,
+   "retention_period": null,
+   "demographic_data_consent_applies": true
+  }
+ ],
+ "internal_job_id": 4678560007,
+ "location": {
+  "name": "Bangalore, IND"
+ },
+ "metadata": [
+  {
+   "id": 4203262007,
+   "name": "Employment Type",
+   "value": "Fulltime Employee",
+   "value_type": "single_select"
+  },
+  {
+   "id": 4363861007,
+   "name": "Additional Job Post Location",
+   "value": [],
+   "value_type": "multi_select"
+  },
+  {
+   "id": 4363809007,
+   "name": "Division",
+   "value": "Customer Success",
+   "value_type": "single_select"
+  },
+  {
+   "id": 4391305007,
+   "name": "Geo/Region",
+   "value": "India",
+   "value_type": "single_select"
+  }
+ ],
+ "id": 5232603007,
+ "updated_at": "2026-10-12T17:46:29-04:00",
+ "requisition_id": "260831_B12324",
+ "title": "Designated Support Engineer III",
+ "company_name": "Zscaler",
+ "first_published": "2026-09-11T01:30:33-04:00",
+ "language": "en",
+ "application_deadline": null,
+ "departments": [
+  {
+   "id": 4015776007,
+   "name": "Support",
+   "child_ids": [
+    4042346007,
+    4042342007,
+    4042347007,
+    4042348007,
+    4042343007,
+    4042344007,
+    4042345007,
+    4018511007,
+    4018506007,
+    4018505007,
+    4018509007,
+    4018522007,
+    4018512007,
+    4018627007,
+    4035832007,
+    4018504007,
+    4065842007,
+    4043622007,
+    4018507007,
+    4018508007,
+    4018502007
+   ],
+   "parent_id": 4015575007
+  }
+ ],
+ "offices": [
+  {
+   "id": 4009751007,
+   "name": "Office - Bangalore, India",
+   "location": "Bangalore, IND",
+   "child_ids": [],
+   "parent_id": 4009663007
+  }
+ ],
+ "ai_disclaimer": null,
+ "include_ai_disclaimer": null,
+ "ai_opt_out_request_url": null,
+ "compliance": null,
+ "demographic_questions": {
+  "header": "Voluntary Self Identification",
+  "description": "<p>At Zscaler, we value diversity, equity, inclusion and belonging. We invite you to voluntarily respond to the question(s) below to help us measure the effectiveness of our outreach and recruitment. Responding is entirely voluntary and will not impact your application process. All responses will be kept confidential and handled in accordance with applicable privacy laws. Thank you for helping us create a more inclusive workplace.</p>",
+  "questions": [
+   {
+    "id": 4014225007,
+    "label": "Sex",
+    "required": true,
+    "type": "multi_value_single_select",
+    "answer_options": [
+     {
+      "id": 4085218007,
+      "label": "Male",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 4085219007,
+      "label": "Female",
+      "free_form": false,
+      "decline_to_answer": false
+     },
+     {
+      "id": 4085220007,
+      "label": "I don't wish to answer",
+      "free_form": false,
+      "decline_to_answer": true
+     }
+    ]
+   }
+  ]
+ },
+ "questions": [
+  {
+   "description": null,
+   "label": "First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "first_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Last Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "last_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Email",
+   "required": true,
+   "fields": [
+    {
+     "name": "email",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Phone",
+   "required": true,
+   "fields": [
+    {
+     "name": "phone",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Resume/CV",
+   "required": true,
+   "fields": [
+    {
+     "name": "resume",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "resume_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Cover Letter",
+   "required": false,
+   "fields": [
+    {
+     "name": "cover_letter",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "cover_letter_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Website",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_12851292007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "LinkedIn Profile",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_12851293007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "How did you learn about this job?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851294007[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "BuiltIn",
+       "value": 35096290007
+      },
+      {
+       "label": "Glassdoor",
+       "value": 35096291007
+      },
+      {
+       "label": "Google search",
+       "value": 35096292007
+      },
+      {
+       "label": "Indeed",
+       "value": 35096293007
+      },
+      {
+       "label": "Linkedin",
+       "value": 35096294007
+      },
+      {
+       "label": "Referral",
+       "value": 35096295007
+      },
+      {
+       "label": "Zscaler Careers Page",
+       "value": 35096296007
+      },
+      {
+       "label": "Zscaler Talent Team",
+       "value": 35096297007
+      },
+      {
+       "label": "Other",
+       "value": 35096298007
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "If you selected Other please tell us how you learned about this job.",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_12851295007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you have the legal right to work in the country where you are applying to work?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851296007",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you, now or in the future, require a work permit, visa, or additional right to work support for the country where you are applying to work?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851297007",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "If yes, please advise what support is needed:",
+   "required": false,
+   "fields": [
+    {
+     "name": "question_12851298007",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "In what city and state is your primary residence? (e.g. San Jose, CA)",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851299007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you currently work for, or have you previously worked for Zscaler?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851300007",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes, I currently work for Zscaler",
+       "value": 35096299007
+      },
+      {
+       "label": "Yes, I have previously worked for Zscaler",
+       "value": 35096300007
+      },
+      {
+       "label": "No, I have never worked for Zscaler",
+       "value": 35096301007
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Current Company",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851301007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Current Title",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851302007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": "<p>In consideration of Zscaler, Inc. or any of its subsidiaries (together referred to as &ldquo;Zscaler&rdquo;) granting the opportunity to apply for a position with Zscaler, I agree (a) to use Confidential Information for the sole purpose of evaluating a position with Zscaler, (b) that I will not disclose Confidential Information to anyone outside of Zscaler, (c) that all Confidential Information disclosed by Zscaler (and any derivative works thereof) remains the property of Zscaler, and no license or other rights to Confidential Information is granted or implied, (d) not to use the systems of my current employer to access any Confidential Information or download any Confidential Information onto the systems of my current employer, (e) immediately upon request, to return or destroy all the embodiments and copies of any Confidential Information, and (f) that &ldquo;Confidential Information&rdquo; means any nonpublic information disclosed to me by Zscaler, which Zscaler labels or otherwise identifies as confidential or a reasonable person would understand to be confidential.</p>",
+   "label": "Zscaler Confidential Information",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851303007[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "I Agree",
+       "value": 35096302007
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": "<p>By proceeding with your application or engaging in the recruitment process with you acknowledge that we will collect, use, and store your personal information in accordance with the data privacy notice linked below. Should you have any concerns or questions about how your personal data is handled, please don't hesitate to reach out to <a href=\"mailto:privacy@zscaler.com\">privacy@zscaler.com</a>.</p>\n<p><a class=\"waffle-rich-text-link\" href=\"https://www.zscaler.com/privacy/applicant-privacy-policy\">Privacy Policy</a></p>",
+   "label": "Zscaler Privacy Policy",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851304007[]",
+     "type": "multi_value_multi_select",
+     "values": [
+      {
+       "label": "I Agree",
+       "value": 35096303007
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": "<p>To ensure compliance with laws on hiring government employees, please let us know if you have a potential conflict of interest. This may apply if you are a current or former government employee who is, or has been, involved in procurement or contract award activities for Zscaler products or services.</p>",
+   "label": "Have you been involved in procurement or contract award activities involving Zscaler as a government employee or official?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851305007",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": "<p>Please enter your full address including city, state/region, country, and postal/pin code.</p>",
+   "label": "Home Address",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_12851306007",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  }
+ ],
+ "location_questions": []
+}

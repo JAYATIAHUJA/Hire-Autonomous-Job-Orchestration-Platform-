@@ -1,0 +1,320 @@
+{
+ "absolute_url": "https://job-boards.greenhouse.io/inmobi/jobs/8169105",
+ "data_compliance": [
+  {
+   "type": "gdpr",
+   "requires_consent": false,
+   "requires_processing_consent": false,
+   "requires_retention_consent": false,
+   "retention_period": null,
+   "demographic_data_consent_applies": false
+  }
+ ],
+ "internal_job_id": 3535342,
+ "location": {
+  "name": "India"
+ },
+ "metadata": [
+  {
+   "id": 164841,
+   "name": "Base Country",
+   "value": [
+    "India"
+   ],
+   "value_type": "multi_select"
+  },
+  {
+   "id": 4655336,
+   "name": "Backfill ID",
+   "value": [
+    "rashmi.chouhan@inmobi.com"
+   ],
+   "value_type": "multi_select"
+  },
+  {
+   "id": 29368,
+   "name": "Employment Type",
+   "value": "Full Time Employee",
+   "value_type": "single_select"
+  },
+  {
+   "id": 4617518,
+   "name": "Department Name (Career Site)",
+   "value": "Account Management",
+   "value_type": "single_select"
+  }
+ ],
+ "id": 8169105,
+ "updated_at": "2026-09-24T04:31:32-04:00",
+ "requisition_id": "11533",
+ "title": "Account Manager - Performance Marketing - Search Ads",
+ "company_name": "InMobi ",
+ "first_published": "2026-09-16T02:43:56-04:00",
+ "language": "en",
+ "application_deadline": null,
+ "departments": [
+  {
+   "id": 81461,
+   "name": "Rohit Dosi (Bing and Etisalat)",
+   "child_ids": [],
+   "parent_id": 77786
+  }
+ ],
+ "offices": [
+  {
+   "id": 4955,
+   "name": "Bangalore",
+   "location": "Bangalore, Karnataka, India",
+   "child_ids": [],
+   "parent_id": 84644
+  }
+ ],
+ "ai_disclaimer": null,
+ "include_ai_disclaimer": null,
+ "ai_opt_out_request_url": null,
+ "compliance": null,
+ "demographic_questions": null,
+ "questions": [
+  {
+   "description": null,
+   "label": "First Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "first_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Last Name",
+   "required": true,
+   "fields": [
+    {
+     "name": "last_name",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Email",
+   "required": true,
+   "fields": [
+    {
+     "name": "email",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Phone",
+   "required": true,
+   "fields": [
+    {
+     "name": "phone",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Resume/CV",
+   "required": true,
+   "fields": [
+    {
+     "name": "resume",
+     "type": "input_file",
+     "values": []
+    },
+    {
+     "name": "resume_text",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is your present CTC",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68917315",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is your notice period ?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68917316",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "What is your present location ?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68917317",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you have experience in Search advertising?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_68917318",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Do you have hands-on, day-to-day experience managing campaigns in Google Ads, Bing Ads/Microsoft Advertising, or SA360? (Yes/No)",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228798",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Is your current or most recent role primarily client-facing (owning advertiser or agency relationships), rather than backend campaign execution ?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228799",
+     "type": "multi_value_single_select",
+     "values": [
+      {
+       "label": "Yes",
+       "value": 1
+      },
+      {
+       "label": "No",
+       "value": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "How many years of experience do you have in search engine marketing (SEM) account management, and which platform(s) have you worked in most?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228800",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Briefly describe the type of client portfolio you've managed (e.g., number of accounts, average account size, enterprise/corporate vs. SMB, single-market vs. cross-border).",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228801",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Describe a time you identified and pitched a budget upsell or optimization opportunity to a client. What was the outcome?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228802",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Describe a time you tried to convince a client to adopt a search/campaign optimization recommendation and they were initially resistant. What was your approach, and how did it play out?",
+   "required": true,
+   "fields": [
+    {
+     "name": "question_69228803",
+     "type": "textarea",
+     "values": []
+    }
+   ]
+  }
+ ],
+ "location_questions": [
+  {
+   "description": null,
+   "label": "Longitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "longitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Latitude",
+   "required": true,
+   "fields": [
+    {
+     "name": "latitude",
+     "type": "input_hidden",
+     "values": []
+    }
+   ]
+  },
+  {
+   "description": null,
+   "label": "Location",
+   "required": true,
+   "fields": [
+    {
+     "name": "location",
+     "type": "input_text",
+     "values": []
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,309 @@
+{
+ "url": "https://jobs.lever.co/zeta/892ad297-ed0e-4f9c-98b8-fd30358a5517/apply",
+ "captured_from": "https://jobs.lever.co/zeta/892ad297-ed0e-4f9c-98b8-fd30358a5517/apply",
+ "final_url": "https://jobs.lever.co/zeta/892ad297-ed0e-4f9c-98b8-fd30358a5517/apply",
+ "captured_at": "2026-10-16T11:48:45+00:00",
+ "ats": "lever",
+ "company": "zeta",
+ "req_id": "892ad297-ed0e-4f9c-98b8-fd30358a5517",
+ "title": "Zeta - Associate Director - Legal",
+ "location": "Mumbai / Bangalore, India",
+ "variant": "jobs.lever.co apply page",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 35,
+ "required_count": 28,
+ "file_inputs": 1,
+ "notable_fields": [
+  "location",
+  "linkedin_url",
+  "github_or_portfolio",
+  "consent_privacy",
+  "dropdowns",
+  "radio_or_checkbox",
+  "free_text",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Resume/CV ✱ATTACH RESUME/CVCouldn't auto-read resume.Analyzing resume...Success!"
+  },
+  {
+   "name": "name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Full name✱"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email✱"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Phone ✱"
+  },
+  {
+   "name": "location",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Current location No location found. Try entering a different locationLoading"
+  },
+  {
+   "name": "org",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Current company ✱"
+  },
+  {
+   "name": "urls[LinkedIn]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "LinkedIn URL"
+  },
+  {
+   "name": "urls[Github / Stack Overflow]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Github / Stack Overflow URL"
+  },
+  {
+   "name": "urls[Portfolio]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Portfolio URL"
+  },
+  {
+   "name": "urls[Other]",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Other website"
+  },
+  {
+   "name": "cards[61edf07f-a0f9-41cd-8901-24d4cb79eb71][field0]",
+   "tag": "select",
+   "type": "select-one",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field0]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "Less than 7 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field0]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "7–9 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field0]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "9 to 12 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field0]",
+   "tag": "input",
+   "type": "checkbox",
+   "role": "",
+   "required": true,
+   "label": "More than 12 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "No law firm experience"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Less than 2 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "2 to less than 5 years"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field1]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "5 years or more"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "B2B SaaS agreements"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Outsourcing contracts"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Software licensing agreements"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Software development agreements"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "IT services agreements"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "IP licensing agreements"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Banking, Financial Services & Insurance (BFSI)"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Fintech / Payments"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field2]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "None of the above"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Digital Personal Data Protection Act, 2023"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "IT Act, 2000 and related rules"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "GDPR or other foreign data protection laws"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "Copyright, patent, or trade secret protection for software"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field3]",
+   "tag": "input",
+   "type": "radio",
+   "role": "",
+   "required": true,
+   "label": "None of the above"
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field4]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "cards[7ed6e107-5342-4eee-8dbb-649db6eb4ba8][field5]",
+   "tag": "textarea",
+   "type": "textarea",
+   "role": "",
+   "required": true,
+   "label": ""
+  }
+ ]
+}

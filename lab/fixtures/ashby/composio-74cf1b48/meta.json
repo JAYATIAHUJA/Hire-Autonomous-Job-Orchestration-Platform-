@@ -1,0 +1,72 @@
+{
+ "url": "https://jobs.ashbyhq.com/composio/74cf1b48-86e9-4454-8c4e-cb2038ed0049/application",
+ "captured_from": "https://jobs.ashbyhq.com/composio/74cf1b48-86e9-4454-8c4e-cb2038ed0049/application",
+ "final_url": "https://jobs.ashbyhq.com/composio/74cf1b48-86e9-4454-8c4e-cb2038ed0049/application",
+ "captured_at": "2026-10-16T11:49:28+00:00",
+ "ats": "ashby",
+ "company": "composio",
+ "req_id": "74cf1b48-86e9-4454-8c4e-cb2038ed0049",
+ "title": "Member of Technical Staff - Enterprise Platform @ Composio",
+ "location": "Bangalore, India",
+ "variant": "jobs.ashbyhq.com application tab",
+ "entry": "page.html",
+ "frame": null,
+ "field_count": 6,
+ "required_count": 5,
+ "file_inputs": 2,
+ "notable_fields": [
+  "linkedin_url",
+  "multi_file_upload",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": ""
+  },
+  {
+   "name": "_systemfield_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Name"
+  },
+  {
+   "name": "_systemfield_resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": true,
+   "label": "Resume"
+  },
+  {
+   "name": "_systemfield_email",
+   "tag": "input",
+   "type": "email",
+   "role": "",
+   "required": true,
+   "label": "Email"
+  },
+  {
+   "name": "f74228eb-5870-47bd-a85e-3ccc406a88c6",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone number"
+  },
+  {
+   "name": "c1bab19f-2cc7-46ab-a731-06ee4f2da5be",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Linkedin URL"
+  }
+ ]
+}

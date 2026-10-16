@@ -1,0 +1,201 @@
+{
+ "url": "https://www.observe.ai/position?gh_jid=5409244008",
+ "captured_from": "https://boards.greenhouse.io/embed/job_app?for=observeai&token=5409244008",
+ "final_url": "https://job-boards.greenhouse.io/embed/job_app?for=observeai&token=5409244008",
+ "captured_at": "2026-10-16T11:50:55+00:00",
+ "ats": "greenhouse",
+ "company": "observeai",
+ "req_id": "5409244008",
+ "title": "Job Application for Interaction Designer at Observe.AI",
+ "location": "Bengaluru",
+ "variant": "embedded iframe on company careers page",
+ "entry": "page.html",
+ "frame": "frame.html",
+ "field_count": 22,
+ "required_count": 14,
+ "file_inputs": 1,
+ "notable_fields": [
+  "how_did_you_hear",
+  "location",
+  "dropdowns",
+  "custom_questions"
+ ],
+ "fields": [
+  {
+   "name": "first_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "First Name*"
+  },
+  {
+   "name": "last_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Last Name*"
+  },
+  {
+   "name": "preferred_name",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": false,
+   "label": "Preferred First Name"
+  },
+  {
+   "name": "email",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": "Email*"
+  },
+  {
+   "name": "country",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Country*"
+  },
+  {
+   "name": "lab_field_0",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "iti-0__search-input",
+   "tag": "input",
+   "type": "search",
+   "role": "combobox",
+   "required": false,
+   "label": "Search"
+  },
+  {
+   "name": "phone",
+   "tag": "input",
+   "type": "tel",
+   "role": "",
+   "required": true,
+   "label": "Phone*"
+  },
+  {
+   "name": "candidate-location",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Location (City)*"
+  },
+  {
+   "name": "lab_field_1",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "resume",
+   "tag": "input",
+   "type": "file",
+   "role": "",
+   "required": false,
+   "label": "Attach"
+  },
+  {
+   "name": "school--0",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "School"
+  },
+  {
+   "name": "degree--0",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "Degree"
+  },
+  {
+   "name": "discipline--0",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": false,
+   "label": "Discipline"
+  },
+  {
+   "name": "start-year--0",
+   "tag": "input",
+   "type": "number",
+   "role": "",
+   "required": false,
+   "label": "Start date year"
+  },
+  {
+   "name": "end-year--0",
+   "tag": "input",
+   "type": "number",
+   "role": "",
+   "required": false,
+   "label": "End date year"
+  },
+  {
+   "name": "question_18568666008",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Have you worked hands-on with Speech Analytics / Conversation Analytics tools?*"
+  },
+  {
+   "name": "lab_field_2",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_18568667008",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you have hands-on experience working with CallMiner or similar call analytics platforms?*"
+  },
+  {
+   "name": "lab_field_3",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  },
+  {
+   "name": "question_18568668008",
+   "tag": "input",
+   "type": "text",
+   "role": "combobox",
+   "required": true,
+   "label": "Do you have experience in Quality Assurance (QA) for contact-center/customer interactions, including call monitoring, quality scoring, evaluations, or QA workfl"
+  },
+  {
+   "name": "lab_field_4",
+   "tag": "input",
+   "type": "text",
+   "role": "",
+   "required": true,
+   "label": ""
+  }
+ ]
+}
