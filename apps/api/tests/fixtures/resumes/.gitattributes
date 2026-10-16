@@ -1,0 +1,3 @@
+# PDF byte offsets (xref) break if line endings are rewritten on checkout.
+*.pdf binary
+*.docx binary
