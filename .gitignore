@@ -8,3 +8,6 @@ __pycache__/
 node_modules/
 dist/
 .vercel/
+
+# Applicant profile, resumes and apply runs (scripts/apply). Personal data: never commit.
+data/private/
