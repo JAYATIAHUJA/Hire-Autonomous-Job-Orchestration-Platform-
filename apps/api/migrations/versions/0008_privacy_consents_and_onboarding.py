@@ -1,7 +1,7 @@
 """privacy consents and onboarding completion
 
-Revision ID: 0007
-Revises: 0006
+Revision ID: 0008
+Revises: 0007
 Create Date: 2026-10-16 23:45:00.000000
 
 privacy_consents is the append-only record of which DPDP notice (version and
@@ -13,8 +13,8 @@ from alembic import op
 import sqlalchemy as sa
 
 
-revision = '0007'
-down_revision = '0006'
+revision = '0008'
+down_revision = '0007'
 branch_labels = None
 depends_on = None
 

@@ -1,7 +1,7 @@
 """companies: public ATS board from the registry
 
 Revision ID: 0006
-Revises: 0002
+Revises: 0005
 Create Date: 2026-10-16 16:10:00
 
 0006 is WP3's reserved id. 0003-0005 belong to other work packages; whichever
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 revision = '0006'
-down_revision = '0002'
+down_revision = '0005'
 branch_labels = None
 depends_on = None
 

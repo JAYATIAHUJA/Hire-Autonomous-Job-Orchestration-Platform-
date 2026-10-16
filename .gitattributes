@@ -1,0 +1,3 @@
+# Never line-ending-convert binary files (a PDF with no NUL bytes looks like text to git).
+*.pdf binary
+*.png binary

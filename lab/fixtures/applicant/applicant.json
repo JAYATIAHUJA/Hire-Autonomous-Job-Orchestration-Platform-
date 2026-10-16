@@ -1,0 +1,18 @@
+{
+  "first_name": "Asha",
+  "last_name": "Rao",
+  "email": "asha.rao@example.com",
+  "phone": "+91 98765 43210",
+  "resume_path": "lab/fixtures/applicant/resume.pdf",
+  "cover_letter_path": "",
+  "linkedin": "https://www.linkedin.com/in/asha-rao",
+  "github": "https://github.com/asharao",
+  "website": "",
+  "city": "Bengaluru, Karnataka, India",
+  "disclosure": true,
+  "answers": {
+    "Are you legally authorized to work in India?": "Yes",
+    "Notice period (days)": "30",
+    "Will you now or in the future require sponsorship?": "No"
+  }
+}

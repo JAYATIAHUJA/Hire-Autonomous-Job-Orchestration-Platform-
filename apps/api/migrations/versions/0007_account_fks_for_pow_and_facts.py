@@ -1,7 +1,7 @@
 """account_id foreign keys for the PoW and fact-vault tables
 
-Revision ID: 0006
-Revises: 0005
+Revision ID: 0007
+Revises: 0006
 Create Date: 2026-10-16 23:30:00.000000
 
 WP2 (pow_runs, pow_evidence) and WP6 (candidate_profiles, profile_facts,
@@ -13,8 +13,8 @@ Rows can only have been written by logged-in accounts, so there are no orphans.
 from alembic import op
 
 
-revision = '0006'
-down_revision = '0005'
+revision = '0007'
+down_revision = '0006'
 branch_labels = None
 depends_on = None
 
