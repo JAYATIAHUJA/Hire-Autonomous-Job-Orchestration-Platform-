@@ -34,7 +34,7 @@ class PowRun(Base):
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(Integer, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     github_username = Column(String, nullable=False)
     status = Column(String, nullable=False, default=RUN_QUEUED, index=True)
     progress = Column(Integer, nullable=False, default=0)
@@ -62,7 +62,7 @@ class PowEvidence(Base):
     __table_args__ = (Index("ix_pow_evidence_account_skill", "account_id", "skill_key"),)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(Integer, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     run_id = Column(Integer, ForeignKey("pow_runs.id", ondelete="CASCADE"), nullable=False, index=True)
     skill = Column(String, nullable=False)
     skill_key = Column(String, nullable=False)  # normalised for lookup: "Next.js" -> "nextjs"

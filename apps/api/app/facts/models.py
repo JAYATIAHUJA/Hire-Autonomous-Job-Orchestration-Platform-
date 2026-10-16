@@ -36,7 +36,7 @@ class CandidateProfile(Base):
     __tablename__ = "candidate_profiles"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(Integer, nullable=False, unique=True, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, unique=True, index=True)
     data = Column(JSONType, nullable=False, default=dict)
     created_at = Column(DateTime, default=_utcnow)
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
@@ -48,7 +48,7 @@ class ProfileFact(Base):
     __tablename__ = "profile_facts"
 
     id = Column(String, primary_key=True, default=new_fact_id)
-    account_id = Column(Integer, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     kind = Column(String, nullable=False, index=True)
     text = Column(Text, nullable=False)
     structured = Column(JSONType, nullable=False, default=dict)
@@ -68,7 +68,7 @@ class AnswerBankEntry(Base):
     __table_args__ = (UniqueConstraint("account_id", "key", name="uq_answer_bank_account_key"),)
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    account_id = Column(Integer, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     key = Column(String, nullable=False)
     value = Column(Text, nullable=False)
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
@@ -80,7 +80,7 @@ class ResumeUpload(Base):
     __tablename__ = "resume_uploads"
 
     id = Column(String, primary_key=True, default=new_upload_id)
-    account_id = Column(Integer, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
     object_key = Column(String, nullable=False)
     sha256 = Column(String, nullable=False, index=True)
     content_type = Column(String, nullable=False)
