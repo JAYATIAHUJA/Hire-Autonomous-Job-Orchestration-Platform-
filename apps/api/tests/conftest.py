@@ -15,3 +15,32 @@ TEST_SIGNING_SECRET = "test-only-consent-secret-0123456789abcdef"
 def _hermetic_settings(monkeypatch):
     monkeypatch.setattr(settings, "live_feeds_enabled", False)
     monkeypatch.setattr(settings, "consent_signing_secret", TEST_SIGNING_SECRET)
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "enforce_consent: keep the DPDP consent gates on for this test")
+
+
+@pytest.fixture(autouse=True)
+def _consent_gates_open(request):
+    """Feature tests predate the DPDP consent gates and are not about them, so the gates
+    pass any logged-in account. Tests marked ``enforce_consent`` (test_me_*.py) keep them."""
+    from fastapi import Depends
+
+    from app.auth.consents import require_github_consent, require_resume_consent
+    from app.auth.deps import get_current_user
+    from app.main import app
+
+    if request.node.get_closest_marker("enforce_consent"):
+        yield
+        return
+
+    def logged_in(account=Depends(get_current_user)):
+        return account
+
+    gates = (require_github_consent, require_resume_consent)
+    for gate in gates:
+        app.dependency_overrides[gate] = logged_in
+    yield
+    for gate in gates:
+        app.dependency_overrides.pop(gate, None)

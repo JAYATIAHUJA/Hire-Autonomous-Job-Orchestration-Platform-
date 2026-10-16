@@ -19,8 +19,8 @@ from . import oauth, otp
 from .accounts import AccountUnavailable, IdentityConflict, link_pow_profiles, normalize_email, sign_in_with_identity
 from .crypto import EncryptionNotConfigured, encrypt_token, ensure_encryption_key
 from .deps import get_current_user, get_optional_user, require_csrf_header
-from .models import Account
-from .schemas import EmailRequest, MeOut, OtpSendResponse, OtpVerifyRequest
+from .models import Account, PrivacyConsent
+from .schemas import ConsentOut, EmailRequest, MeOut, OtpSendResponse, OtpVerifyRequest
 from .sessions import clear_session_cookie, create_session, revoke_session, set_session_cookie
 
 router = APIRouter(prefix="/v1", tags=["auth"])
@@ -30,14 +30,24 @@ STATE_COOKIE = "hire_oauth_state"
 STATE_MAX_AGE = 600
 
 
+def consent_out(row: PrivacyConsent) -> ConsentOut:
+    return ConsentOut(notice_version=row.notice_version, notice_hash=row.notice_hash,
+                      purposes=row.purposes, accepted_at=row.accepted_at)
+
+
 def to_me(account: Account) -> MeOut:
+    providers = sorted({i.provider for i in account.identities})
+    consent = account.current_consent
     return MeOut(
         id=account.id,
         email=account.email,
         display_name=account.display_name,
         role=account.role,
         created_at=account.created_at,
-        providers=sorted({i.provider for i in account.identities}),
+        providers=providers,
+        identities=providers,
+        consent=consent_out(consent) if consent else None,
+        onboarding_completed_at=account.onboarding_completed_at,
     )
 
 

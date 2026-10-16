@@ -96,6 +96,9 @@ class Settings(BaseSettings):
     smtp_password: str = ""
     smtp_from: str = ""
     smtp_starttls: bool = True
+    # The DPDP privacy notice in force (apps/web/src/privacy/notice.ts NOTICE_VERSION).
+    # Consent given to an older version no longer counts; bump both together.
+    privacy_notice_version: str = "v1"
     # Object store (ADR-009): SeaweedFS in dev, AWS S3 in prod. S3 API only.
     s3_endpoint: str = ""
     s3_bucket: str = ""

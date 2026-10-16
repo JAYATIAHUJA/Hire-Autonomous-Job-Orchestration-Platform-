@@ -9,6 +9,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy.orm import Session
 
+from ..auth.consents import require_github_consent
 from ..auth.deps import get_current_user
 from ..db import get_db
 from ..profiles.pow_models import PowEvidence, PowRun
@@ -21,8 +22,10 @@ router = APIRouter(prefix="/v1/profile", tags=["pow"])
 
 
 @router.post("/pow/refresh", response_model=PowRunOut, status_code=202)
-def refresh(payload: PowRefreshRequest, response: Response, account=Depends(get_current_user),
+def refresh(response: Response, payload: Optional[PowRefreshRequest] = None,
+            account=Depends(require_github_consent),
             db: Session = Depends(get_db)):
+    payload = payload or PowRefreshRequest()  # the web client posts no body when GitHub is linked
     linked = linked_login(db, account.id)
     username = payload.github_username or linked
     if not username:

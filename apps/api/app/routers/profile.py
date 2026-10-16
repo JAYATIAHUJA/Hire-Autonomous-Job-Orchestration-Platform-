@@ -7,6 +7,7 @@ and map failures to HTTP responses. All real work lives in ``services`` and ``pr
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from ..auth.consents import require_github_consent
 from ..auth.deps import get_current_user
 from ..auth.models import Account
 from ..db import get_db
@@ -21,7 +22,7 @@ router = APIRouter(prefix="/api/profile", tags=["profile"], dependencies=[Depend
 
 @router.post("/analyze", response_model=AnalyzeResponse)
 async def analyze_profile(
-    payload: AnalyzeRequest, db: Session = Depends(get_db), account: Account = Depends(get_current_user)
+    payload: AnalyzeRequest, db: Session = Depends(get_db), account: Account = Depends(require_github_consent)
 ):
     username = payload.username.strip()
     if not username:
