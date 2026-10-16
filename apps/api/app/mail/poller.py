@@ -12,7 +12,7 @@ from typing import Any, Optional
 from ..config import settings
 from ..db import SessionLocal
 from .imap_client import ImapNotConfigured, fetch_recruiter_messages
-from .sync import sync_messages
+from .sync import mailbox_account_id, sync_messages
 
 logger = logging.getLogger("hire.mail.poller")
 
@@ -22,7 +22,10 @@ def run_sync_round(limit: Optional[int] = None) -> dict[str, Any]:
     messages = fetch_recruiter_messages(limit=limit or settings.imap_fetch_limit)
     db = SessionLocal()
     try:
-        return sync_messages(db, messages, candidate_ref=settings.imap_candidate_ref)
+        account_id = mailbox_account_id(db)
+        if account_id is None:
+            raise ImapNotConfigured("IMAP_CANDIDATE_REF does not name an existing account (id or email).")
+        return sync_messages(db, messages, account_id=account_id)
     finally:
         db.close()
 

@@ -10,7 +10,10 @@ from ..jobs.schemas import JobContract
 class SwipeRequest(BaseModel):
     job_id: str
     direction: str = Field(..., description="'right' records consent and applies, 'left' skips the card")
-    candidate_ref: str = Field(..., description="Who is consenting — GitHub handle or email")
+    candidate_ref: Optional[str] = Field(
+        default=None,
+        description="Deprecated and ignored: the consenting candidate is always the logged-in account.",
+    )
     purpose: Optional[str] = Field(default=None, description="Overrides the default consent purpose text")
 
 
@@ -101,8 +104,7 @@ class MailSyncRequest(BaseModel):
     )
     candidate_ref: Optional[str] = Field(
         default=None,
-        description="Whose board the replies may move. Required with `messages`; "
-        "the IMAP path uses IMAP_CANDIDATE_REF.",
+        description="Deprecated and ignored: replies only ever move the logged-in account's board.",
     )
     limit: int = 25
 

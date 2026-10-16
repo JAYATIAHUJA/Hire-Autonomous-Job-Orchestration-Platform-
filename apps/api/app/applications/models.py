@@ -5,6 +5,7 @@ import datetime
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
+from ..auth import models as _auth_models  # noqa: F401  (accounts must exist for the FKs below)
 from ..db import Base
 from .board import STAGE_APPLIED
 
@@ -19,10 +20,17 @@ class Application(Base):
     __tablename__ = "applications"
     # One card per (candidate, job): the repository checks first, this makes it true
     # even if two swipes race each other.
-    __table_args__ = (UniqueConstraint("candidate_ref", "job_id", name="uq_application_candidate_job"),)
+    __table_args__ = (
+        UniqueConstraint("candidate_ref", "job_id", name="uq_application_candidate_job"),
+        UniqueConstraint("account_id", "job_id", name="uq_application_account_job"),
+    )
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     application_id = Column(String, unique=True, nullable=False, index=True)
+    # The owner. Every read and write is filtered by it (WP1).
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
+    # The owner's stable reference ("account:<id>"), as signed into consent receipts.
+    # Rows from before WP1 keep the free-text handle they were created with.
     candidate_ref = Column(String, nullable=False, index=True)
     job_id = Column(String, nullable=False, index=True)
 
@@ -56,6 +64,7 @@ class ConsentLog(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     consent_id = Column(String, unique=True, nullable=False, index=True)
     application_db_id = Column(Integer, ForeignKey("applications.id"), nullable=False)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
 
     subject = Column(String, nullable=False)
     employer_name = Column(String, nullable=False)
@@ -92,7 +101,10 @@ class ProcessedMessage(Base):
 
     __tablename__ = "processed_messages"
 
+    # "account:<id>|<message key>": scoped to the mailbox owner.
     message_uid = Column(String, primary_key=True)
+    # Null only for ledger rows from before WP1 that could not be attributed.
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=True, index=True)
     classification = Column(String, nullable=False)
     matched_application_id = Column(String, nullable=True)
     subject = Column(Text, nullable=True)

@@ -7,6 +7,7 @@ from sqlalchemy.pool import StaticPool
 from app.db import Base, get_db
 from app.jobs import models as job_models  # noqa: F401
 from app.main import app
+from auth_helpers import login_new_account
 
 
 @pytest.fixture
@@ -24,6 +25,7 @@ def client():
 
     app.dependency_overrides[get_db] = override_db
     test_client = TestClient(app)
+    login_new_account(test_client, "jobs-reader@example.com")
     yield test_client
     app.dependency_overrides.clear()
 

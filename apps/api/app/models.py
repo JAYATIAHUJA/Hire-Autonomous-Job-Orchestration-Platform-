@@ -3,6 +3,7 @@ import datetime
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Table, Text
 from sqlalchemy.orm import relationship
 
+from .auth import models as _auth_models  # noqa: F401  (accounts must exist for the FK below)
 from .db import Base
 
 skill_highlights = Table(
@@ -18,6 +19,9 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String, nullable=False, index=True)
+    # The login account that owns this analysis. Null for rows analysed before WP1;
+    # a GitHub login with the same username claims them.
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     analysis_mode = Column(String, nullable=False, default="limited")
     timeline_json = Column(Text, nullable=True)

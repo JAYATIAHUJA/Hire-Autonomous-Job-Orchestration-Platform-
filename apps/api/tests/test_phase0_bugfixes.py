@@ -20,6 +20,7 @@ from app.jobs.ingestion import feeds
 from app.mail.classifier import classify_reply
 from app.main import app
 from app.services import fetch_service
+from auth_helpers import login_new_account
 
 CANDIDATE = "oshisharma1222"
 
@@ -38,7 +39,9 @@ def session_and_client():
             db.close()
 
     app.dependency_overrides[get_db] = override_db
-    yield Session, TestClient(app)
+    client = TestClient(app)
+    login_new_account(client, "oshi@example.com")
+    yield Session, client
     app.dependency_overrides.clear()
 
 

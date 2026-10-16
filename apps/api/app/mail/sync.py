@@ -14,6 +14,8 @@ from sqlalchemy.orm import Session
 from ..applications import repository
 from ..applications.models import Application
 from ..applications.repository import StageTransitionError
+from ..auth.models import Account
+from ..config import settings
 from .classifier import ReplyClassification, classify_reply
 
 APPLICATION_ID_RE = re.compile(r"\bapp_[0-9a-f]{8,32}\b", re.IGNORECASE)
@@ -116,14 +118,14 @@ def match_application(
     return None, "no matching card"
 
 
-def dedupe_key(message: dict[str, Any], candidate_ref: str) -> str:
+def dedupe_key(message: dict[str, Any], account_id: int) -> str:
     """The processed-message id: the stable message key, scoped to its owner."""
     key = str(message.get("message_key") or "")
     if not key and message.get("message_id"):
         key = f"msgid:{str(message['message_id']).strip().strip('<>').lower()}"
     if not key and message.get("uid"):
         key = f"uid:{message['uid']}"
-    return f"{candidate_ref}|{key}" if key else ""
+    return f"account:{account_id}|{key}" if key else ""
 
 
 def apply_message(
@@ -132,6 +134,7 @@ def apply_message(
     applications: list[Application],
     *,
     key: Optional[str] = None,
+    account_id: Optional[int] = None,
 ) -> dict[str, Any]:
     """Classify one reply and move its card. Returns what happened, for the report."""
     # ``uid`` below is the processed-message key the ledger dedupes on.
@@ -158,6 +161,7 @@ def apply_message(
             matched_application_id=None,
             subject=message.get("subject"),
             from_address=message.get("from_address"),
+            account_id=account_id,
         )
         return outcome
 
@@ -171,6 +175,7 @@ def apply_message(
             matched_application_id=None,
             subject=message.get("subject"),
             from_address=message.get("from_address"),
+            account_id=account_id,
         )
         return outcome
 
@@ -194,29 +199,48 @@ def apply_message(
         matched_application_id=app.application_id,
         subject=message.get("subject"),
         from_address=message.get("from_address"),
+        account_id=account_id,
     )
     return outcome
 
 
-def sync_messages(db: Session, messages: list[dict[str, Any]], *, candidate_ref: str) -> dict[str, Any]:
-    """Run one candidate's recruiter replies through matching and stage moves.
+def mailbox_account_id(db: Session) -> Optional[int]:
+    """The account the configured IMAP mailbox belongs to.
 
-    Only that candidate's cards are candidates for a match, so one person's mail can
+    ``IMAP_CANDIDATE_REF`` names it as an account id (``12`` or ``account:12``) or as
+    the account's email. None if unset or no live account matches.
+    """
+    ref = (settings.imap_candidate_ref or "").strip()
+    if not ref:
+        return None
+    query = db.query(Account).filter(Account.deleted_at.is_(None))
+    raw_id = ref.split(":", 1)[1] if ref.lower().startswith("account:") else ref
+    if raw_id.isdigit():
+        account = query.filter(Account.id == int(raw_id)).first()
+    else:
+        account = query.filter(Account.email == ref.lower()).first()
+    return account.id if account else None
+
+
+def sync_messages(db: Session, messages: list[dict[str, Any]], *, account_id: int) -> dict[str, Any]:
+    """Run one account's recruiter replies through matching and stage moves.
+
+    Only that account's cards are candidates for a match, so one person's mail can
     never move another person's board.
     """
-    if not candidate_ref:
-        raise ValueError("candidate_ref is required: a mailbox belongs to one candidate.")
+    if not account_id:
+        raise ValueError("account_id is required: a mailbox belongs to one account.")
     stats: dict[str, Any] = {"fetched": len(messages), "matched": 0, "moved": 0, "skipped": 0, "errors": [], "moves": []}
 
     for message in messages:
-        key = dedupe_key(message, candidate_ref)
+        key = dedupe_key(message, account_id)
         if not key or repository.is_message_processed(db, key):
             stats["skipped"] += 1
             continue
 
         # Re-read the board per message: an earlier mail may have moved a card.
-        applications = repository.open_applications(db, candidate_ref)
-        outcome = apply_message(db, message, applications, key=key)
+        applications = repository.open_applications(db, account_id)
+        outcome = apply_message(db, message, applications, key=key, account_id=account_id)
 
         if outcome.get("matched"):
             stats["matched"] += 1
