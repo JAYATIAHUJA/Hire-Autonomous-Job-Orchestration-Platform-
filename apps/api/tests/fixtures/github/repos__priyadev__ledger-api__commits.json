@@ -1,0 +1,206 @@
+[
+  {
+    "sha": "9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "node_id": "C_9fb099950bb67ee4f8ca",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-07-02T11:40:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-02T11:40:00Z"
+      },
+      "message": "feat: publish ledger events to Kafka",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "cc1a8e4158c2a674385b20a14cedd1a6178de62b",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "node_id": "C_e87ae4d4527c39648a6f",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-24T09:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-24T09:00:00Z"
+      },
+      "message": "feat: Postgres repository for entries",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "8b6751878d44a03f0179ad0e465e1dea4ca049fb",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "node_id": "C_5e51c87c15c0b8b6b070",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-20T14:30:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-20T14:30:00Z"
+      },
+      "message": "test: entries API happy path and idempotency",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "82cb5c054cbb5728d15f4b4ee7d486884c33eb5d",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "592d9b844390877d48c2714489eafe3032cdc9b7",
+    "node_id": "C_592d9b844390877d48c2",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-18T18:05:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-18T18:05:00Z"
+      },
+      "message": "fix: idempotency key collision across tenants",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/592d9b844390877d48c2714489eafe3032cdc9b7",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/592d9b844390877d48c2714489eafe3032cdc9b7",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "c503d01ae210f6b539059aa7505224b513e9d4a0",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "27fa51150d8091e1c1229e910598616b863e4395",
+    "node_id": "C_27fa51150d8091e1c122",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-15T10:20:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-15T10:20:00Z"
+      },
+      "message": "feat: POST /entries endpoint",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/27fa51150d8091e1c1229e910598616b863e4395",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/27fa51150d8091e1c1229e910598616b863e4395",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "66fa77cc100edecab4cb8f98d127e2a031bbf1b8",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "7cf5def448266327b402fefc1c71a545e678668e",
+    "node_id": "C_7cf5def448266327b402",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-14T08:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-14T08:00:00Z"
+      },
+      "message": "docs: README with local setup",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/7cf5def448266327b402fefc1c71a545e678668e",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/7cf5def448266327b402fefc1c71a545e678668e",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "012f131ec52273e20679af9b7d4d3b8b5080b1dc",
+        "url": ""
+      }
+    ]
+  }
+]

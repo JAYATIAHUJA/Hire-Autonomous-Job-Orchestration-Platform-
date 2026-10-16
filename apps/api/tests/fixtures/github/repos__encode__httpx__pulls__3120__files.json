@@ -1,0 +1,20 @@
+[
+  {
+    "sha": "0ae879c25e85a0d679b7b356ce14aedc40347f40",
+    "filename": "httpx/_transports/default.py",
+    "status": "modified",
+    "additions": 52,
+    "deletions": 0,
+    "changes": 52,
+    "patch": "@@ -1,0 +1,4 @@\n+import typing\n+from .._models import Request, Response\n+class RetryTransport(HTTPTransport):\n+    retries: int = 3"
+  },
+  {
+    "sha": "b5b1c483991513b89882005aa99706cda66f37af",
+    "filename": "tests/test_retries.py",
+    "status": "added",
+    "additions": 24,
+    "deletions": 0,
+    "changes": 24,
+    "patch": "@@ -1,0 +1,4 @@\n+import pytest\n+import httpx\n+def test_retries_on_connect_error():\n+    assert httpx.HTTPTransport(retries=2)._pool is not None"
+  }
+]

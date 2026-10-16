@@ -1,0 +1,329 @@
+{
+  "9fb099950bb67ee4f8cafd7590b2bcc2870645a6": {
+    "sha": "9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "node_id": "C_9fb099950bb67ee4f8ca",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-07-02T11:40:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-02T11:40:00Z"
+      },
+      "message": "feat: publish ledger events to Kafka",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/9fb099950bb67ee4f8cafd7590b2bcc2870645a6",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "cc1a8e4158c2a674385b20a14cedd1a6178de62b",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 46,
+      "additions": 46,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "sha": "d45649cc07068a4c6a3198f0bed49941facb13de",
+        "filename": "app/events.py",
+        "status": "added",
+        "additions": 45,
+        "deletions": 0,
+        "changes": 45,
+        "patch": "@@ -1,0 +1,5 @@\n+from confluent_kafka import Producer\n+from .config import settings\n+producer = Producer({'bootstrap.servers': settings.kafka_brokers})\n+def publish(entry_id: str, payload: bytes) -> None:\n+    producer.produce('ledger.entries', key=entry_id, value=payload)"
+      },
+      {
+        "sha": "03aea58f8f7449ef16d93e53879a4b62f51f80eb",
+        "filename": "requirements.txt",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "patch": "@@ -1,0 +1,1 @@\n+confluent-kafka==2.4.0"
+      }
+    ]
+  },
+  "e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781": {
+    "sha": "e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "node_id": "C_e87ae4d4527c39648a6f",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-24T09:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-24T09:00:00Z"
+      },
+      "message": "feat: Postgres repository for entries",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/e87ae4d4527c39648a6f8bc2d7dbbbc1c850e781",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "8b6751878d44a03f0179ad0e465e1dea4ca049fb",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 75,
+      "additions": 75,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "sha": "27c6bb5689b5b047ecc19137f802ca940f54e182",
+        "filename": "app/db.py",
+        "status": "added",
+        "additions": 74,
+        "deletions": 0,
+        "changes": 74,
+        "patch": "@@ -1,0 +1,4 @@\n+import psycopg\n+from psycopg.rows import dict_row\n+def connect(dsn: str):\n+    return psycopg.connect(dsn, row_factory=dict_row)"
+      },
+      {
+        "sha": "03aea58f8f7449ef16d93e53879a4b62f51f80eb",
+        "filename": "requirements.txt",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0,
+        "changes": 1,
+        "patch": "@@ -1,0 +1,1 @@\n+psycopg[binary]==3.2.1"
+      }
+    ]
+  },
+  "5e51c87c15c0b8b6b0706a7222e68936819a48f0": {
+    "sha": "5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "node_id": "C_5e51c87c15c0b8b6b070",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-20T14:30:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-20T14:30:00Z"
+      },
+      "message": "test: entries API happy path and idempotency",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/5e51c87c15c0b8b6b0706a7222e68936819a48f0",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "82cb5c054cbb5728d15f4b4ee7d486884c33eb5d",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 56,
+      "additions": 56,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "sha": "57592b53d02d520b57da8226e041a4613d567741",
+        "filename": "tests/test_entries.py",
+        "status": "added",
+        "additions": 56,
+        "deletions": 0,
+        "changes": 56,
+        "patch": "@@ -1,0 +1,6 @@\n+import pytest\n+from fastapi.testclient import TestClient\n+from app.main import app\n+client = TestClient(app)\n+def test_create_entry():\n+    assert client.post('/entries', json={'amount': 100}).status_code == 201"
+      }
+    ]
+  },
+  "592d9b844390877d48c2714489eafe3032cdc9b7": {
+    "sha": "592d9b844390877d48c2714489eafe3032cdc9b7",
+    "node_id": "C_592d9b844390877d48c2",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-18T18:05:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-18T18:05:00Z"
+      },
+      "message": "fix: idempotency key collision across tenants",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/592d9b844390877d48c2714489eafe3032cdc9b7",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/592d9b844390877d48c2714489eafe3032cdc9b7",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "c503d01ae210f6b539059aa7505224b513e9d4a0",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 8,
+      "additions": 7,
+      "deletions": 1
+    },
+    "files": [
+      {
+        "sha": "efee18c31eef7fa44fdc2bc6761cb37b6e9a1ffa",
+        "filename": "app/entries.py",
+        "status": "modified",
+        "additions": 7,
+        "deletions": 1,
+        "changes": 8,
+        "patch": "@@ -1,1 +1,1 @@\n-    key = idempotency_key\n+    key = f'{tenant_id}:{idempotency_key}'"
+      }
+    ]
+  },
+  "27fa51150d8091e1c1229e910598616b863e4395": {
+    "sha": "27fa51150d8091e1c1229e910598616b863e4395",
+    "node_id": "C_27fa51150d8091e1c122",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-15T10:20:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-15T10:20:00Z"
+      },
+      "message": "feat: POST /entries endpoint",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/27fa51150d8091e1c1229e910598616b863e4395",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/27fa51150d8091e1c1229e910598616b863e4395",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "66fa77cc100edecab4cb8f98d127e2a031bbf1b8",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 70,
+      "additions": 70,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "sha": "8998c0b5f3ab5dca929d79769f0952447911488a",
+        "filename": "app/main.py",
+        "status": "added",
+        "additions": 68,
+        "deletions": 0,
+        "changes": 68,
+        "patch": "@@ -1,0 +1,8 @@\n+from fastapi import FastAPI, HTTPException\n+from pydantic import BaseModel\n+app = FastAPI(title='ledger')\n+class Entry(BaseModel):\n+    amount: int\n+@app.post('/entries', status_code=201)\n+def create(entry: Entry):\n+    return entry"
+      },
+      {
+        "sha": "03aea58f8f7449ef16d93e53879a4b62f51f80eb",
+        "filename": "requirements.txt",
+        "status": "added",
+        "additions": 2,
+        "deletions": 0,
+        "changes": 2,
+        "patch": "@@ -1,0 +1,2 @@\n+fastapi==0.111.0\n+pydantic==2.7.4"
+      }
+    ]
+  },
+  "7cf5def448266327b402fefc1c71a545e678668e": {
+    "sha": "7cf5def448266327b402fefc1c71a545e678668e",
+    "node_id": "C_7cf5def448266327b402",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-14T08:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-14T08:00:00Z"
+      },
+      "message": "docs: README with local setup",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/ledger-api/commits/7cf5def448266327b402fefc1c71a545e678668e",
+    "html_url": "https://github.com/priyadev/ledger-api/commit/7cf5def448266327b402fefc1c71a545e678668e",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "012f131ec52273e20679af9b7d4d3b8b5080b1dc",
+        "url": ""
+      }
+    ],
+    "stats": {
+      "total": 22,
+      "additions": 22,
+      "deletions": 0
+    },
+    "files": [
+      {
+        "sha": "838dd4d21887c5f6172da2faf60b3b514c777efb",
+        "filename": "README.md",
+        "status": "added",
+        "additions": 22,
+        "deletions": 0,
+        "changes": 22,
+        "patch": "@@ -1,0 +1,2 @@\n+# ledger-api\n+Run `docker compose up` then `uvicorn app.main:app`."
+      }
+    ]
+  }
+}

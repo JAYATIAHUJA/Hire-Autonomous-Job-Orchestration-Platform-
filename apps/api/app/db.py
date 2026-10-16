@@ -28,5 +28,6 @@ def init_db():
     from .jobs import models as job_models  # noqa: F401
     from .applications import models as application_models  # noqa: F401
     from .auth import models as auth_models  # noqa: F401
+    from .profiles import pow_models  # noqa: F401
 
     Base.metadata.create_all(bind=engine)

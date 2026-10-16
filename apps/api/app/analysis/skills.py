@@ -18,9 +18,20 @@ def load_rules() -> dict:
     return json.loads(RULES_PATH.read_text(encoding="utf-8"))
 
 
+# A key also matches its own sub-modules: "@aws-sdk" -> "@aws-sdk/client-s3",
+# "org.springframework" -> "org.springframework.boot.SpringApplication",
+# "org.apache.kafka" -> "org.apache.kafka:kafka-clients" (Gradle group:artifact).
+# "-" and "_" are deliberately NOT separators: "react-native" is not React and
+# "next-auth" is not Next.js. A rule opts into a package family with a trailing "*"
+# ("django-*", "langchain*") only where the family really is that ecosystem.
+_HIERARCHY_SEPARATORS = "/.:"
+
+
 def _matches(value: str, key: str) -> bool:
     v, k = value.lower(), key.lower()
-    return v == k or (v.startswith(k) and v[len(k)] in "-/.:_")
+    if k.endswith("*"):
+        return v.startswith(k[:-1])
+    return v == k or (v.startswith(k) and v[len(k)] in _HIERARCHY_SEPARATORS)
 
 
 @dataclass
@@ -96,7 +107,7 @@ def skills_for_contribution(c: Contribution, rules: dict) -> dict[str, tuple[flo
                 reasons[("category", f.category)] += 1
                 matched_files.add(f)
             for key in rule.get("paths", []):
-                if key in f.path:
+                if key.lower() in f.path:
                     reasons[("path", key)] += 1
                     matched_files.add(f)
         dependency_hit = False

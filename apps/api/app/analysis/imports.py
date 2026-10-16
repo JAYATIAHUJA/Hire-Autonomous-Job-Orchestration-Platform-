@@ -17,6 +17,11 @@ RUBY_REQUIRE = re.compile(r"""^\s*require\s+['"]([^'"]+)['"]""")
 PHP_USE = re.compile(r"^\s*use\s+([\w\\]+)")
 CSHARP_USING = re.compile(r"^\s*using\s+([\w.]+)\s*;")
 DART_IMPORT = re.compile(r"""^\s*import\s+['"]package:([\w]+)/""")
+SWIFT_IMPORT = re.compile(r"^\s*(?:@testable\s+)?import\s+(?:class\s+|struct\s+|enum\s+|func\s+)?(\w+)")
+
+# Python namespace packages whose top level says nothing on its own: keep the
+# second segment so "google.cloud" (GCP) is not confused with "google.protobuf".
+PY_NAMESPACE_PACKAGES = {"google", "azure"}
 
 JS_LANGUAGES = {"JavaScript", "TypeScript", "Vue", "Svelte"}
 
@@ -50,10 +55,10 @@ def extract_added_imports(language: Optional[str], patch: Optional[str]) -> set[
         elif language in {"Python", "Jupyter Notebook"}:
             if m := PY_FROM.match(line):
                 if not m.group(1).startswith("."):
-                    found.add(m.group(1).split(".")[0])
+                    found.add(_python_package(m.group(1)))
             elif m := PY_IMPORT.match(line):
                 for part in m.group(1).split(","):
-                    found.add(part.strip().split()[0].split(".")[0])
+                    found.add(_python_package(part.strip().split()[0]))
         elif language == "Go":
             if m := GO_IMPORT.match(line):
                 path = m.group(1)
@@ -77,7 +82,17 @@ def extract_added_imports(language: Optional[str], patch: Optional[str]) -> set[
         elif language == "Dart":
             if m := DART_IMPORT.match(line):
                 found.add(m.group(1))
+        elif language == "Swift":
+            if m := SWIFT_IMPORT.match(line):
+                found.add(m.group(1))
     return found
+
+
+def _python_package(module: str) -> str:
+    parts = module.split(".")
+    if parts[0] in PY_NAMESPACE_PACKAGES and len(parts) > 1:
+        return ".".join(parts[:2])
+    return parts[0]
 
 
 NPM_DEP = re.compile(r"""^\s*"(@?[\w.\-]+(?:/[\w.\-]+)?)"\s*:\s*"(?:[\^~>=<]*\d[^"]*|\*|latest|workspace:[^"]*)"\s*,?\s*$""")
@@ -87,9 +102,13 @@ TOML_KEY_DEP = re.compile(r"""^\s*([A-Za-z0-9][A-Za-z0-9_.\-]*)\s*=\s*(?:["'][\^
 GO_REQUIRE = re.compile(r"^\s*(?:require\s+)?([\w.\-]+\.[a-z]+/[\w.\-/]+)\s+v\d")
 GEM = re.compile(r"""^\s*gem\s+['"]([^'"]+)['"]""")
 MAVEN_ARTIFACT = re.compile(r"^\s*<artifactId>([^<]+)</artifactId>")
+CSPROJ_PACKAGE = re.compile(r"""<PackageReference\s+Include\s*=\s*["']([\w.\-]+)["']""", re.IGNORECASE)
+# pubspec.yaml: a package directly under dependencies/dev_dependencies ("  http: ^1.2.0", "  flutter:").
+PUBSPEC_DEP = re.compile(r"""^  ([a-z][a-z0-9_]*):\s*(?:["']?[\^~<>=\d][^#]*|any)?\s*(?:#.*)?$""")
 GRADLE_DEP = re.compile(r"""(?:implementation|api|compile|runtimeOnly|testImplementation)\s*\(?\s*['"]([\w.\-]+):([\w.\-]+)""")
 NON_DEPENDENCY_KEYS = {"name", "version", "description", "python", "readme", "license", "authors", "edition",
-                       "requires-python", "homepage", "repository", "node", "npm"}
+                       "requires-python", "homepage", "repository", "node", "npm", "sdk", "assets", "fonts",
+                       "generate", "publish_to"}
 
 
 def extract_added_dependencies(path: str, patch: Optional[str]) -> set[str]:
@@ -110,6 +129,10 @@ def extract_added_dependencies(path: str, patch: Optional[str]) -> set[str]:
             m = GEM.match(line)
         elif name == "pom.xml":
             m = MAVEN_ARTIFACT.match(line)
+        elif name.endswith(".csproj"):
+            m = CSPROJ_PACKAGE.search(line)
+        elif name == "pubspec.yaml":
+            m = PUBSPEC_DEP.match(line)
         elif name.startswith("build.gradle"):
             if g := GRADLE_DEP.search(line):
                 deps.add(f"{g.group(1)}:{g.group(2)}".lower())
