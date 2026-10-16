@@ -40,6 +40,8 @@ def config_from_settings() -> ImapConfig:
             ("IMAP_HOST", settings.imap_host),
             ("IMAP_USER", settings.imap_user),
             ("IMAP_PASSWORD", settings.imap_password),
+            # The mailbox belongs to one candidate; replies may only move their cards.
+            ("IMAP_CANDIDATE_REF", settings.imap_candidate_ref),
         )
         if not value
     ]
@@ -91,7 +93,27 @@ def extract_body(msg: Message) -> str:
     return html_fallback
 
 
-def parse_message(uid: str, raw_bytes: bytes) -> dict[str, Any]:
+def message_key(message_id: Optional[str], *, mailbox: str, uidvalidity: Optional[str], uid: str) -> str:
+    """The id a message is deduplicated by.
+
+    The Message-ID header survives moves, re-syncs and mailbox rebuilds, so it wins.
+    Without one, a UID is only stable inside one UIDVALIDITY epoch of one mailbox,
+    so all three go into the key: a server that resets UIDVALIDITY then reads as new
+    mail instead of silently colliding with old ids.
+    """
+    cleaned = (message_id or "").strip().strip("<>").strip()
+    if cleaned:
+        return f"msgid:{cleaned.lower()}"
+    return f"imap:{mailbox}:{uidvalidity or '0'}:{uid}"
+
+
+def parse_message(
+    uid: str,
+    raw_bytes: bytes,
+    *,
+    mailbox: str = "INBOX",
+    uidvalidity: Optional[str] = None,
+) -> dict[str, Any]:
     """Turn a raw RFC822 message into the dict the sync layer consumes."""
     msg = email.message_from_bytes(raw_bytes)
 
@@ -102,13 +124,25 @@ def parse_message(uid: str, raw_bytes: bytes) -> dict[str, Any]:
         except (TypeError, ValueError):
             received_at = None
 
+    message_id = decode_value(msg.get("Message-ID")) or None
     return {
         "uid": uid,
+        "message_id": message_id,
+        "message_key": message_key(message_id, mailbox=mailbox, uidvalidity=uidvalidity, uid=uid),
         "from_address": decode_value(msg.get("From")),
         "subject": decode_value(msg.get("Subject")),
         "body": extract_body(msg),
         "received_at": received_at,
     }
+
+
+def _uidvalidity(client: imaplib.IMAP4) -> Optional[str]:
+    """UIDVALIDITY from the untagged SELECT response, if the server sent it."""
+    _, data = client.response("UIDVALIDITY")
+    if data and data[0]:
+        value = data[0]
+        return value.decode() if isinstance(value, bytes) else str(value)
+    return None
 
 
 def fetch_recruiter_messages(config: Optional[ImapConfig] = None, limit: int = 25) -> list[dict[str, Any]]:
@@ -125,17 +159,22 @@ def fetch_recruiter_messages(config: Optional[ImapConfig] = None, limit: int = 2
         client.login(cfg.username, cfg.password)
         # Read-only: the tracker must never mark a candidate's mail as seen.
         client.select(cfg.mailbox, readonly=True)
+        uidvalidity = _uidvalidity(client)
 
-        status, data = client.search(None, cfg.search)
+        # UID SEARCH / UID FETCH, not SEARCH / FETCH: plain sequence numbers shift
+        # whenever a message is expunged, so storing them as ids skipped or replayed mail.
+        status, data = client.uid("SEARCH", None, cfg.search)
         if status != "OK" or not data or not data[0]:
             return []
 
         uids = data[0].split()[-limit:]
         for uid in uids:
-            status, payload = client.fetch(uid, "(RFC822)")
+            status, payload = client.uid("FETCH", uid, "(RFC822)")
             if status != "OK" or not payload or not isinstance(payload[0], tuple):
                 continue
-            messages.append(parse_message(uid.decode(), payload[0][1]))
+            messages.append(
+                parse_message(uid.decode(), payload[0][1], mailbox=cfg.mailbox, uidvalidity=uidvalidity)
+            )
     finally:
         try:
             client.logout()
