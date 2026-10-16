@@ -26,6 +26,8 @@ x-api-env: &api-env
   GITHUB_OAUTH_CLIENT_SECRET: ${GITHUB_OAUTH_CLIENT_SECRET:-}
   GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID:-}
   GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
+  # Resume parsing (WP6). Put your key in .env; without it uploads answer 503.
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
 
 services:
   db:
@@ -113,6 +115,10 @@ services:
   mock-ats:
     build: ./lab/mock-ats
     ports: ["127.0.0.1:8180:8000"]
+    # The 20 captured form fixtures (WP4), served at /fixtures/<ats>/<id>/.
+    environment:
+      LAB_FIXTURES_DIR: /srv/fixtures
+    volumes: ["./lab/fixtures:/srv/fixtures:ro"]
 
   # --- Browser computers (profile: computers) -------------------------------------------
   computer-image:
