@@ -1,0 +1,25 @@
+{
+  "candidates": 660,
+  "candidates_with_india_board": 99,
+  "candidate_hit_rate": 0.15,
+  "discovered_boards_probed": 9369,
+  "discovered_boards_with_india": 641,
+  "boards_with_india_openings": 663,
+  "boards_without_india_openings": 6849,
+  "per_ats": {
+    "greenhouse": 436,
+    "lever": 19,
+    "ashby": 208
+  },
+  "per_source": {
+    "candidates": 99,
+    "crawl": 564
+  },
+  "india_openings_total": 6353,
+  "name_verified": {
+    "None": 598,
+    "True": 65
+  },
+  "requests": 11768,
+  "candidates_with_errors": []
+}
