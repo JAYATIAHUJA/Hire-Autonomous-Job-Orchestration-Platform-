@@ -4,7 +4,6 @@ user A's rows. Another account's row answers 404, not 403, so existence never le
 import re
 
 import pytest
-from fastapi.routing import APIRoute
 
 from app import models as pow_models
 from app.auth.deps import CSRF_HEADER
@@ -25,14 +24,19 @@ def client():
         yield c
 
 
+HTTP_METHODS = {"get", "post", "put", "patch", "delete"}
+
+
 def _private_routes():
-    for route in app.routes:
-        if not isinstance(route, APIRoute):
+    # Read the routes from the OpenAPI schema, not app.routes: newer FastAPI keeps included
+    # routers as nested objects in app.routes, so walking it finds only app-level routes and
+    # this check silently tests nothing. Every API route here is in the schema.
+    for path, operations in app.openapi()["paths"].items():
+        if path in PUBLIC_PATHS or path.startswith(PUBLIC_PREFIXES):
             continue
-        if route.path in PUBLIC_PATHS or route.path.startswith(PUBLIC_PREFIXES):
-            continue
-        for method in route.methods:
-            yield method, route.path
+        for method in operations:
+            if method in HTTP_METHODS:
+                yield method.upper(), path
 
 
 PRIVATE_ROUTES = sorted(set(_private_routes()))
@@ -41,6 +45,17 @@ PRIVATE_ROUTES = sorted(set(_private_routes()))
 def test_there_are_private_routes_to_check():
     paths = {path for _, path in PRIVATE_ROUTES}
     assert {"/api/applications/deck", "/api/mail/sync", "/api/profile/{profile_id}", "/jobs/feed", "/v1/me"} <= paths
+    # Guard against the enumeration breaking again: Phase 0 has well over 30 private routes.
+    assert len(PRIVATE_ROUTES) >= 30, len(PRIVATE_ROUTES)
+
+
+def test_every_api_route_is_in_the_schema():
+    """The session check above walks the OpenAPI schema, so a route hidden from it
+    (include_in_schema=False) would escape the check. Keep them all visible."""
+    from fastapi.routing import APIRoute
+
+    hidden = [r.path for r in app.router.routes if isinstance(r, APIRoute) and not r.include_in_schema]
+    assert hidden == []
 
 
 @pytest.mark.parametrize("method, path", PRIVATE_ROUTES)
