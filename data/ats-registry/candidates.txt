@@ -1,0 +1,690 @@
+# Candidate employers for the ATS registry seed (PLAN.md §20 item 6).
+# One company per line. Optional extra board slugs after "|", comma separated.
+# probe.py tries each name's slug variants on Greenhouse, Lever and Ashby and keeps
+# only boards that answer and list at least one India-located opening.
+# Unverified guesses are fine here: nothing from this file is trusted until probed.
+
+# --- Indian product companies and startups ---
+Razorpay
+Swiggy
+Zomato
+Zepto
+CRED|dreamplug
+Meesho
+Groww|groww-in
+Zerodha
+PhonePe
+Paytm
+Flipkart
+Myntra
+Ola|olacabs,ola-electric
+InMobi
+Glance|glance-inmobi
+Freshworks
+Zoho
+Postman
+BrowserStack
+Chargebee
+Druva
+Hasura
+Atlan
+Sprinklr
+MindTickle
+Innovaccer
+Icertis
+Darwinbox
+Unacademy
+upGrad
+PhysicsWallah|pw
+Vedantu
+Dream11|dreamsports,dream-sports
+Mobile Premier League|mpl
+Games24x7
+Nykaa
+Lenskart
+BharatPe
+Pine Labs|pinelabs
+Juspay
+Cashfree|cashfreepayments
+PayU|payu-india
+Slice|sliceit
+Jupiter|jupiter-money
+Fi|fi-money,epifi
+Niyo
+OneCard|fpl-technologies
+Navi
+Acko
+Digit Insurance|godigit
+PolicyBazaar
+CarDekho|girnarsoft
+Cars24
+Spinny
+OYO|oyorooms
+MakeMyTrip
+ixigo
+Urban Company|urbancompany
+Dunzo
+BigBasket
+Licious
+Rapido
+Porter|theporter
+Delhivery
+Shiprocket
+BlackBuck
+Udaan
+Infra.Market|inframarket
+OfBusiness
+Zetwerk
+Moglix
+Vymo
+LeadSquared
+Whatfix
+Exotel
+Gupshup
+Haptik
+Yellow.ai|yellowai
+Uniphore
+Observe.AI|observeai
+Sarvam AI|sarvam
+Krutrim
+Ather Energy|atherenergy
+Simpl|getsimpl
+Khatabook
+OkCredit
+Vyapar
+DealShare
+apna|apnatime
+Classplus
+Teachmint
+Eruditus
+Scaler|interviewbit,scaleracademy
+Coding Ninjas|codingninjas
+smallcase
+INDmoney|finzoom
+Upstox
+Angel One|angelone
+Dhan|raise
+Zeta|zetasuite
+M2P Fintech|m2p
+Perfios
+Signzy
+IDfy
+Setu
+Decentro
+Open Financial|open
+ShareChat|mohallatech
+VerSe Innovation|dailyhunt,verse
+Pocket FM|pocketfm
+Kuku FM|kukufm
+Tata 1mg|1mg
+PharmEasy
+Practo
+Cult.fit|curefit
+HealthifyMe|healthify
+Qure.ai|qureai
+Pristyn Care|pristyncare
+Honasa Consumer|mamaearth
+boAt|boatlifestyle
+Purplle
+FirstCry
+Pepperfry
+Livspace
+NoBroker
+Square Yards|squareyards
+Rebel Foods|rebelfoods
+Blinkit
+Country Delight|countrydelight
+Ninjacart
+DeHaat
+AgroStar
+Jumbotail
+ElasticRun
+Captain Fresh|captainfresh
+Park+|parkplus
+Zoomcar
+Yulu
+Testbook
+Adda247
+Turtlemint
+Plum|plumhq
+Loop Health|loophealth
+Onsurity
+Clear|cleartax,clear-tax
+Zluri
+Spendflo
+Kissflow
+Facilio
+Hevo Data|hevodata
+Sigmoid
+Fractal Analytics|fractal
+Tiger Analytics|tigeranalytics
+MathCo|themathcompany
+Quantiphi
+LatentView|latentview
+Gramener
+Fyle
+Rocketlane
+Zenduty
+SigNoz
+Appsmith
+ToolJet
+Hoppscotch
+Dyte
+100ms|100mslive
+CleverTap
+MoEngage
+WebEngage
+Netcore Cloud|netcore
+Capillary Technologies|capillary
+Unbxd
+Locus|locus-sh
+Shipsy
+FarEye
+LogiNext
+Increff
+Simplilearn
+Great Learning|greatlearning
+Masai School|masai
+Newton School|newtonschool
+AlmaBetter
+Instahyre
+Cutshort
+HackerEarth
+HackerRank
+Mettl|mercer-mettl
+Sprinto
+Scrut|scrutautomation
+Ultrahuman
+Noise|gonoise
+Uniqode|beaconstac
+Leena AI|leenaai
+Atomicwork
+Composio
+TrueFoundry
+Simplismart
+Nanonets
+Wysa
+SuperOps|superopsai
+Everstage
+Zuddl
+Airmeet
+Hubilo
+Plivo
+Kaleyra
+MyOperator
+Amagi
+nference
+Arcesium
+Graviton Research Capital|graviton
+Quadeye
+Tower Research Capital|towerresearch,tower-research
+Uber
+InVideo|invideo
+Rephrase.ai|rephrase
+Mad Street Den|madstreetden,vue-ai
+Vue.ai|vueai
+Uplers
+Cogoport
+Xpressbees
+Ecom Express|ecomexpress
+Pratilipi
+Eloelo
+STAGE|stage-ott
+Frontier Markets
+Groyyo
+Bijak
+Stashfin
+KreditBee
+MoneyView|money-view,moneyview
+Fibe|earlysalary
+Lendingkart
+Aye Finance|ayefinance
+Kissht|onemi
+Rupeek
+Indifi
+FlexiLoans
+Progcap
+Vayana
+Credgenics
+Recko
+Fampay
+Junio
+Uni Cards|unicards
+Paisabazaar
+Bajaj Finserv|bajajfinserv
+Zolve
+Aspora|vance
+Salt|saltpay,salt-money
+Skuad
+Multiplier|usemultiplier
+Toplyne
+Zoko
+Bureau|bureau-id
+Hyperverge
+Eightfold|eightfoldai
+Gan.ai|ganai
+Murf AI|murf
+Pixis|pixisai
+Mihup
+Reverie|reverieinc
+Spotdraft
+Rizzle
+GreyOrange|greyorange
+Addverb
+Ati Motors|atimotors
+Agnikul
+Skyroot Aerospace|skyroot
+Pixxel
+Dhruva Space|dhruvaspace
+Euler Motors|eulermotors
+Exponent Energy|exponentenergy
+Log9 Materials|log9
+River|rideriver
+Ultraviolette
+Battery Smart|batterysmart
+Sun Mobility|sunmobility
+Ampere
+Tork Motors
+Simple Energy|simpleenergy
+Matter|matter-motor
+
+# --- Global companies with India engineering, product or ops teams ---
+Stripe
+Airbnb
+Databricks
+Snowflake
+Coinbase
+Rubrik
+Nutanix
+Confluent
+Elastic
+MongoDB
+Twilio
+Okta
+Zscaler
+Cloudflare
+Grafana Labs|grafanalabs
+GitLab
+HashiCorp
+Notion
+Figma
+Canva
+Intercom
+Grab
+Deliveroo
+Wise|transferwise
+Revolut
+Lyft
+DoorDash|doordashusa
+Instacart
+Pinterest
+Reddit
+Discord
+Dropbox
+Box
+Asana
+Airtable
+Zendesk
+HubSpot
+Toast
+Samsara
+Gusto
+Rippling
+Deel
+Remote|remotecom
+Oyster|oysterhr
+Toptal
+Gainsight
+Commvault
+Glean|gleanwork
+Harness
+Chronosphere
+Temporal|temporaltechnologies
+Vercel
+Supabase
+PlanetScale
+Sentry
+Datadog
+New Relic|newrelic
+PagerDuty
+Cohesity
+Netskope
+Clari
+Highspot
+Mixpanel
+Amplitude
+Segment
+Braze
+Contentful
+Miro|mirorealtimeboard
+Monday.com|mondaycom
+Smartsheet
+DigitalOcean
+Fastly
+Akamai
+Twitch
+Spotify
+SoundCloud
+Duolingo
+Coursera
+Udemy
+Chegg
+Quizlet
+Brex
+Ramp
+Plaid
+Chime
+Affirm
+Robinhood
+SoFi
+Marqeta
+Checkout.com|checkoutcom
+Adyen
+Klarna
+Mollie
+Paddle
+Rapyd
+Thunes
+Nium
+Airwallex
+Tide
+Monzo
+Starling Bank|starlingbank
+N26
+Zilch
+Payoneer
+Payhawk
+Pleo
+Mambu
+Thought Machine|thoughtmachine
+10x Banking|10xbanking
+Temenos
+Freshpaint
+Postscript
+Gorgias
+Attentive
+Klaviyo
+Yotpo
+Bolt
+Faire
+Shopify
+BigCommerce
+Wix
+Squarespace
+Webflow
+Framer
+Canva
+Linear
+Retool
+Airbyte
+dbt Labs|dbtlabsinc
+Fivetran
+Starburst
+Dremio
+ClickHouse
+SingleStore
+Couchbase
+Redis
+Cockroach Labs|cockroachlabs
+Neo4j
+Pinecone
+Weaviate
+Qdrant
+LangChain
+Hugging Face|huggingface
+Scale AI|scaleai
+Anyscale
+Weights & Biases|wandb
+Cohere
+Mistral AI|mistral
+Perplexity|perplexityai
+Writer
+Jasper
+Synthesia
+ElevenLabs
+Runway|runwayml
+Replit
+Sourcegraph
+Snyk
+Wiz|wizinc
+Lacework
+Sysdig
+Aqua Security|aquasec
+Tanium
+SentinelOne
+Arctic Wolf|arcticwolf
+Rapid7
+Tenable
+Qualys
+1Password|agilebits
+Auth0
+Ping Identity|pingidentity
+Saviynt
+Sumo Logic|sumologic
+Splunk
+Dynatrace
+AppDynamics
+LogicMonitor
+Freshdesk
+Kong
+Postman
+Apollo GraphQL|apollographql
+Algolia
+Mapbox
+Unity|unity3d
+Epic Games|epicgames
+Riot Games|riotgames
+Roblox
+Niantic
+Zynga
+Moonfrog
+Nazara
+Juego Studios
+Kwalee
+Supercell
+Electronic Arts|ea
+Ubisoft
+Agoda
+Booking.com|bookingcom
+Expedia
+Trivago
+Skyscanner
+GetYourGuide|getyourguide
+Klook
+Traveloka
+Tokopedia
+Shopee
+Sea|sealimited
+Lazada
+Carousell
+PropertyGuru|propertyguru
+Ninja Van|ninjavan
+Xendit
+Kredivo
+Akulaku
+Gojek
+Careem
+Talabat
+Noon
+Swvl
+Tabby
+Tamara
+Wego
+Zalando
+Delivery Hero|deliveryhero
+HelloFresh
+Glovo
+Bolt|boltinc
+FreeNow
+BlaBlaCar|blablacar
+Personio
+Celonis
+N26
+Trade Republic|traderepublic
+Contentsquare
+Doctolib
+Alan
+Qonto
+Algolia
+Mirakl
+Sorare
+Back Market|backmarket
+Ledger
+Dataiku
+Mistral
+Pigment
+Spendesk
+Swile
+Payfit
+Aircall
+Front
+Typeform
+Factorial
+Travelperk
+Cabify
+Glovo
+Wallapop
+Idealista
+Hotjar
+Bending Spoons|bendingspoons
+Satispay
+Scalapay
+Bitpanda
+GoStudent
+Adjust
+Taxfix
+Sennder
+Forto
+Flix|flixbus
+Babbel
+SumUp
+Raisin
+Solaris|solarisbank
+Mollie
+Bunq
+Picnic
+Mews
+Productboard
+Pipedrive
+Bolt
+Wise
+Veriff
+Starship
+Paysera
+Vinted
+Nord Security|nordsecurity
+Kilo Health|kilohealth
+Omnisend
+Brainly
+DocPlanner
+Booksy
+LiveChat|livechatinc
+Allegro
+Zapier
+Automattic
+InVision|invisionapp
+Hotjar
+GitBook
+Doist
+Buffer
+Toggl
+Close|closeio
+Help Scout|helpscout
+Basecamp
+Zapier
+Ghost
+Mattermost
+Elastic
+Canonical
+Red Hat|redhat
+SUSE
+Percona
+Docker
+JetBrains
+Tailscale
+Fly.io|flyio
+Render
+Railway
+Netlify
+Cloudinary
+ImageKit|imagekit
+Contentstack
+Sanity
+Strapi
+Directus
+Hasura
+Appwrite
+Nhost
+Clerk
+Stytch
+WorkOS
+Twingate
+Teleport|gravitational
+Vanta
+Drata
+Secureframe
+OneTrust
+Securiti|securitiai
+BigID
+Collibra
+Alation
+Informatica
+Talend
+Boomi
+MuleSoft
+Workato
+Tray.io|tray
+Celigo
+Zuora
+Chargebee
+Recurly
+Maxio
+Avalara
+Bill.com|billcom
+Coupa
+Tipalti
+Navan|tripactions
+Expensify
+Pleo
+Brex
+Mercury
+Carta
+Pulley
+AngelList|angellist
+Deel
+Papaya Global|papayaglobal
+Velocity Global|velocityglobal
+G-P|globalization-partners
+Atlas HXM|atlashxm
+Lattice
+Culture Amp|cultureamp
+15Five
+Leapsome
+BambooHR
+HiBob|hibob
+Personio
+Workable
+Greenhouse
+Lever
+Ashby
+SmartRecruiters
+Gem
+Beamery
+Eightfold
+Phenom|phenompeople
+HackerRank
+Codility
+CoderPad
+Karat
+Turing
+Andela
+Crossover
+Toptal
+Hired
+Wellfound
+Instawork
+Upwork
+Fiverr
+Freelancer
+Guru
+Contra
