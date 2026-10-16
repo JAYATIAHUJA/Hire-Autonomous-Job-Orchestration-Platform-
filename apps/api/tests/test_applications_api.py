@@ -213,6 +213,7 @@ def test_recruiter_reply_moves_the_card_from_applied_to_interview(client):
     sync = client.post(
         "/api/mail/sync",
         json={
+            "candidate_ref": CANDIDATE,
             "messages": [
                 {
                     "uid": "1001",
@@ -248,12 +249,13 @@ def test_rejection_reply_moves_the_card_and_is_not_replayed(client):
         "body": "We regret to inform you that we have decided to move forward with other candidates.",
     }
 
-    first = client.post("/api/mail/sync", json={"messages": [message]}).json()
+    payload = {"candidate_ref": CANDIDATE, "messages": [message]}
+    first = client.post("/api/mail/sync", json=payload).json()
     assert first["moved"] == 1
     assert client.get(f"/api/applications/{application_id}").json()["stage"] == "rejected"
 
     # The same uid arriving again is ignored rather than re-applied.
-    second = client.post("/api/mail/sync", json={"messages": [message]}).json()
+    second = client.post("/api/mail/sync", json=payload).json()
     assert second["moved"] == 0
     assert second["skipped"] == 1
 
@@ -265,6 +267,7 @@ def test_unrelated_mail_leaves_the_board_untouched(client):
     stats = client.post(
         "/api/mail/sync",
         json={
+            "candidate_ref": CANDIDATE,
             "messages": [
                 {
                     "uid": "3003",

@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from . import models
-from .board import BOARD_STAGES, STAGE_APPLIED, STAGE_SKIPPED, can_transition, label_for
+from .board import AUTOMATED_TRANSITIONS, BOARD_STAGES, STAGE_APPLIED, STAGE_SKIPPED, can_transition, label_for
 from .consent import CONSENT_ALGORITHM, DEFAULT_PURPOSE, issue_consent, verify_payload
 from .schemas import ApplicationCard, BoardColumn, BoardResponse, ConsentReceipt, PipelineEventOut
 
@@ -293,12 +293,20 @@ def get_board(db: Session, candidate_ref: str) -> BoardResponse:
     )
 
 
-def open_applications(db: Session) -> list[models.Application]:
-    """Cards a recruiter reply could still act on, most recently touched first."""
+def open_applications(db: Session, candidate_ref: str) -> list[models.Application]:
+    """One candidate's cards a recruiter reply could still act on, most recent first.
+
+    Scoped to the candidate, and limited to stages an automated move can leave:
+    a rejected card can't be moved by mail, so it must not absorb a match either.
+    """
+    movable = [stage for stage in BOARD_STAGES if AUTOMATED_TRANSITIONS.get(stage)]
     return (
         db.query(models.Application)
         .options(joinedload(models.Application.consent), joinedload(models.Application.events))
-        .filter(models.Application.stage.in_(BOARD_STAGES))
+        .filter(
+            models.Application.candidate_ref == candidate_ref,
+            models.Application.stage.in_(movable),
+        )
         .order_by(models.Application.updated_at.desc())
         .all()
     )

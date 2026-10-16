@@ -87,6 +87,7 @@ class RecruiterMessage(BaseModel):
     """A recruiter reply, either read over IMAP or posted in for a dry run."""
 
     uid: str
+    message_id: Optional[str] = None
     from_address: str = ""
     subject: str = ""
     body: str = ""
@@ -97,6 +98,11 @@ class MailSyncRequest(BaseModel):
     messages: Optional[list[RecruiterMessage]] = Field(
         default=None,
         description="Supply messages directly to replay a sync without touching a mailbox.",
+    )
+    candidate_ref: Optional[str] = Field(
+        default=None,
+        description="Whose board the replies may move. Required with `messages`; "
+        "the IMAP path uses IMAP_CANDIDATE_REF.",
     )
     limit: int = 25
 

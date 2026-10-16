@@ -24,6 +24,7 @@ from ..applications.schemas import (
     SwipeRequest,
     SwipeResponse,
 )
+from ..config import settings
 from ..db import get_db
 from ..jobs.pipeline import run_discovery_cycle
 from ..jobs.repository import get_job_by_id, get_jobs_feed
@@ -157,7 +158,11 @@ async def trigger_mail_sync(payload: MailSyncRequest, db: Session = Depends(get_
     without a live inbox.
     """
     if payload.messages:
-        stats = sync_messages(db, [m.model_dump() for m in payload.messages])
+        if not payload.candidate_ref:
+            raise HTTPException(status_code=422, detail="candidate_ref is required with messages.")
+        stats = sync_messages(
+            db, [m.model_dump() for m in payload.messages], candidate_ref=payload.candidate_ref
+        )
         return MailSyncResponse(source="inline", **stats)
 
     try:
@@ -167,4 +172,6 @@ async def trigger_mail_sync(payload: MailSyncRequest, db: Session = Depends(get_
     except Exception as exc:  # noqa: BLE001 - surface mailbox failures to the caller
         raise HTTPException(status_code=502, detail=f"Mailbox read failed: {exc}")
 
-    return MailSyncResponse(source="imap", **sync_messages(db, messages))
+    return MailSyncResponse(
+        source="imap", **sync_messages(db, messages, candidate_ref=settings.imap_candidate_ref)
+    )

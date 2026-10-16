@@ -22,7 +22,7 @@ def run_sync_round(limit: Optional[int] = None) -> dict[str, Any]:
     messages = fetch_recruiter_messages(limit=limit or settings.imap_fetch_limit)
     db = SessionLocal()
     try:
-        return sync_messages(db, messages)
+        return sync_messages(db, messages, candidate_ref=settings.imap_candidate_ref)
     finally:
         db.close()
 

@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     imap_port: int = 993
     imap_user: str = ""
     imap_password: str = ""
+    imap_candidate_ref: str = ""
     imap_mailbox: str = "INBOX"
     imap_use_ssl: bool = True
     imap_search: str = "UNSEEN"

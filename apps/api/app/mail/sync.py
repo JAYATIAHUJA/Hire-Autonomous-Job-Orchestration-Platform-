@@ -90,32 +90,54 @@ def match_application(
             if _root_domain(app.employer_domain) == from_root:
                 return app, f"sender domain {from_root}"
 
-    # 3. The employer's name appears in the mail (or in the sender's display name).
+    # 3. The employer's name appears in the mail (or in the sender's display name),
+    # as whole words: "cred" must not match "incredible".
     name_haystack = (haystack + " " + (message.get("from_address") or "")).lower()
     best: Optional[Application] = None
     best_hits = 0
+    tied = False
     for app in applications:
         tokens = company_tokens(app.employer_name)
         if not tokens:
             continue
-        hits = sum(1 for token in tokens if token in name_haystack)
-        if hits and hits > best_hits:
-            best, best_hits = app, hits
+        hits = sum(1 for token in tokens if re.search(rf"\b{re.escape(token)}\b", name_haystack))
+        if not hits:
+            continue
+        if hits > best_hits:
+            best, best_hits, tied = app, hits, False
+        elif hits == best_hits and best is not None and best.employer_name != app.employer_name:
+            tied = True
+    if best and tied:
+        # Two employers fit equally well; guessing would move the wrong card.
+        return None, "ambiguous employer name"
     if best:
         return best, f"employer name in message ({best_hits} token match)"
 
     return None, "no matching card"
 
 
+def dedupe_key(message: dict[str, Any], candidate_ref: str) -> str:
+    """The processed-message id: the stable message key, scoped to its owner."""
+    key = str(message.get("message_key") or "")
+    if not key and message.get("message_id"):
+        key = f"msgid:{str(message['message_id']).strip().strip('<>').lower()}"
+    if not key and message.get("uid"):
+        key = f"uid:{message['uid']}"
+    return f"{candidate_ref}|{key}" if key else ""
+
+
 def apply_message(
     db: Session,
     message: dict[str, Any],
     applications: list[Application],
+    *,
+    key: Optional[str] = None,
 ) -> dict[str, Any]:
     """Classify one reply and move its card. Returns what happened, for the report."""
-    uid = str(message.get("uid") or "")
+    # ``uid`` below is the processed-message key the ledger dedupes on.
+    uid = key or str(message.get("uid") or "")
     outcome: dict[str, Any] = {
-        "uid": uid,
+        "uid": str(message.get("uid") or ""),
         "subject": message.get("subject", ""),
         "matched": False,
         "moved": False,
@@ -176,19 +198,25 @@ def apply_message(
     return outcome
 
 
-def sync_messages(db: Session, messages: list[dict[str, Any]]) -> dict[str, Any]:
-    """Run a batch of recruiter replies through matching and stage moves."""
+def sync_messages(db: Session, messages: list[dict[str, Any]], *, candidate_ref: str) -> dict[str, Any]:
+    """Run one candidate's recruiter replies through matching and stage moves.
+
+    Only that candidate's cards are candidates for a match, so one person's mail can
+    never move another person's board.
+    """
+    if not candidate_ref:
+        raise ValueError("candidate_ref is required: a mailbox belongs to one candidate.")
     stats: dict[str, Any] = {"fetched": len(messages), "matched": 0, "moved": 0, "skipped": 0, "errors": [], "moves": []}
 
     for message in messages:
-        uid = str(message.get("uid") or "")
-        if not uid or repository.is_message_processed(db, uid):
+        key = dedupe_key(message, candidate_ref)
+        if not key or repository.is_message_processed(db, key):
             stats["skipped"] += 1
             continue
 
         # Re-read the board per message: an earlier mail may have moved a card.
-        applications = repository.open_applications(db)
-        outcome = apply_message(db, message, applications)
+        applications = repository.open_applications(db, candidate_ref)
+        outcome = apply_message(db, message, applications, key=key)
 
         if outcome.get("matched"):
             stats["matched"] += 1
