@@ -10,6 +10,7 @@ from .auth import router as auth_router
 from .auth.tokens import register_github_providers
 from .config import settings
 from .db import init_db
+from .facts import router as facts
 from .mail.poller import poll_forever
 from .routers import applications, jobs, pow, profile
 
@@ -61,6 +62,8 @@ app.include_router(pow.router)
 app.include_router(jobs.router)
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router)
+app.include_router(facts.router)
+app.include_router(facts.answer_bank_router)
 
 
 @app.get("/health")
