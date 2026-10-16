@@ -197,6 +197,11 @@ def test_fixture_loads_offline_and_posts_only_to_the_mock(key):
     if meta.get("frame"):
         outer = inventory(page.text)
         assert outer.iframes == [meta["frame"]]
+    # job descriptions are cut to an excerpt; the form tests do not need them
+    if 'class="job__description' in html:
+        assert html.count('class="job__description') == html.count('data-lab-trimmed="1"')
+    for content in re.findall(r'<meta[^>]+description"[^>]*content="([^"]*)"', html):
+        assert len(content) <= 300
 
 
 @pytest.mark.parametrize("key", FIXTURE_IDS)

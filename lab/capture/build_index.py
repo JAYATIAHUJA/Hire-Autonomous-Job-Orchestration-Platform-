@@ -77,6 +77,8 @@ def main() -> None:
         "  (`data-lab-wrapped`). Controls without a `name` get their `id` as name (`data-lab-named`).",
         "- Links point at `#` (original in `data-lab-href`). Images are a 1x1 placeholder; fonts and media are not saved.",
         "- Stylesheets are saved under `assets/`, pruned to the rules that match the saved DOM.",
+        "- Job descriptions (and the description `<meta>` tags) are cut to a ~280-character excerpt marked",
+        "  `data-lab-trimmed`; form content, including question help text, is never trimmed.",
         "- The two embedded fixtures are the real Greenhouse embed (`frame.html`) inside a minimal stand-in careers page",
         "  (`page.html`); the employer's own careers site is not captured.",
         "- `questions.json` (Greenhouse only) is the public `?questions=true` board API response without the job description.",

@@ -43,6 +43,38 @@ RENDER_HOSTS = (
 )
 BLOCKED_TYPES = {"image", "font", "media"}
 
+# Job descriptions are not needed to test a form, so they are cut to a short excerpt. Only
+# description blocks outside the <form> are touched, so question help text stays intact.
+TRIM_NOTE = "Job description trimmed by the Hire form lab; the full text is at the posting URL in meta.json."
+TRIM_JS = r"""
+(note) => {
+  const doc = document;
+  let saved = 0;
+  const excerpt = text => {
+    const t = text.replace(/\s+/g, ' ').trim();
+    return t.length > 280 ? t.slice(0, 280).trimEnd() + '...' : t;
+  };
+  for (const m of doc.querySelectorAll('meta[name="description"], meta[property="og:description"], ' +
+                                       'meta[name="twitter:description"]')) {
+    const c = m.getAttribute('content') || '';
+    if (c.length > 300) { m.setAttribute('content', excerpt(c)); saved += c.length - m.getAttribute('content').length; }
+  }
+  for (const el of doc.querySelectorAll('.job__description, [data-qa="job-description"]')) {
+    if (el.closest('form') || el.hasAttribute('data-lab-trimmed')) continue;
+    const before = el.outerHTML.length;
+    const p = doc.createElement('p');
+    p.textContent = excerpt(el.textContent);
+    const tag = doc.createElement('p');
+    tag.className = 'lab-trim-note';
+    tag.textContent = note;
+    el.replaceChildren(p, tag);
+    el.setAttribute('data-lab-trimmed', '1');
+    saved += before - el.outerHTML.length;
+  }
+  return saved;
+}
+"""
+
 SANITISE_JS = r"""
 ({fixtureId, sheets}) => {
   const doc = document;
@@ -333,6 +365,7 @@ def capture_one(browser, http: PoliteSession, throttle: Throttle, target: dict) 
         if body is not None:
             sheets.append({"href": href, "css": clean_css(body), "local": f"assets/style-{i}.css"})
 
+    page.evaluate(TRIM_JS, TRIM_NOTE)  # before sanitising, so CSS pruning sees the trimmed DOM
     result = page.evaluate(SANITISE_JS, {"fixtureId": f"{ats}/{fixture}", "sheets": sheets})
     context.close()
 
