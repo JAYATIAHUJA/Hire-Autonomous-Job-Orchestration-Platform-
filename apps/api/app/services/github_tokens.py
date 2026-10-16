@@ -26,6 +26,21 @@ def set_user_token_provider(provider: Optional[UserTokenProvider]) -> None:
     _user_token_provider = provider
 
 
+LinkedLoginProvider = Callable[[Session, int], Optional[str]]
+
+_linked_login_provider: Optional[LinkedLoginProvider] = None
+
+
+def set_linked_login_provider(provider: Optional[LinkedLoginProvider]) -> None:
+    """WP1: register "which GitHub login has this account linked?" (None if not linked)."""
+    global _linked_login_provider
+    _linked_login_provider = provider
+
+
+def linked_login(db: Session, account_id: int) -> Optional[str]:
+    return _linked_login_provider(db, account_id) if _linked_login_provider else None
+
+
 def resolve_token(db: Session, account_id: int) -> tuple[Optional[str], str]:
     """(token, source) where source is "user", "app" or "none" (recorded on the run)."""
     if _user_token_provider is not None:

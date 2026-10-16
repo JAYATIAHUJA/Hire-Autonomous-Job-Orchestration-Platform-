@@ -10,7 +10,7 @@ from .auth import router as auth_router
 from .config import settings
 from .db import init_db
 from .mail.poller import poll_forever
-from .routers import applications, jobs, profile
+from .routers import applications, jobs, pow, profile
 
 logger = logging.getLogger("hire")
 
@@ -55,6 +55,7 @@ app.add_middleware(
 
 app.include_router(auth_router.router)
 app.include_router(profile.router)
+app.include_router(pow.router)
 app.include_router(jobs.router)
 app.include_router(jobs.router, prefix="/api")
 app.include_router(applications.router)

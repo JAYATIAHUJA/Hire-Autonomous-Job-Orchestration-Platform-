@@ -16,6 +16,8 @@ from typing import Optional
 import httpx
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "github"
+# The token that belongs to the fixture user (priyadev); /user answers with someone else for any other.
+USER_TOKEN = "user-token"
 COMMIT_DETAIL = re.compile(r"^/repos/([^/]+)/([^/]+)/commits/([0-9a-f]{40})$")
 
 
@@ -56,6 +58,8 @@ class FixtureGitHub:
         path = request.url.path
         if request.method == "POST" and path == "/graphql":
             return load(f"graphql__{self.graphql}.json") if self.graphql else None
+        if path == "/user" and request.headers.get("Authorization") != f"Bearer {USER_TOKEN}":
+            return {"login": "hire-pow-bot", "id": 90000001, "type": "Bot"}  # some other token's owner
         if m := COMMIT_DETAIL.match(path):
             bundle = FIXTURES / f"repos__{m[1]}__{m[2]}__commit_details.json"
             return json.loads(bundle.read_text(encoding="utf-8")).get(m[3]) if bundle.exists() else None
