@@ -1,6 +1,6 @@
 {
   "React": {"imports": ["react", "react-dom"], "dependencies": ["react", "react-dom"]},
-  "React Native": {"imports": ["react-native", "@react-native", "@react-native-community"], "dependencies": ["react-native", "@react-native", "@react-native-community"]},
+  "React Native": {"imports": ["react-native", "react-native-*", "@react-native*"], "dependencies": ["react-native", "react-native-*", "@react-native*"]},
   "Expo": {"imports": ["expo", "expo-*", "@expo"], "dependencies": ["expo", "expo-*", "@expo"], "paths": ["eas.json"]},
   "Next.js": {"imports": ["next", "@next"], "dependencies": ["next", "@next"], "paths": ["next.config."]},
   "NextAuth.js": {"imports": ["next-auth", "@auth/core", "@auth/nextjs"], "dependencies": ["next-auth", "@auth/core"]},

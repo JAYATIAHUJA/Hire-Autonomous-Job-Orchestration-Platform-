@@ -39,6 +39,8 @@ class Contribution:
     weight: float = 0.0
     files: list = field(default_factory=list)
     dependencies_added: set = field(default_factory=set)
+    # From a private repo the user opted in to. Never shown on the public profile.
+    private: bool = False
 
     @property
     def meaningful_lines(self) -> int:

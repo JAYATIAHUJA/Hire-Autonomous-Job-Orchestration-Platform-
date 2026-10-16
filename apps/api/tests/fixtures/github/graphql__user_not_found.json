@@ -1,0 +1,20 @@
+{
+  "data": {
+    "user": null
+  },
+  "errors": [
+    {
+      "type": "NOT_FOUND",
+      "path": [
+        "user"
+      ],
+      "locations": [
+        {
+          "line": 3,
+          "column": 3
+        }
+      ],
+      "message": "Could not resolve to a User with the login of 'no-such-user-xyz'."
+    }
+  ]
+}

@@ -18,6 +18,19 @@ class Settings(BaseSettings):
     github_api_base: str = "https://api.github.com"
     github_concurrency: int = 8
     max_commits_listed_per_repo: int = 300
+    # Server-side token used for background PoW runs when the user has not linked
+    # GitHub. Empty means unauthenticated (60 requests/hour, no GraphQL totals).
+    github_app_token: str = ""
+    # Waits shorter than this (Retry-After / X-RateLimit-Reset) are slept through;
+    # longer ones fail the request as rate-limited.
+    github_max_retries: int = 3
+    github_max_backoff_seconds: float = 60.0
+    github_etag_cache_size: int = 4096
+
+    # Proof-of-Work background runs (python -m app.worker picks them up).
+    pow_poll_seconds: float = 2.0
+    # A run still "running" after this long is presumed dead (worker crash) and failed.
+    pow_stale_run_seconds: int = 1800
 
     # With a token GitHub allows 5,000 requests/hour; without, 60.
     full_max_repos: int = 20

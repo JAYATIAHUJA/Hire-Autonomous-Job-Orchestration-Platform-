@@ -1,0 +1,346 @@
+[
+  {
+    "sha": "659e067452a72dab27b302cd7b44c592d0af156e",
+    "node_id": "C_659e067452a72dab27b3",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-09-20T15:30:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-09-20T15:30:00Z"
+      },
+      "message": "feat(search): debounce product search",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/659e067452a72dab27b302cd7b44c592d0af156e",
+    "html_url": "https://github.com/priyadev/shopfront/commit/659e067452a72dab27b302cd7b44c592d0af156e",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "b87567df0afda2ad78cfabcc63de08f75ef61d61",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "c75f565d9b37d9c9e925e65944a683d47daa563a",
+    "node_id": "C_c75f565d9b37d9c9e925",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-09-12T08:10:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-09-12T08:10:00Z"
+      },
+      "message": "ci: run lint and tests on push",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/c75f565d9b37d9c9e925e65944a683d47daa563a",
+    "html_url": "https://github.com/priyadev/shopfront/commit/c75f565d9b37d9c9e925e65944a683d47daa563a",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "7a9547d06fb4de16b9fe00e4bdc6d03c0b72f272",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "de413201835f82306212c2857e6bc069fb966230",
+    "node_id": "C_de413201835f82306212",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-09-05T12:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-09-05T12:00:00Z"
+      },
+      "message": "Merge pull request #14 from priyadev/cart-drawer",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/de413201835f82306212c2857e6bc069fb966230",
+    "html_url": "https://github.com/priyadev/shopfront/commit/de413201835f82306212c2857e6bc069fb966230",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "89ab69fe1bc8e6378023930752a83b86a2ef3762",
+        "url": ""
+      },
+      {
+        "sha": "96f44dc671cea9185e998f32f4a171009ef4764a",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "e9f1b45409de22f58e0a22d40a2e5cddd37cb196",
+    "node_id": "C_e9f1b45409de22f58e0a",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-09-04T19:22:41Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-09-04T19:22:41Z"
+      },
+      "message": "feat(cart): add cart drawer with quantity stepper",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/e9f1b45409de22f58e0a22d40a2e5cddd37cb196",
+    "html_url": "https://github.com/priyadev/shopfront/commit/e9f1b45409de22f58e0a22d40a2e5cddd37cb196",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "ea5666297b87f23b2db9e5438c4ddd5ed4304f47",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "0f0a1e5ca91d3271f75947585d008b42891b5123",
+    "node_id": "C_0f0a1e5ca91d3271f759",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-08-28T10:05:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-08-28T10:05:00Z"
+      },
+      "message": "test: cover cart totals and GST rounding",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/0f0a1e5ca91d3271f75947585d008b42891b5123",
+    "html_url": "https://github.com/priyadev/shopfront/commit/0f0a1e5ca91d3271f75947585d008b42891b5123",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "683b28d82fa690fb2f01a681c13c03d912538ea5",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "821961364505e4751528d989c39fd3bfc94807d0",
+    "node_id": "C_821961364505e4751528",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-08-27T17:40:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-08-27T17:40:00Z"
+      },
+      "message": "fix(checkout): round GST to two decimals",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/821961364505e4751528d989c39fd3bfc94807d0",
+    "html_url": "https://github.com/priyadev/shopfront/commit/821961364505e4751528d989c39fd3bfc94807d0",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "227b19bc2d9fcd609b17b3a3e060eb836767e69e",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "517279a16f35a65c75c3dc63064f96f447afce5a",
+    "node_id": "C_517279a16f35a65c75c3",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-08-20T09:15:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-08-20T09:15:00Z"
+      },
+      "message": "feat(auth): sign in with GitHub via next-auth",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/517279a16f35a65c75c3dc63064f96f447afce5a",
+    "html_url": "https://github.com/priyadev/shopfront/commit/517279a16f35a65c75c3dc63064f96f447afce5a",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "035dc3c74789846869a838d99d3ef96efafdf8d8",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "5dd416b85e3c4804f476666a0376dcc2b0102f37",
+    "node_id": "C_5dd416b85e3c4804f476",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-08-02T13:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-08-02T13:00:00Z"
+      },
+      "message": "feat: product grid with Tailwind",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/5dd416b85e3c4804f476666a0376dcc2b0102f37",
+    "html_url": "https://github.com/priyadev/shopfront/commit/5dd416b85e3c4804f476666a0376dcc2b0102f37",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "9e1836a4d447507a3bed4f22a2305910ab5fa016",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "a9046ffd2145304702c451f8ef608fa9e6df9fc0",
+    "node_id": "C_a9046ffd2145304702c4",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-07-15T07:00:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-07-15T07:00:00Z"
+      },
+      "message": "chore: bump dependencies",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/a9046ffd2145304702c451f8ef608fa9e6df9fc0",
+    "html_url": "https://github.com/priyadev/shopfront/commit/a9046ffd2145304702c451f8ef608fa9e6df9fc0",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "3a0648f52bff05fde2184a001624dfb7858eb4b8",
+        "url": ""
+      }
+    ]
+  },
+  {
+    "sha": "e5b5ce856cdf6acc02a666e8f9e0a0ed2516d36c",
+    "node_id": "C_e5b5ce856cdf6acc02a6",
+    "commit": {
+      "author": {
+        "name": "Priya Sharma",
+        "email": "48151623+priyadev@users.noreply.github.com",
+        "date": "2026-06-30T05:30:00Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-06-30T05:30:00Z"
+      },
+      "message": "Initial commit from Create Next App",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/priyadev/shopfront/commits/e5b5ce856cdf6acc02a666e8f9e0a0ed2516d36c",
+    "html_url": "https://github.com/priyadev/shopfront/commit/e5b5ce856cdf6acc02a666e8f9e0a0ed2516d36c",
+    "author": {
+      "login": "priyadev",
+      "id": 48151623
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447
+    },
+    "parents": [
+      {
+        "sha": "11d545ea7b1043c2e73712f6e4a3ad5c9b76cc92",
+        "url": ""
+      }
+    ]
+  }
+]
