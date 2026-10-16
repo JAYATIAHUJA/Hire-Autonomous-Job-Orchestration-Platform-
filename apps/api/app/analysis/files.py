@@ -59,7 +59,7 @@ def classify_file(path: str) -> FileInfo:
         category = "generated"
     elif name in LOCKFILES:
         category = "lockfile"
-    elif name in MANIFESTS or (name.startswith("requirements") and ext == ".txt"):
+    elif name in MANIFESTS or (name.startswith("requirements") and ext == ".txt") or ext == ".csproj":
         category = "manifest"
     elif lower.startswith(CI_DIRS) or name in CI_FILES:
         category = "ci"
