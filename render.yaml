@@ -5,20 +5,23 @@ services:
     env: python
     region: oregon
     plan: free
-    rootDir: backend
+    rootDir: apps/api
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
       - key: DATABASE_URL
         value: sqlite:///./hire.db
+      # Required: the API refuses to start without a real signing secret (bug B4).
+      - key: CONSENT_SIGNING_SECRET
+        generateValue: true
 
   # React / Vite Static Frontend
   - type: web
     name: hire-frontend
     env: static
-    rootDir: frontend
+    rootDir: apps/web
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:

@@ -1,0 +1,27 @@
+Hire includes or builds on the following third-party software.
+
+--------------------------------------------------------------------------------
+OpenBot (CopilotKit), MIT License, Copyright (c) 2026 CopilotKit
+  Used by: apps/supervisor and apps/computer. Their images are built from
+  https://github.com/CopilotKit/OpenBot at revision b6932d31a8d6e7896c15139dfc27a6c6911deb27.
+  Licence text: apps/supervisor/LICENSE.openbot, apps/computer/LICENSE.openbot
+  When forking agent-computer, also keep the Apache-2.0 and BSD notices referenced in screencast.ts.
+
+--------------------------------------------------------------------------------
+OpenDots (CopilotKit), MIT License, Copyright (c) Atai Barkai
+  Used by: apps/supervisor/harden-supervisor.mjs (adapted) and apps/supervisor/Dockerfile (adapted).
+  Licence text: apps/supervisor/LICENSE.opendots
+
+--------------------------------------------------------------------------------
+ai-job-search (MadsLorentzen), MIT License
+  Planned use: packages/prompts (fit rubric, tailoring, grounding audit and form-answer rules).
+  Nothing has been ported yet. Copy its copyright notice and licence text here when the first file is ported.
+
+--------------------------------------------------------------------------------
+open-dots (Anil-matcha): NO LICENCE. No code is copied from it.
+  The Run engine (Phase 4) is a clean-room implementation of the documented design.
+  A request for an MIT or Apache-2.0 licence is pending (docs/outreach/open-dots-licence.md).
+
+--------------------------------------------------------------------------------
+SeaweedFS (dev object store, used as a Docker image only), Apache-2.0
+pgvector (dev database image), PostgreSQL License

@@ -1,0 +1,152 @@
+# Hire dev stack. Start it with:  python scripts/dev.py
+# (that writes .env with random secrets on first run, then runs `docker compose up --build`).
+#
+# Host ports are all bound to 127.0.0.1 and chosen so they don't clash with other local stacks:
+#   web 5173 · api 8100 · mock-ats 8180 · postgres 54329 · redis 63790 · s3 58333
+#
+# The browser computers are heavy and pull OpenBot from GitHub, so they sit behind a profile:
+#   python scripts/dev.py --computers
+name: hire
+
+x-api-env: &api-env
+  DATABASE_URL: postgresql+psycopg://hire:hire@db:5432/hire
+  REDIS_URL: redis://redis:6379/0
+  S3_ENDPOINT: http://s3:8333
+  S3_BUCKET: hire-dev
+  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-hire}
+  S3_SECRET_KEY: ${S3_SECRET_KEY:?Run python scripts/dev.py to create .env}
+  CONSENT_SIGNING_SECRET: ${CONSENT_SIGNING_SECRET:?Run python scripts/dev.py to create .env}
+  CORS_ORIGINS: '["http://localhost:5173"]'
+  LIVE_FEEDS_ENABLED: ${LIVE_FEEDS_ENABLED:-false}
+  MOCK_ATS_BASE_URL: http://mock-ats:8000
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.0-pg16
+    environment:
+      POSTGRES_USER: hire
+      POSTGRES_PASSWORD: hire
+      POSTGRES_DB: hire
+    ports: ["127.0.0.1:54329:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hire -d hire"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4-alpine
+    ports: ["127.0.0.1:63790:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  # S3-compatible object store (resumes, screenshots, replays). SeaweedFS rather than MinIO:
+  # MinIO's public Docker images can no longer be pulled.
+  s3:
+    image: chrislusf/seaweedfs:4.00
+    command: server -dir=/data -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    configs:
+      - source: s3_identities
+        target: /etc/seaweedfs/s3.json
+    ports: ["127.0.0.1:58333:8333"]
+    volumes: [s3data:/data]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8333/healthz || exit 1"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  s3-init:
+    image: amazon/aws-cli:2.27.0
+    depends_on:
+      s3: {condition: service_healthy}
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-hire}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY}
+      AWS_DEFAULT_REGION: ap-south-1
+    entrypoint: ["sh", "-c"]
+    command:
+      - aws --endpoint-url http://s3:8333 s3api head-bucket --bucket hire-dev 2>/dev/null
+        || aws --endpoint-url http://s3:8333 s3 mb s3://hire-dev
+    restart: "no"
+
+  api:
+    build: ./apps/api
+    environment: *api-env
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    ports: ["127.0.0.1:8100:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    build: ./apps/api
+    command: ["python", "-m", "app.worker"]
+    environment: *api-env
+    depends_on:
+      api: {condition: service_healthy}  # api runs the migrations
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    environment:
+      VITE_API_PROXY: http://api:8000
+    depends_on: [api]
+    ports: ["127.0.0.1:5173:5173"]
+
+  mock-ats:
+    build: ./lab/mock-ats
+    ports: ["127.0.0.1:8180:8000"]
+
+  # --- Browser computers (profile: computers) -------------------------------------------
+  computer-image:
+    profiles: [computers]
+    image: hire-computer:openbot-b6932d3
+    build:
+      context: https://github.com/CopilotKit/OpenBot.git#b6932d31a8d6e7896c15139dfc27a6c6911deb27
+      dockerfile: agent-computer/Dockerfile
+    command: ["true"]
+
+  supervisor:
+    profiles: [computers]
+    image: hire-supervisor:openbot-b6932d3
+    build:
+      context: ./apps/supervisor
+      additional_contexts:
+        openbot: https://github.com/CopilotKit/OpenBot.git#b6932d31a8d6e7896c15139dfc27a6c6911deb27
+    depends_on:
+      computer-image: {condition: service_completed_successfully}
+    ports: ["127.0.0.1:4312:4300"]
+    environment:
+      PORT: "4300"
+      SUPERVISOR_TOKEN: ${COMPUTER_SUPERVISOR_TOKEN:?Run python scripts/dev.py to create .env}
+      COMPUTER_TOKEN: ${COMPUTER_TOKEN:?Run python scripts/dev.py to create .env}
+      COMPUTER_NAMESPACE: hire
+      COMPUTER_IMAGE: hire-computer:openbot-b6932d3
+      COMPUTER_BROWSER_MODE: headless
+      COMPUTER_NETWORK: ""
+      COMPUTER_MEMORY_BYTES: ${COMPUTER_MEMORY_BYTES:-2147483648}
+      COMPUTER_RUNTIME: ${COMPUTER_RUNTIME:-}
+    volumes:
+      - ${ENGINE_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    init: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+
+volumes:
+  pgdata:
+  s3data:
+
+configs:
+  s3_identities:
+    content: |
+      {"identities": [{"name": "hire", "credentials": [{"accessKey": "${S3_ACCESS_KEY:-hire}", "secretKey": "${S3_SECRET_KEY}"}], "actions": ["Admin", "Read", "Write", "List", "Tagging"]}]}
