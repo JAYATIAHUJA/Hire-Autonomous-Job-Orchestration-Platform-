@@ -1790,3 +1790,494 @@ button:disabled {
     align-items: start;
   }
 }
+
+/* ==========================================================================
+   Login, Privacy Notice & Onboarding (WP5)
+   ========================================================================== */
+
+/* Visible keyboard focus on every interactive element. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+input[type="checkbox"]:focus-visible,
+input[type="file"]:focus-visible,
+[tabindex]:not([tabindex="-1"]):focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -48px;
+  z-index: 10;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 600;
+  font-size: 0.86rem;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+main:focus {
+  outline: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+select {
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--text);
+  min-width: 0;
+}
+
+select:focus {
+  border-color: var(--text);
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--green-main);
+  cursor: pointer;
+}
+
+input[type="file"] {
+  padding: 10px;
+  max-width: 100%;
+}
+
+.nav-logout {
+  cursor: pointer;
+  box-shadow: none;
+  font-family: inherit;
+}
+
+.guard-wait {
+  min-height: 40vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.guard-error {
+  max-width: 440px;
+  margin: 32px auto 0;
+}
+
+.auth-page,
+.onboarding-page {
+  max-width: 440px;
+  margin: 32px auto 0;
+}
+
+.onboarding-page {
+  max-width: 580px;
+}
+
+.auth-page h1 {
+  font-size: 1.7rem;
+  margin-bottom: 8px;
+}
+
+.auth-card,
+.onboarding-card {
+  margin-top: 20px;
+}
+
+.text-link {
+  text-decoration: underline;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.oauth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-oauth {
+  width: 100%;
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  box-shadow: none;
+}
+
+.btn-oauth:hover:not(:disabled) {
+  border-color: var(--text);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-form {
+  margin-top: 12px;
+}
+
+.otp-sent {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.otp-fieldset,
+.consent-toggles,
+.fact-list {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.otp-fieldset legend,
+.consent-toggles legend,
+.fact-list legend {
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.otp-boxes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 360px;
+}
+
+.otp-box {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  padding: 0;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.otp-box[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.otp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 0.86rem;
+}
+
+.link-button:disabled {
+  color: var(--muted);
+  text-decoration: none;
+  cursor: default;
+}
+
+.link-button:hover:not(:disabled) {
+  transform: none;
+}
+
+/* Always rendered so an error appearing does not push the page around. */
+.auth-error {
+  min-height: 1.4em;
+  margin: 12px 0 0;
+}
+
+.notice-page .card {
+  margin-top: 0;
+}
+
+.notice-content h2 {
+  font-size: 1.4rem;
+  margin: 0 0 2px;
+}
+
+.notice-content h3 {
+  font-size: 1.05rem;
+  margin: 18px 0 6px;
+}
+
+.notice-content h4 {
+  font-size: 0.95rem;
+  margin: 16px 0 4px;
+}
+
+.notice-content p,
+.notice-content li {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.notice-content ul {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+
+.notice-content li + li {
+  margin-top: 6px;
+}
+
+.notice-version {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.notice-scroll {
+  max-height: 45vh;
+  overflow-y: auto;
+  padding: 4px 16px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.notice-scroll .notice-content h3:first-child {
+  margin-top: 12px;
+}
+
+.consent-toggle,
+.fact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.consent-toggle + .consent-toggle,
+.fact-item + .fact-item {
+  margin-top: 8px;
+}
+
+.consent-toggle:has(input:checked),
+.fact-item:has(input:checked) {
+  border-color: var(--surface-green-border);
+  background: var(--surface-green);
+}
+
+.consent-toggle-detail {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.step-dots {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+}
+
+.step-dots li {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--border);
+}
+
+.step-dots li.done {
+  background: var(--green-main);
+}
+
+.step-dots li.current {
+  background: var(--accent);
+}
+
+.step-count {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.step-title {
+  font-size: 1.6rem;
+  margin: 2px 0 0;
+}
+
+.step-title:focus {
+  outline: none;
+}
+
+.onboarding-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.onboarding-step .subtitle {
+  margin: 0;
+}
+
+.onboarding-step.connect-form {
+  margin-top: 0;
+}
+
+.step-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.step-actions > button {
+  flex: 1 1 auto;
+}
+
+.pow-progress-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.pow-progress .meter-track {
+  height: 10px;
+}
+
+.pow-coverage {
+  margin-top: 8px;
+  min-height: 1.45em;
+}
+
+.fact-text {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.fact-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-top: 6px;
+  font-size: 0.78rem;
+}
+
+.fact-inferred {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--surface-warm-border);
+  background: var(--yellow-badge-bg);
+  color: var(--yellow-dark);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.conflict-card {
+  display: grid;
+  gap: 10px;
+}
+
+.conflict-side {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.conflict-side p {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+
+.conflict-new {
+  border-color: var(--surface-green-border);
+  background: var(--surface-green);
+}
+
+.conflict-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.field-row > label {
+  min-width: 0;
+}
+
+.field-grow {
+  flex: 1 1 180px;
+}
+
+@media (min-width: 560px) {
+  .conflict-card {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-shell {
+    padding: 0 16px 48px;
+  }
+
+  .auth-card,
+  .onboarding-card {
+    padding: 18px 16px;
+  }
+
+  .auth-page,
+  .onboarding-page {
+    margin-top: 16px;
+  }
+}
