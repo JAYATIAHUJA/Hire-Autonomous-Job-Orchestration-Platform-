@@ -79,7 +79,7 @@ export default function PipelinePage() {
     setSyncing(true)
     setSyncResult(null)
     try {
-      const result = await syncRecruiterMail(messages)
+      const result = await syncRecruiterMail(candidateRef, messages)
       setSyncResult(result)
       setError(null)
       await loadBoard()

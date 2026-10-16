@@ -121,11 +121,12 @@ export async function moveApplicationStage(
   return handle<ApplicationCard>(res)
 }
 
-export async function syncRecruiterMail(messages?: RecruiterMessage[]): Promise<MailSyncResponse> {
+export async function syncRecruiterMail(candidateRef: string, messages?: RecruiterMessage[]): Promise<MailSyncResponse> {
+  // Replies may only move this candidate's cards, so the API requires whose board it is.
   const res = await fetch(url('/api/mail/sync'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(messages && messages.length ? { messages } : {}),
+    body: JSON.stringify(messages && messages.length ? { messages, candidate_ref: candidateRef } : {}),
   })
   return handle<MailSyncResponse>(res)
 }
