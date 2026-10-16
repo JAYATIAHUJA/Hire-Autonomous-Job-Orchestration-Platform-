@@ -4,7 +4,7 @@ WORKDIR /srv/web
 # and npm dies with "Exit handler never called". Pin IPv4 and switch auto-selection off.
 ENV NODE_OPTIONS="--dns-result-order=ipv4first --no-network-family-autoselection"
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+RUN --mount=type=cache,target=/root/.npm npm ci --no-audit --no-fund
 COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

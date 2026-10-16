@@ -108,6 +108,15 @@ export interface ParsedRequirementsContract {
   raw_description_hash: string
 }
 
+export interface SourceContract {
+  // greenhouse | lever | ashby | remoteok | sample
+  name: string | null
+  apply_url: string | null
+  posted_at: string | null
+  last_seen_at: string | null
+  is_remote: boolean
+}
+
 export interface JobContract {
   job_id: string
   company: CompanyContract
@@ -115,6 +124,35 @@ export interface JobContract {
   ghost_job_metrics: GhostJobMetricsContract
   parsed_requirements: ParsedRequirementsContract
   created_at: string
+  source?: SourceContract
+  // A short preview in lists; the full text from GET /jobs/{id}.
+  description?: string | null
+  // On deck cards: how well it fits the candidate's preferences, and why.
+  match?: { score: number; percent: number; reasons: string[] } | null
+}
+
+export interface DiscoveryRun {
+  id: number
+  status: 'requested' | 'running' | 'done' | 'failed'
+  requested_at: string | null
+  started_at: string | null
+  finished_at: string | null
+  boards_checked: number
+  boards_failed: number
+  jobs_added: number
+  jobs_updated: number
+  jobs_closed: number
+  ghosts_filtered: number
+}
+
+export interface DiscoveryStatus {
+  active_jobs: number
+  companies_with_jobs: number
+  boards_tracked: number
+  by_source: Record<string, number>
+  interval_minutes: number
+  last_run: DiscoveryRun | null
+  current_run: DiscoveryRun | null
 }
 
 export interface JobFeedResponse {
@@ -193,6 +231,12 @@ export interface ApplicationCard {
   last_event_summary: string | null
   consent: ConsentReceipt | null
   events: PipelineEvent[]
+  // A swipe sends nothing: this says whether the application itself reached the employer.
+  submission_status?: 'not_sent' | 'filling' | 'needs_review' | 'sent' | 'failed'
+  submitted_at?: string | null
+  submit_method?: 'self' | 'auto' | null
+  apply_url?: string | null
+  can_autofill?: boolean
 }
 
 export interface SwipeResponse {
@@ -219,6 +263,7 @@ export interface DeckResponse {
   total: number
   min_legitimacy: number
   jobs: JobContract[]
+  swiped_total?: number
 }
 
 export interface RecruiterMessage {

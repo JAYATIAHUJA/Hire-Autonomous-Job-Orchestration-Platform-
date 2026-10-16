@@ -42,6 +42,26 @@ class CandidateProfile(Base):
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
 
 
+class ProfileVersion(Base):
+    """A targeted cut of the master profile: which facts it shows, under which headline.
+
+    ``fact_ids`` lists the experience, project, achievement and skill facts it includes.
+    Identity, links and education always come along; a fact deleted from the master
+    simply drops out.
+    """
+
+    __tablename__ = "profile_versions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
+    name = Column(String, nullable=False)
+    headline = Column(String, nullable=True)
+    target_role = Column(String, nullable=True)
+    fact_ids = Column(JSONType, nullable=False, default=list)
+    created_at = Column(DateTime, default=_utcnow)
+    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
+
+
 class ProfileFact(Base):
     """One atomic claim about the candidate. Untrusted until ``status == "approved"``."""
 

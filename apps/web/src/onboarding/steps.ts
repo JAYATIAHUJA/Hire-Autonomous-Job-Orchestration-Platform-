@@ -1,24 +1,26 @@
 import type { ConsentPurposes, FactProposal, Me, SampleCoverage } from '../api/v1types'
 import { grantedPurposes, needsConsent } from '../privacy/consent'
 
-export type StepId = 'consent' | 'github' | 'resume' | 'facts' | 'preferences' | 'answers'
+export type StepId = 'consent' | 'resume' | 'facts' | 'polish' | 'presence' | 'preferences' | 'answers'
 
 export const STEP_LABELS: Record<StepId, string> = {
   consent: 'Privacy notice',
-  github: 'Connect GitHub',
+  polish: 'Polish your profile',
+  presence: 'Your profiles',
   resume: 'Upload resume',
   facts: 'Review facts',
   preferences: 'Preferences',
   answers: 'Standard answers',
 }
 
-// A step that needs a purpose only appears when the user switched that purpose
-// on: no consent, no GitHub analysis and no resume parsing.
+// The resume goes first so everything after it can be prefilled from it; its steps need
+// resume consent. Polishing (fixing pointers, adding what the resume missed), profiles
+// and links are always asked for: the user types those, we do not collect them. GitHub
+// consent only decides whether the token field and the analysis are offered.
 export function stepsFor(purposes: ConsentPurposes): StepId[] {
   const steps: StepId[] = ['consent']
-  if (purposes.github) steps.push('github')
   if (purposes.resume) steps.push('resume', 'facts')
-  steps.push('preferences', 'answers')
+  steps.push('polish', 'presence', 'preferences', 'answers')
   return steps
 }
 

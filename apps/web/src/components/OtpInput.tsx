@@ -44,7 +44,7 @@ export default function OtpInput({ digits, onChange, disabled, invalid, describe
 
   return (
     <fieldset className="otp-fieldset" disabled={disabled}>
-      <legend>6-digit code</legend>
+      <legend className="visually-hidden">6-digit code</legend>
       <div className="otp-boxes">
         {digits.map((digit, i) => (
           <input

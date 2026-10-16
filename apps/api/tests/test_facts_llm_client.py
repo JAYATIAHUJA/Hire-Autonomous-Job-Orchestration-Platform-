@@ -59,6 +59,33 @@ def call(client):
 @pytest.fixture(autouse=True)
 def _no_sdk_retries(monkeypatch):
     monkeypatch.setattr(settings, "llm_max_retries", 0)
+    # The real Anthropic API, whatever the environment configures (e.g. a GLM endpoint).
+    monkeypatch.setattr(settings, "anthropic_base_url", "")
+    monkeypatch.setattr(settings, "llm_model", "claude-opus-5-5")
+    monkeypatch.setattr(settings, "llm_effort", "medium")
+    monkeypatch.setattr(settings, "llm_refusal_fallback", True)
+
+
+def test_compatible_endpoint_gets_bearer_auth_and_no_anthropic_only_fields(monkeypatch):
+    monkeypatch.setattr(settings, "anthropic_base_url", "https://api.z.ai/api/anthropic")
+    monkeypatch.setattr(settings, "llm_model", "glm-5.1")
+    monkeypatch.setattr(settings, "llm_effort", "")
+    monkeypatch.setattr(settings, "llm_refusal_fallback", False)
+    sent, urls = [], []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        urls.append(str(request.url))
+        sent.append({"headers": dict(request.headers), "body": json.loads(request.content)})
+        return httpx.Response(200, json=message([TOOL_USE]))
+
+    client = AnthropicLLMClient(api_key="zai-key", http_client=httpx.Client(transport=httpx.MockTransport(handler)))
+    assert call(client).data == {"things": ["a", "b"]}
+    assert urls == ["https://api.z.ai/api/anthropic/v1/messages"]
+    assert sent[0]["headers"]["authorization"] == "Bearer zai-key"
+    body = sent[0]["body"]
+    assert body["model"] == "glm-5.1"
+    assert "output_config" not in body and "fallbacks" not in body
+    assert "anthropic-beta" not in sent[0]["headers"]
 
 
 def test_request_shape_uses_config_model_cached_system_and_strict_tool(caplog):

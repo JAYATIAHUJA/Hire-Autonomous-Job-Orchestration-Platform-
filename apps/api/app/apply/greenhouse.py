@@ -93,6 +93,9 @@ class Applicant:
     city: str = ""
     # Answers to anything else, keyed by the question's label (case and punctuation ignored).
     answers: dict[str, Any] = field(default_factory=dict)
+    # Answers to common questions however a form words them: regex on the label -> value
+    # (notice period, CTC, relocation...). Checked after ``answers``.
+    topic_answers: dict[str, Any] = field(default_factory=dict)
     disclosure: bool = True
 
     @classmethod
@@ -202,6 +205,9 @@ def _profile_value(applicant: Applicant, label: str, field_name: str) -> tuple[A
         return answers[key], "answers"
     if field_name in applicant.answers:
         return applicant.answers[field_name], "answers"
+    for pattern, value in applicant.topic_answers.items():
+        if re.search(pattern, key):
+            return value, "answer bank"
     for pattern, attr in _LABEL_TO_PROFILE:
         if pattern.search(key):
             return getattr(applicant, attr), attr

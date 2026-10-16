@@ -2,13 +2,20 @@ import { ApiError } from './client'
 import { mockAccountApi } from './mock'
 import type {
   AnswerBank,
+  CandidateProfile,
   ConsentRecord,
   ConsentRequest,
+  Fact,
+  FactFields,
   Me,
   OtpSendResponse,
   PowRun,
   Preferences,
   ResumeUploadResponse,
+  OnlinePresence,
+  ProfileVersion,
+  ProfileVersionInput,
+  OnlinePresenceUpdate,
 } from './v1types'
 
 // The /v1 surface the logged-in app talks to. One interface, two implementations:
@@ -24,9 +31,19 @@ export interface AccountApi {
   completeOnboarding(): Promise<Me>
   startPowRefresh(): Promise<PowRun>
   getPowRun(id: string): Promise<PowRun>
-  uploadResume(file: File): Promise<ResumeUploadResponse>
+  getLatestPowRun(): Promise<PowRun | null> // never starts a run
+  getProfile(): Promise<CandidateProfile>
+  getPreferences(): Promise<Preferences | null>
+  getPresence(): Promise<OnlinePresence>
+  listVersions(): Promise<ProfileVersion[]>
+  saveVersion(v: ProfileVersionInput, id?: number): Promise<ProfileVersion>
+  deleteVersion(id: number): Promise<void>
+  savePresence(update: OnlinePresenceUpdate): Promise<OnlinePresence>
+  uploadResume(file: File, batch?: boolean): Promise<ResumeUploadResponse>
   approveFacts(ids: string[]): Promise<void>
   rejectFacts(ids: string[]): Promise<void>
+  addFact(kind: string, text: string, structured?: FactFields): Promise<Fact>
+  editFact(id: string, change: { text?: string; structured?: FactFields }): Promise<Fact>
   savePreferences(prefs: Preferences): Promise<void>
   getAnswerBank(): Promise<AnswerBank>
   saveAnswerBank(answers: AnswerBank): Promise<void>
@@ -72,13 +89,26 @@ export const httpAccountApi: AccountApi = {
   completeOnboarding: () => request('/me', json('PATCH', { onboarding_completed: true })),
   startPowRefresh: () => request('/profile/pow/refresh', { method: 'POST' }),
   getPowRun: (id) => request(`/profile/pow/runs/${encodeURIComponent(id)}`),
-  uploadResume(file) {
+  getLatestPowRun: async () => (await request<PowRun | null>('/profile/pow/latest')) ?? null,
+  getProfile: () => request('/profile'),
+  async getPreferences() {
+    const prefs = await request<Preferences | null>('/me/preferences')
+    return prefs && prefs.roles?.length ? prefs : null
+  },
+  getPresence: () => request('/me/online-presence'),
+  listVersions: () => request('/profile/versions'),
+  saveVersion: (v, id) => (id ? request(`/profile/versions/${id}`, json('PUT', v)) : request('/profile/versions', json('POST', v))),
+  deleteVersion: (id) => request(`/profile/versions/${id}`, { method: 'DELETE' }),
+  savePresence: (update) => request('/me/online-presence', json('PUT', update)),
+  uploadResume(file, batch = false) {
     const form = new FormData()
     form.append('file', file)
-    return request('/profile/resume', { method: 'POST', body: form })
+    return request(`/profile/resume${batch ? '?batch=true' : ''}`, { method: 'POST', body: form })
   },
   approveFacts: (ids) => request('/profile/facts/approve', json('POST', { ids })),
   rejectFacts: (ids) => request('/profile/facts/reject', json('POST', { ids })),
+  addFact: (kind, text, structured = {}) => request('/profile/facts', json('POST', { kind, text, structured })),
+  editFact: (id, change) => request(`/profile/facts/${encodeURIComponent(id)}`, json('PATCH', change)),
   savePreferences: (prefs) => request('/me/preferences', json('PATCH', prefs)),
   async getAnswerBank() {
     const body = await request<{ answers?: AnswerBank }>('/me/answer-bank')

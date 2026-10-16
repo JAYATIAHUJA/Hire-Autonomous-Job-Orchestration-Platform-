@@ -29,61 +29,10 @@ sys.path.insert(0, str(ROOT / "apps" / "api"))
 
 import httpx  # noqa: E402
 
+from app.apply.browser import CAPTCHA_SELECTOR, SUBMIT_SELECTORS, fill_one, wait_for_confirmation  # noqa: E402
 from app.apply.greenhouse import Applicant, Plan, parse_job_url, plan_application, question_sheet, render_plan  # noqa: E402
 
 PRIVATE = ROOT / "data" / "private"
-CONFIRM_SELECTORS = ["#application_confirmation", "text=/thank you for applying/i", "text=/application (has been )?(submitted|received)/i"]
-SUBMIT_SELECTORS = ["#submit_app", "button[type=submit]", "button:has-text('Submit application')", "input[type=submit]"]
-CAPTCHA_SELECTOR = "iframe[src*='recaptcha'][title*='challenge'], iframe[src*='hcaptcha'], iframe[title*='captcha' i]"
-
-
-def field_locator(page, name: str):
-    for sel in (f"#{name}", f"[name='{name}']", f"[name='job_application[{name}]']"):
-        loc = page.locator(sel)
-        if loc.count():
-            return loc.first
-    return None
-
-
-def fill_one(page, answer) -> str:
-    """Fill one field and read it back. Returns '' when it worked, else the problem."""
-    loc = field_locator(page, answer.field_name)
-    if loc is None:
-        return f"field not found on the page: {answer.label} ({answer.field_name})"
-    kind = answer.field_type
-    if kind == "input_file":
-        loc.set_input_files(answer.value)
-        return ""
-    if kind in ("input_text", "textarea"):
-        loc.fill(str(answer.value))
-        got = loc.input_value()
-        return "" if got == str(answer.value) else f"{answer.label}: page shows {got!r}"
-    if kind == "multi_value_single_select":
-        tag = loc.evaluate("el => el.tagName.toLowerCase()")
-        if tag == "select":
-            loc.select_option(value=str(answer.value))
-            got = loc.input_value()
-            return "" if got == str(answer.value) else f"{answer.label}: selected {got!r}"
-        # Greenhouse's new forms use a searchable combobox: type the option, pick it.
-        loc.click()
-        loc.fill(answer.shown)
-        option = page.get_by_role("option", name=answer.shown, exact=True)
-        if not option.count():
-            return f"{answer.label}: option {answer.shown!r} not offered"
-        option.first.click()
-        return ""
-    return f"{answer.label}: can't fill a {kind} field yet"
-
-
-def wait_for_confirmation(page, seconds: int) -> bool:
-    """Poll for a thank-you page for up to `seconds`."""
-    for _ in range(seconds):
-        if any(page.locator(s).count() for s in CONFIRM_SELECTORS):
-            return True
-        page.wait_for_timeout(1000)
-    return False
-
-
 def confirm_real_submit(plan: Plan, yes: bool) -> bool:
     if plan.job.is_mock:
         return yes or input("Type SUBMIT to send to the mock ATS: ").strip() == "SUBMIT"

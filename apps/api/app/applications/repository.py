@@ -3,10 +3,10 @@
 import json
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, object_session
 
 from . import models
 from .board import AUTOMATED_TRANSITIONS, BOARD_STAGES, STAGE_APPLIED, STAGE_SKIPPED, can_transition, label_for
@@ -64,7 +64,19 @@ def _has_verified_consent(app: models.Application) -> bool:
     return bool(receipt and receipt.verified)
 
 
-def to_card(app: models.Application) -> ApplicationCard:
+AUTOFILL_SOURCES = ("greenhouse",)
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
+def to_card(app: models.Application, job: Optional[Any] = None) -> ApplicationCard:
+    """``job`` (the Job row) adds the posting link; looked up when not given."""
+    if job is None:
+        from ..jobs.models import Job
+
+        job = object_session(app).query(Job).filter(Job.job_id == app.job_id).first() if object_session(app) else None
     return ApplicationCard(
         application_id=app.application_id,
         job_id=app.job_id,
@@ -90,7 +102,27 @@ def to_card(app: models.Application) -> ApplicationCard:
             )
             for e in app.events
         ],
+        submission_status=app.submission_status or "not_sent",
+        submitted_at=_iso(app.submitted_at),
+        submit_method=app.submit_method,
+        apply_url=getattr(job, "apply_url", None),
+        can_autofill=bool(job is not None and job.source in AUTOFILL_SOURCES and job.apply_url),
     )
+
+
+def mark_submitted(db: Session, app: models.Application, *, sent: bool, method: str = "self",
+                   detail: Optional[str] = None) -> models.Application:
+    """Record that the application did (or did not) reach the employer."""
+    if sent and app.submission_status == "sent":
+        return app
+    app.submission_status = "sent" if sent else "not_sent"
+    app.submitted_at = _utcnow() if sent else None
+    app.submit_method = method if sent else None
+    record_event(db, app, from_stage=app.stage, to_stage=app.stage, source="manual" if method == "self" else "auto",
+                 detail=detail or ("You applied on the company’s site." if sent else "Marked as not sent yet."))
+    db.commit()
+    db.refresh(app)
+    return app
 
 
 def get_application(db: Session, application_id: str, account_id: int) -> Optional[models.Application]:
@@ -260,6 +292,10 @@ def move_stage(
         )
 
     app.stage = to_stage
+    # Hearing back (an interview, a rejection) means the application did reach them.
+    if from_stage == STAGE_APPLIED and to_stage != STAGE_APPLIED and app.submission_status != "sent":
+        app.submission_status, app.submitted_at = "sent", app.submitted_at or _utcnow()
+        app.submit_method = app.submit_method or "self"
     record_event(
         db,
         app,
@@ -287,9 +323,12 @@ def get_board(db: Session, account_id: int, candidate_ref: str) -> BoardResponse
         .all()
     )
 
+    from ..jobs.models import Job
+
+    jobs = {j.job_id: j for j in db.query(Job).filter(Job.job_id.in_([a.job_id for a in apps] or [""]))}
     by_stage: dict[str, list[ApplicationCard]] = {stage: [] for stage in BOARD_STAGES}
     for app in apps:
-        by_stage[app.stage].append(to_card(app))
+        by_stage[app.stage].append(to_card(app, jobs.get(app.job_id)))
 
     return BoardResponse(
         candidate_ref=candidate_ref,

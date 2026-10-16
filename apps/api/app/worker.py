@@ -17,16 +17,30 @@ from typing import Optional
 from .auth.tokens import register_github_providers
 from .config import settings
 from .db import SessionLocal
+from .jobs import discovery
 from .jobs.pipeline import run_discovery_cycle
 from .services import pow_service
+from .apply import runner as apply_runner
+from .facts.storage import get_object_store
 
 logger = logging.getLogger("hire.worker")
 
 
-async def discovery_round() -> dict[str, int]:
+async def discovery_round() -> Optional[dict[str, int]]:
+    """Run discovery if one was requested or one is due; None when there is nothing to do."""
     db = SessionLocal()
     try:
-        return await run_discovery_cycle(db, limit=settings.discovery_batch_size)
+        run = discovery.claim_run(db)
+        if run is None:
+            return None
+        try:
+            stats = await run_discovery_cycle(db, limit=settings.discovery_batch_size, run=run)
+        except Exception as exc:  # noqa: BLE001 - recorded on the run, then re-raised for the log
+            db.rollback()
+            discovery.finish_run(db, run, error=f"{type(exc).__name__}: {exc}"[:500])
+            raise
+        discovery.finish_run(db, run, stats)
+        return stats
     finally:
         db.close()
 
@@ -44,14 +58,15 @@ async def _sleep_or_stop(stop: asyncio.Event, seconds: float) -> None:
 
 
 async def discovery_loop(stop: asyncio.Event) -> None:
-    logger.info("discovery every %ss", settings.discovery_interval_seconds)
+    logger.info("discovery every %ss, or on request", settings.discovery_interval_seconds)
     while not stop.is_set():
         try:
             stats = await discovery_round()
-            logger.info("discovery round: %s", stats)
+            if stats is not None:
+                logger.info("discovery round: %s", stats)
         except Exception:  # noqa: BLE001 - one bad round must not kill the worker
             logger.exception("discovery round failed")
-        await _sleep_or_stop(stop, settings.discovery_interval_seconds)
+        await _sleep_or_stop(stop, settings.discovery_poll_seconds)
 
 
 async def pow_loop(stop: asyncio.Event) -> None:
@@ -67,6 +82,21 @@ async def pow_loop(stop: asyncio.Event) -> None:
         await _sleep_or_stop(stop, settings.pow_poll_seconds)
 
 
+async def apply_loop(stop: asyncio.Event) -> None:
+    """Fill (and, once confirmed, submit) application forms, one at a time."""
+    logger.info("apply runs: polling every 3s")
+    store = get_object_store()
+    while not stop.is_set():
+        try:
+            run_id = await asyncio.to_thread(apply_runner.process_next, SessionLocal, store)
+            if run_id is not None:
+                logger.info("apply run %s advanced", run_id)
+                continue
+        except Exception:  # noqa: BLE001 - one bad run must not kill the worker
+            logger.exception("apply round failed")
+        await _sleep_or_stop(stop, 3.0)
+
+
 async def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     stop = asyncio.Event()
@@ -79,7 +109,7 @@ async def main() -> None:
 
     register_github_providers()  # PoW runs use the account's own GitHub token when linked
     logger.info("worker started")
-    await asyncio.gather(discovery_loop(stop), pow_loop(stop))
+    await asyncio.gather(discovery_loop(stop), pow_loop(stop), apply_loop(stop))
     logger.info("worker stopped")
 
 

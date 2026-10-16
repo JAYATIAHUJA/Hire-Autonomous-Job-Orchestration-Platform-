@@ -2,9 +2,10 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { accountApi, USE_MOCKS } from '../api/account'
 import { useAuth } from '../auth/AuthContext'
-import { HOME_PATH, safeNextPath } from '../auth/guard'
 import { codeOf, DEFAULT_RESEND_SECONDS, emptyCode, formatCountdown, isComplete, otpErrorMessage } from '../auth/otp'
 import OtpInput from '../components/OtpInput'
+import Icon, { type IconName } from '../ui/Icon'
+import { Alert } from '../ui/kit'
 
 // Seconds left until `until` (epoch ms), ticking once a second.
 function useSecondsLeft(until: number): number {
@@ -18,10 +19,15 @@ function useSecondsLeft(until: number): number {
   return Math.max(0, Math.ceil((until - now) / 1000))
 }
 
+const VALUES: { icon: IconName; title: string; body: string }[] = [
+  { icon: 'ghost', title: 'No ghost jobs', body: 'Every listing is scored for real hiring intent before it reaches you.' },
+  { icon: 'code', title: 'Proof, not claims', body: 'Your profile is built from the code you actually shipped on GitHub.' },
+  { icon: 'shield', title: 'Nothing sent without you', body: 'You approve every application. Each one gets a signed consent receipt.' },
+]
+
 export default function LoginPage() {
   const { setMe } = useAuth()
   const [params] = useSearchParams()
-  const next = safeNextPath(params.get('next'))
   const [email, setEmail] = useState('')
   const [sentTo, setSentTo] = useState<string | null>(null)
   const [digits, setDigits] = useState(emptyCode)
@@ -79,36 +85,50 @@ export default function LoginPage() {
     if (isComplete(digits)) verify(codeOf(digits))
   }
 
-  function oauth(provider: 'github' | 'google') {
-    window.location.assign(accountApi.oauthStartUrl(provider, next ?? HOME_PATH))
-  }
-
   return (
-    <section className="auth-page">
-      <h1>Sign in to Hire</h1>
-      <p className="subtitle">
-        One account for your proof-of-work profile, your deck and your applications. Before we collect anything beyond
-        your sign-in, we show you our <Link to="/privacy" className="text-link">privacy notice</Link>.
-      </p>
+    <div className="auth-layout">
+      <section>
+        <span className="eyebrow">
+          <span className="eyebrow-dot" aria-hidden="true" />
+          For engineers and students in India
+        </span>
+        <h1 className="hero-title">
+          Apply to real jobs.
+          <br />
+          <span className="serif accent-text">Skip the ghosts.</span>
+        </h1>
+        <p className="hero-lede">
+          Hire deals you a daily deck of verified openings, backs your application with proof from your GitHub, and
+          tracks every reply. Swipe right to apply, left to pass.
+        </p>
+        <ul className="value-list">
+          {VALUES.map((v) => (
+            <li key={v.title}>
+              <span className="value-icon">
+                <Icon name={v.icon} size={18} />
+              </span>
+              <span>
+                <strong>{v.title}</strong>
+                <span>{v.body}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="card auth-card">
         {!sentTo ? (
           <>
-            <div className="oauth-buttons">
-              <button type="button" className="btn-oauth" onClick={() => oauth('github')}>
-                Continue with GitHub
-              </button>
-              <button type="button" className="btn-oauth" onClick={() => oauth('google')}>
-                Continue with Google
-              </button>
-            </div>
-            <div className="divider" role="separator">
-              <span>or use your email</span>
-            </div>
-            <form onSubmit={onEmailSubmit} className="connect-form auth-form" noValidate>
-              <label>
-                Email address
+            <h2>Sign in or create an account</h2>
+            <p className="muted small" style={{ marginTop: 6 }}>
+              Just your email: we send you a 6-digit code, no password. New here? Setup takes about three minutes.
+            </p>
+            <div style={{ height: 22 }} />
+            <form onSubmit={onEmailSubmit} className="form" noValidate>
+              <label className="field">
+                <span className="field-label">Email address</span>
                 <input
+                  className="input"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -120,16 +140,20 @@ export default function LoginPage() {
                   aria-describedby={error ? 'auth-error' : undefined}
                 />
               </label>
-              <button type="submit" disabled={busy || !email.trim()}>
-                {busy ? 'Sending code…' : 'Email me a code'}
+              <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={busy || !email.trim()}>
+                {busy ? 'Sending code…' : 'Email me a sign-in code'}
               </button>
             </form>
           </>
         ) : (
-          <form onSubmit={onCodeSubmit} className="connect-form auth-form">
-            <p className="otp-sent" aria-live="polite">
-              We sent a 6-digit code to <strong>{sentTo}</strong>. It expires in 10 minutes.
-            </p>
+          <form onSubmit={onCodeSubmit} className="form">
+            <div>
+              <h2>Check your inbox</h2>
+              <p className="muted small" style={{ marginTop: 6 }} aria-live="polite">
+                We sent a 6-digit code to <strong style={{ color: 'var(--ink)' }}>{sentTo}</strong>. It expires in 10
+                minutes.
+              </p>
+            </div>
             <OtpInput
               digits={digits}
               onChange={onDigits}
@@ -138,37 +162,56 @@ export default function LoginPage() {
               describedBy={error ? 'auth-error' : undefined}
               autoFocus
             />
-            <button type="submit" disabled={busy || !isComplete(digits)}>
+            <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={busy || !isComplete(digits)}>
               {busy ? 'Checking…' : 'Verify and continue'}
             </button>
-            <div className="otp-actions">
-              <button
-                type="button"
-                className="link-button"
-                disabled={busy || secondsLeft > 0}
-                onClick={() => sendCode(sentTo)}
-              >
-                {secondsLeft > 0 ? `Resend code in ${formatCountdown(secondsLeft)}` : 'Resend code'}
+            <div className="row-between small">
+              <button type="button" className="link-btn" disabled={busy || secondsLeft > 0} onClick={() => sendCode(sentTo)}>
+                {secondsLeft > 0 ? `Resend in ${formatCountdown(secondsLeft)}` : 'Resend code'}
               </button>
               <button
                 type="button"
-                className="link-button"
+                className="link-btn"
                 onClick={() => {
                   setSentTo(null)
                   setError(null)
                 }}
               >
-                Use a different email
+                Use another email
               </button>
             </div>
           </form>
         )}
 
-        <p id="auth-error" className="error auth-error" role="alert">
-          {error}
+        {error && (
+          <div style={{ marginTop: 16 }}>
+            <Alert tone="error" id="auth-error">
+              {error}
+            </Alert>
+          </div>
+        )}
+
+        {USE_MOCKS ? (
+          <p className="dev-note">Mock mode: any email works and the code is 123456.</p>
+        ) : (
+          import.meta.env.DEV &&
+          sentTo && (
+            <p className="dev-note">
+              Running locally? No email is sent. Your code is in the API log:
+              <br />
+              <code>docker logs hire-api-1 2&gt;&amp;1 | findstr "DEV login code"</code>
+            </p>
+          )
+        )}
+
+        <p className="hint" style={{ marginTop: 18 }}>
+          Before we collect anything beyond your sign-in, we show you our{' '}
+          <Link to="/privacy" className="text-link">
+            privacy notice
+          </Link>
+          .
         </p>
-        {USE_MOCKS && <p className="hint">Mock mode: any email works, and the code is 123456.</p>}
       </div>
-    </section>
+    </div>
   )
 }

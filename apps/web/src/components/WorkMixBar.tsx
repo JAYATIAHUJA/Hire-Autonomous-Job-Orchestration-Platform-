@@ -15,16 +15,14 @@ export default function WorkMixBar({ mix }: { mix: WorkMix[] }) {
   if (total === 0) return null
 
   return (
-    <section className="card">
-      <h2>What kind of work</h2>
-      <div className="mix-bar" role="img" aria-label="Work mix">
+    <section className="card card-pad">
+      <h3>What kind of work you do</h3>
+      <p className="muted small" style={{ margin: '4px 0 16px' }}>
+        Each commit and pull request, sorted by what it changed.
+      </p>
+      <div className="mix-bar" role="img" aria-label={mix.map((m) => `${WORK_TYPE_LABELS[m.type]} ${Math.round((m.count / total) * 100)}%`).join(', ')}>
         {mix.map((m) => (
-          <span
-            key={m.type}
-            className={`mix-segment type-${m.type.replace('/', '-')}`}
-            style={{ flexGrow: m.count }}
-            title={`${WORK_TYPE_LABELS[m.type]}: ${m.count}`}
-          />
+          <span key={m.type} className={`mix-segment type-${m.type.replace('/', '-')}`} style={{ flexGrow: m.count }} />
         ))}
       </div>
       <ul className="mix-legend">
@@ -32,7 +30,6 @@ export default function WorkMixBar({ mix }: { mix: WorkMix[] }) {
           <li key={m.type}>
             <span className={`swatch type-${m.type.replace('/', '-')}`} />
             {WORK_TYPE_LABELS[m.type]} <strong>{Math.round((m.count / total) * 100)}%</strong>
-            <span className="muted"> · {m.count}</span>
           </li>
         ))}
       </ul>

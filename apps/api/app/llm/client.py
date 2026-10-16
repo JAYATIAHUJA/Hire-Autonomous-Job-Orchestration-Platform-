@@ -123,12 +123,19 @@ class AnthropicLLMClient:
         key = api_key or settings.anthropic_api_key
         if key:
             kwargs["api_key"] = key
+        if settings.anthropic_base_url:
+            kwargs["base_url"] = settings.anthropic_base_url
+            # Compatible gateways (Z.ai GLM among them) read the key from a bearer token.
+            if key:
+                kwargs["auth_token"] = key
         if http_client is not None:
             kwargs["http_client"] = http_client
         self._client = anthropic.Anthropic(**kwargs)
 
     def _request(self, system: str, content: list[dict[str, Any]], tool: dict[str, Any]) -> dict[str, Any]:
-        extra_body: dict[str, Any] = {"output_config": {"effort": settings.llm_effort}}
+        extra_body: dict[str, Any] = {}
+        if settings.llm_effort:
+            extra_body["output_config"] = {"effort": settings.llm_effort}
         extra_headers: dict[str, str] = {}
         if settings.llm_refusal_fallback:
             extra_body["fallbacks"] = "default"

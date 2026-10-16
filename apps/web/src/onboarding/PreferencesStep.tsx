@@ -1,33 +1,41 @@
 import { useState, type FormEvent } from 'react'
 import { accountApi } from '../api/account'
 import type { ExperienceBand, Preferences } from '../api/v1types'
+import { Alert, errorMessage } from '../ui/kit'
 import { splitList } from './steps'
 
-const BANDS: { value: ExperienceBand; label: string }[] = [
-  { value: '0-1', label: 'Less than 1 year' },
-  { value: '1-3', label: '1 to 3 years' },
-  { value: '3-5', label: '3 to 5 years' },
-  { value: '5-8', label: '5 to 8 years' },
-  { value: '8-12', label: '8 to 12 years' },
-  { value: '12+', label: 'More than 12 years' },
+export const BANDS: { value: ExperienceBand; label: string }[] = [
+  { value: '0-1', label: 'Intern / Fresher' },
+  { value: '1-3', label: '1–3 years' },
+  { value: '3-5', label: '3–5 years' },
+  { value: '5-8', label: '5–8 years' },
+  { value: '8-12', label: '8–12 years' },
+  { value: '12+', label: '12+ years' },
 ]
 
-type Props = { onNext: () => void }
+const ROLE_IDEAS = ['Backend engineer', 'Frontend engineer', 'Full-stack engineer', 'SDE intern', 'Data engineer', 'DevOps / SRE']
 
-export default function PreferencesStep({ onNext }: Props) {
-  const [roles, setRoles] = useState('')
-  const [locations, setLocations] = useState('')
-  const [remoteOk, setRemoteOk] = useState(false)
-  const [band, setBand] = useState<ExperienceBand | ''>('')
-  const [salary, setSalary] = useState('')
-  const [currency, setCurrency] = useState<'INR' | 'USD'>('INR')
-  const [dealBreakers, setDealBreakers] = useState('')
+type Props = { onSaved: () => void; initial?: Preferences | null; submitLabel?: string; onCancel?: () => void }
+
+export default function PreferencesStep({ onSaved, initial, submitLabel = 'Save', onCancel }: Props) {
+  const [roles, setRoles] = useState(initial?.roles.join(', ') ?? '')
+  const [locations, setLocations] = useState(initial?.locations.join(', ') ?? '')
+  const [remoteOk, setRemoteOk] = useState(initial?.remote_ok ?? false)
+  const [band, setBand] = useState<ExperienceBand | ''>(initial?.experience_band ?? '')
+  const [salary, setSalary] = useState(initial?.salary_floor ? String(initial.salary_floor.amount) : '')
+  const [currency, setCurrency] = useState<'INR' | 'USD'>(initial?.salary_floor?.currency ?? 'INR')
+  const [dealBreakers, setDealBreakers] = useState(initial?.deal_breakers.join('\n') ?? '')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const roleList = splitList(roles)
+
+  function addRole(role: string) {
+    if (roleList.some((r) => r.toLowerCase() === role.toLowerCase())) return
+    setRoles([...roleList, role].join(', '))
+  }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault()
-    const roleList = splitList(roles)
     if (roleList.length === 0) {
       setError('Add at least one role you are looking for.')
       return
@@ -49,92 +57,128 @@ export default function PreferencesStep({ onNext }: Props) {
     setError(null)
     try {
       await accountApi.savePreferences(prefs)
-      onNext()
+      onSaved()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not save your preferences.')
+      setError(errorMessage(err, 'Could not save your preferences.'))
     } finally {
       setBusy(false)
     }
   }
 
+  const suggestions = ROLE_IDEAS.filter((r) => !roleList.some((x) => x.toLowerCase() === r.toLowerCase()))
+
   return (
-    <form onSubmit={onSubmit} className="onboarding-step connect-form" noValidate>
-      <p className="subtitle">This decides which jobs reach your deck. You can change it later.</p>
-      <label>
-        Roles you want
+    <form onSubmit={onSubmit} className="form" noValidate>
+      <div className="field">
+        <label className="field-label" htmlFor="pref-roles">
+          Roles you want
+        </label>
         <input
+          id="pref-roles"
+          className="input"
           value={roles}
           onChange={(e) => setRoles(e.target.value)}
           placeholder="Backend engineer, SRE"
-          required
           aria-describedby="roles-hint"
         />
-        <span id="roles-hint" className="hint">
-          Separate roles with commas.
+        {suggestions.length > 0 && (
+          <div className="chips-preview" id="roles-hint">
+            {suggestions.slice(0, 5).map((r) => (
+              <button key={r} type="button" className="chip chip-outline" style={{ cursor: 'pointer' }} onClick={() => addRole(r)}>
+                + {r}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="field">
+        <span className="field-label" id="band-label">
+          Experience
         </span>
-      </label>
-      <label>
-        Locations
+        <div className="choice-grid" role="radiogroup" aria-labelledby="band-label">
+          {BANDS.map((b) => (
+            <button
+              key={b.value}
+              type="button"
+              role="radio"
+              className="choice"
+              aria-checked={band === b.value}
+              onClick={() => setBand(band === b.value ? '' : b.value)}
+            >
+              {b.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <label className="field">
+        <span className="field-label">Cities</span>
         <input
+          className="input"
           value={locations}
           onChange={(e) => setLocations(e.target.value)}
-          placeholder="Bengaluru, Pune"
+          placeholder="Bengaluru, Pune, Hyderabad"
           autoComplete="off"
         />
+        <span className="hint">Separate with commas.</span>
       </label>
-      <label className="checkbox-label">
-        <input type="checkbox" checked={remoteOk} onChange={(e) => setRemoteOk(e.target.checked)} />
-        Open to remote roles
+
+      <label className={`switch-row${remoteOk ? ' on' : ''}`}>
+        <span className="switch-row-text">
+          <strong>Open to remote roles</strong>
+          <span>Remote jobs are added to your deck wherever the company is based.</span>
+        </span>
+        <input type="checkbox" role="switch" className="switch" checked={remoteOk} onChange={(e) => setRemoteOk(e.target.checked)} />
       </label>
-      <label>
-        Experience
-        <select value={band} onChange={(e) => setBand(e.target.value as ExperienceBand | '')}>
-          <option value="">Choose…</option>
-          {BANDS.map((b) => (
-            <option key={b.value} value={b.value}>
-              {b.label}
-            </option>
-          ))}
-        </select>
-      </label>
+
       <div className="field-row">
-        <label className="field-grow">
-          Minimum salary per year <span className="muted">(optional)</span>
+        <label className="field">
+          <span className="field-label">
+            Minimum salary per year<span className="optional">optional</span>
+          </span>
           <input
+            className="input"
             type="number"
             inputMode="numeric"
             min={0}
             value={salary}
             onChange={(e) => setSalary(e.target.value)}
-            placeholder={currency === 'INR' ? '1800000' : '60000'}
+            placeholder={currency === 'INR' ? '1200000' : '60000'}
           />
         </label>
-        <label>
-          Currency
-          <select value={currency} onChange={(e) => setCurrency(e.target.value as 'INR' | 'USD')}>
-            <option value="INR">INR</option>
-            <option value="USD">USD</option>
+        <label className="field" style={{ width: 110 }}>
+          <span className="field-label">Currency</span>
+          <select className="select" value={currency} onChange={(e) => setCurrency(e.target.value as 'INR' | 'USD')}>
+            <option value="INR">INR ₹</option>
+            <option value="USD">USD $</option>
           </select>
         </label>
       </div>
-      <label>
-        Deal-breakers <span className="muted">(optional)</span>
+
+      <label className="field">
+        <span className="field-label">
+          Deal-breakers<span className="optional">optional</span>
+        </span>
         <textarea
+          className="textarea"
           rows={3}
           value={dealBreakers}
           onChange={(e) => setDealBreakers(e.target.value)}
-          placeholder={'One per line, e.g.\nNo night shifts\nNo bond or service agreement'}
+          placeholder={'One per line, e.g.\nNo night shifts\nNo service bond'}
         />
       </label>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="step-actions">
-        <button type="submit" disabled={busy}>
-          {busy ? 'Saving…' : 'Save and continue'}
+
+      {error && <Alert tone="error">{error}</Alert>}
+      <div className="form-actions">
+        <button type="submit" className="btn btn-primary btn-lg" disabled={busy}>
+          {busy ? 'Saving…' : submitLabel}
         </button>
+        {onCancel && (
+          <button type="button" className="btn btn-ghost btn-lg" onClick={onCancel} disabled={busy}>
+            Cancel
+          </button>
+        )}
       </div>
     </form>
   )

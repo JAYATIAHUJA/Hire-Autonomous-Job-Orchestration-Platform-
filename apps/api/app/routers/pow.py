@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from sqlalchemy.orm import Session
 
 from ..auth.consents import require_github_consent
+from ..auth.presence import saved_github_username
 from ..auth.deps import get_current_user
 from ..db import get_db
 from ..profiles.pow_models import PowEvidence, PowRun
@@ -27,9 +28,10 @@ def refresh(response: Response, payload: Optional[PowRefreshRequest] = None,
             db: Session = Depends(get_db)):
     payload = payload or PowRefreshRequest()  # the web client posts no body when GitHub is linked
     linked = linked_login(db, account.id)
-    username = payload.github_username or linked
+    # Without a linked token, fall back to the username the user saved on their profile.
+    username = payload.github_username or linked or saved_github_username(db, account.id)
     if not username:
-        raise HTTPException(status_code=422, detail="Connect GitHub or give github_username.")
+        raise HTTPException(status_code=422, detail="Add your GitHub username to your profile first.")
     # Evidence is cited as the user's own work, so once an account has linked GitHub
     # it may only analyse that login.
     if linked and username.lower() != linked.lower():
@@ -39,6 +41,13 @@ def refresh(response: Response, payload: Optional[PowRefreshRequest] = None,
     if not created:
         response.status_code = 200  # an analysis is already queued or running: return it
     return _run_out(run)
+
+
+@router.get("/pow/latest", response_model=Optional[PowRunOut])
+def get_latest_run(account=Depends(get_current_user), db: Session = Depends(get_db)):
+    """The newest run, or null when this account has never been analysed. Never starts one."""
+    run = pow_service.latest_run(db, account.id)
+    return _run_out(run) if run else None
 
 
 @router.get("/pow/runs/{run_id}", response_model=PowRunOut)

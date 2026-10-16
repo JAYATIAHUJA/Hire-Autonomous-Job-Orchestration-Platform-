@@ -1,8 +1,9 @@
 """Database repository layer for Job, Company, and JD Cache operations."""
 
 import json
-from datetime import datetime, timezone
-from typing import Iterable, Optional
+from datetime import datetime, timedelta, timezone
+from typing import Any, Iterable, Optional
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from . import models
@@ -11,11 +12,27 @@ from .schemas import (
     GhostJobMetricsContract,
     JobContract,
     ParsedRequirementsContract,
+    MatchContract,
     RoleContract,
+    SourceContract,
 )
 
 
-def to_job_contract(job: models.Job) -> JobContract:
+def _readable(text: Optional[str], limit: Optional[int]) -> Optional[str]:
+    """Plain text for the client even if an older row stored HTML or mis-decoded quotes."""
+    from .ingestion.ats_boards import fix_mojibake, plain_text
+
+    if not text:
+        return None
+    clean = plain_text(text) if "<" in text or "&lt;" in text else fix_mojibake(text)
+    return (clean[:limit] if limit else clean) or None
+
+
+def _iso(value: Optional[datetime]) -> Optional[str]:
+    return value.replace(tzinfo=timezone.utc).isoformat() if value else None
+
+
+def to_job_contract(job: models.Job, full_description: bool = False) -> JobContract:
     """Serialize a Job ORM model to the shared JSON Data Contract."""
     skills = json.loads(job.primary_skills_json or "[]")
     created_str = job.created_at.replace(tzinfo=timezone.utc).isoformat() if job.created_at else datetime.now(timezone.utc).isoformat()
@@ -45,6 +62,14 @@ def to_job_contract(job: models.Job) -> JobContract:
             raw_description_hash=job.raw_description_hash,
         ),
         created_at=created_str,
+        source=SourceContract(
+            name=job.source,
+            apply_url=job.apply_url,
+            posted_at=_iso(job.posted_at),
+            last_seen_at=_iso(job.last_seen_at),
+            is_remote=bool(job.is_remote),
+        ),
+        description=_readable(job.raw_description, None if full_description else 400),
     )
 
 
@@ -56,7 +81,7 @@ def get_job_by_id(db: Session, job_id: str) -> Optional[JobContract]:
         .filter(models.Job.job_id == job_id)
         .first()
     )
-    return to_job_contract(job) if job else None
+    return to_job_contract(job, full_description=True) if job else None
 
 
 def get_job_by_description_hash(db: Session, hash_val: str) -> Optional[JobContract]:
@@ -77,6 +102,14 @@ def get_jobs_feed(
     limit: int = 20,
     page: int = 1,
     exclude_job_ids: Optional[Iterable[str]] = None,
+    q: Optional[str] = None,
+    city: Optional[str] = None,
+    remote: bool = False,
+    newest_first: bool = False,
+    levels: Optional[Iterable[str]] = None,
+    salary_shown: bool = False,
+    posted_within_days: Optional[int] = None,
+    rank: Optional[Any] = None,
 ) -> tuple[list[JobContract], int]:
     """Retrieve clean, ghost-filtered jobs feed for Student C's swipe UI.
     
@@ -93,8 +126,38 @@ def get_jobs_feed(
             models.Job.legitimacy_probability >= min_legitimacy,
             models.Job.ghost_score < 700,
         )
-        .order_by(models.Job.ghost_score.asc(), models.Job.created_at.desc())
     )
+    if q and q.strip():
+        like = f"%{q.strip()}%"
+        query = query.join(models.Company).filter(
+            models.Job.title.ilike(like) | models.Company.name.ilike(like) | models.Job.primary_skills_json.ilike(like)
+        )
+    if city and city.strip():
+        query = query.filter(models.Job.location.ilike(f"%{city.strip()}%"))
+    if remote:
+        query = query.filter(models.Job.is_remote.is_(True) | models.Job.location.ilike("%remote%"))
+    if levels:
+        query = query.filter(models.Job.experience_level.in_(list(levels)))
+    if salary_shown:
+        query = query.filter(models.Job.salary_range.isnot(None), models.Job.salary_range != "")
+    if posted_within_days:
+        since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=posted_within_days)
+        query = query.filter(func.coalesce(models.Job.posted_at, models.Job.created_at) >= since)
+    if rank is not None:
+        # Best match first: score every match in Python (a few thousand rows at most).
+        scored = sorted(((rank(job), job) for job in query.all()),
+                        key=lambda t: (t[0][0], t[1].posted_at or t[1].created_at or datetime.min), reverse=True)
+        total = len(scored)
+        out = []
+        for (points, reasons), job in scored[offset:offset + limit]:
+            contract = to_job_contract(job)
+            contract.match = MatchContract(score=points, percent=max(0, min(100, round(points / 7 * 100))), reasons=reasons)
+            out.append(contract)
+        return out, total
+    if newest_first:
+        query = query.order_by(models.Job.posted_at.desc().nullslast(), models.Job.created_at.desc())
+    else:
+        query = query.order_by(models.Job.ghost_score.asc(), models.Job.created_at.desc())
 
     excluded = set(exclude_job_ids or ())
     if excluded:
@@ -161,6 +224,11 @@ def save_job(
     raw_description: str,
     canonical_key: Optional[str] = None,
     is_active: bool = True,
+    source: Optional[str] = None,
+    apply_url: Optional[str] = None,
+    posted_at: Optional[datetime] = None,
+    is_remote: bool = False,
+    commit: bool = True,
 ) -> models.Job:
     """Upsert Company and Job entities."""
     # Lookup or create company
@@ -199,7 +267,9 @@ def save_job(
             is_active=is_active,
         )
         db.add(job)
+        created = True
     else:
+        created = False
         job.title = title
         job.location = location
         job.salary_range = salary_range
@@ -212,7 +282,20 @@ def save_job(
         if canonical_key:
             job.canonical_key = canonical_key
         job.is_active = is_active
+        job.raw_description = raw_description
+        job.raw_description_hash = raw_description_hash
+        job.experience_level = experience_level
 
-    db.commit()
-    db.refresh(job)
+    job.source = source or job.source
+    job.apply_url = apply_url or job.apply_url
+    job.posted_at = posted_at.replace(tzinfo=None) if posted_at else job.posted_at
+    job.is_remote = bool(is_remote)
+    job.last_seen_at = datetime.now(timezone.utc).replace(tzinfo=None)
+    job._was_created = created  # read by the pipeline counters; not a column
+
+    if commit:
+        db.commit()
+        db.refresh(job)
+    else:
+        db.flush()
     return job

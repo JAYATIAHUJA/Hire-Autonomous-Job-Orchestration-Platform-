@@ -55,6 +55,15 @@ class Settings(BaseSettings):
     # Background worker (python -m app.worker).
     discovery_interval_seconds: int = 1800
     discovery_batch_size: int = 50
+    # The hard-coded Phase 0 sample jobs. Off in real use; tests switch it on.
+    demo_jobs_enabled: bool = False
+    # Employer boards (Greenhouse / Lever / Ashby) read per discovery round, oldest first.
+    ats_boards_per_round: int = 40
+    ats_fetch_concurrency: int = 4
+    # The verified board list; loaded into ``companies`` when the table has no boards yet.
+    ats_registry_path: str = "/srv/data/ats-registry/registry.json"
+    # How often the worker checks for a "find jobs now" request between rounds.
+    discovery_poll_seconds: float = 5.0
 
     # Background recruiter-mailbox reader. Disabled by default so local runs and
     # tests never reach for a mailbox; the /api/mail/sync endpoint works either way.
@@ -110,7 +119,11 @@ class Settings(BaseSettings):
 
     # Anthropic (app/llm). The model id lives here only; call sites never name a model.
     anthropic_api_key: str = ""
+    # Any Anthropic-compatible Messages endpoint, e.g. Z.ai GLM at https://api.z.ai/api/anthropic.
+    # Empty means the real Anthropic API.
+    anthropic_base_url: str = ""
     llm_model: str = "claude-opus-5-5"
+    # Empty leaves output_config out of the request, for endpoints that do not know it.
     llm_effort: str = "medium"
     llm_max_tokens: int = 16000
     llm_timeout_seconds: float = 120.0

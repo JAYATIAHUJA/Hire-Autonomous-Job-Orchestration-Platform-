@@ -139,3 +139,19 @@ def test_the_review_text_says_mock_or_real(tmp_path):
     assert "[MOCK ATS]" in render_plan(plan)
     real = plan_application(parse_job_url("https://boards.greenhouse.io/acme/jobs/1"), _schema(), _applicant(tmp_path))
     assert "[REAL EMPLOYER]" in render_plan(real)
+
+
+def test_answer_bank_topics_answer_however_the_form_words_it(tmp_path):
+    from app.apply.greenhouse import Applicant, JobRef, plan_application
+
+    job = JobRef(board="acme", job_id=1, api_base="https://x", form_url="https://x/f", is_mock=False)
+    schema = {"title": "SWE", "questions": [
+        {"label": "What is your notice period?", "required": True, "fields": [{"name": "q1", "type": "input_text"}]},
+        {"label": "Are you willing to relocate to Pune?", "required": True,
+         "fields": [{"name": "q2", "type": "multi_value_single_select", "values": [{"label": "Yes", "value": 1}, {"label": "No", "value": 0}]}]},
+    ]}
+    applicant = Applicant(first_name="A", last_name="B", email="a@b.co",
+                          topic_answers={r"notice period": "30 days", r"relocat": "Yes"})
+    plan = plan_application(job, schema, applicant)
+    assert plan.ready
+    assert {a.field_name: a.shown for a in plan.answers} == {"q1": "30 days", "q2": "Yes"}

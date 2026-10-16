@@ -28,6 +28,26 @@ x-api-env: &api-env
   GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET:-}
   # Resume parsing (WP6). Put your key in .env; without it uploads answer 503.
   ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  # Optional: point the same client at an Anthropic-compatible endpoint (e.g. Z.ai GLM).
+  ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-}
+  LLM_MODEL: ${LLM_MODEL:-claude-opus-5-5}
+  LLM_EFFORT: ${LLM_EFFORT-medium}
+  LLM_REFUSAL_FALLBACK: ${LLM_REFUSAL_FALLBACK:-true}
+  # GitHub token for PoW runs when the user has not linked GitHub (60 -> 5,000 requests/hour).
+  GITHUB_APP_TOKEN: ${GITHUB_APP_TOKEN:-}
+  # Real OTP email. Empty keeps dev codes in the API log.
+  OTP_SENDER: ${OTP_SENDER:-}
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  SMTP_FROM: ${SMTP_FROM:-}
+  # Recruiter-reply mailbox for the pipeline board.
+  IMAP_ENABLED: ${IMAP_ENABLED:-false}
+  IMAP_HOST: ${IMAP_HOST:-}
+  IMAP_USER: ${IMAP_USER:-}
+  IMAP_PASSWORD: ${IMAP_PASSWORD:-}
+  IMAP_CANDIDATE_REF: ${IMAP_CANDIDATE_REF:-}
 
 services:
   db:
@@ -86,6 +106,8 @@ services:
   api:
     build: ./apps/api
     environment: *api-env
+    # The verified employer boards the worker reads jobs from (data/ats-registry).
+    volumes: ["./data/ats-registry:/srv/data/ats-registry:ro"]
     depends_on:
       db: {condition: service_healthy}
       redis: {condition: service_healthy}
@@ -97,9 +119,13 @@ services:
       retries: 20
 
   worker:
-    build: ./apps/api
+    build:
+      context: ./apps/api
+      args:
+        WITH_BROWSER: "true"  # fills application forms (auto-apply)
     command: ["python", "-m", "app.worker"]
     environment: *api-env
+    volumes: ["./data/ats-registry:/srv/data/ats-registry:ro"]
     depends_on:
       api: {condition: service_healthy}  # api runs the migrations
 

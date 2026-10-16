@@ -23,8 +23,8 @@ describe('apiFetch', () => {
     const fetchMock = vi.fn(async () => ok())
     vi.stubGlobal('fetch', fetchMock)
 
-    await getBoard('ignored-handle')
-    await swipeJob('job-1', 'right', 'ignored-handle').catch(() => undefined)
+    await getBoard()
+    await swipeJob('job-1', 'right').catch(() => undefined)
     for (const call of fetchMock.mock.calls as unknown as [string, RequestInit][]) {
       expect(call[1].credentials).toBe('include')
       expect(new Headers(call[1].headers).get('X-Requested-With')).toBe('hire-web')

@@ -18,6 +18,8 @@ class Company(Base):
     ats_vendor = Column(String, nullable=True)  # greenhouse | lever | ashby
     ats_board_token = Column(String, nullable=True)
     ats_checked_at = Column(DateTime, nullable=True)
+    # When the board was last read for openings (oldest first gets read next).
+    jobs_fetched_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     jobs = relationship("Job", back_populates="company", cascade="all, delete-orphan")
@@ -51,10 +53,38 @@ class Job(Base):
     # Same job on several boards -> same key (employer + title + city; see cross_portal_key).
     canonical_key = Column(String, nullable=True, index=True)
 
+    # Where it came from: greenhouse | lever | ashby | remoteok | sample.
+    source = Column(String, nullable=True, index=True)
+    # The employer's own posting: where the candidate reads and applies.
+    apply_url = Column(String, nullable=True)
+    posted_at = Column(DateTime, nullable=True)
+    # Last time a board still listed it; a job that drops off its board is closed.
+    last_seen_at = Column(DateTime, nullable=True)
+    is_remote = Column(Boolean, default=False, nullable=False)
+
     is_active = Column(Boolean, default=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
     company = relationship("Company", back_populates="jobs")
+
+
+class DiscoveryRun(Base):
+    """One pass over the job boards. A ``requested`` row asks the worker to run now."""
+
+    __tablename__ = "discovery_runs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    status = Column(String, nullable=False, index=True)  # requested | running | done | failed
+    requested_at = Column(DateTime, nullable=True)
+    started_at = Column(DateTime, nullable=True)
+    finished_at = Column(DateTime, nullable=True)
+    boards_checked = Column(Integer, nullable=False, default=0)
+    boards_failed = Column(Integer, nullable=False, default=0)
+    jobs_added = Column(Integer, nullable=False, default=0)
+    jobs_updated = Column(Integer, nullable=False, default=0)
+    jobs_closed = Column(Integer, nullable=False, default=0)
+    ghosts_filtered = Column(Integer, nullable=False, default=0)
+    error = Column(Text, nullable=True)
 
 
 class JobDescriptionCache(Base):

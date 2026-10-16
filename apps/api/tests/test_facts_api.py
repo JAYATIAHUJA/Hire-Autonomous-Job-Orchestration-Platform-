@@ -313,3 +313,37 @@ def test_endpoints_require_login():
                          ("post", "/v1/profile/facts/approve")]:
         kwargs = {"json": {"ids": ["x"], "answers": {}}} if method in {"put", "post"} else {}
         assert getattr(client, method)(path, **kwargs).status_code == 401, path
+
+
+def test_several_resumes_in_one_batch_add_up_without_duplicates(h):
+    h.llm.response = tool_output([fact("skill", "Go", name="Go"), fact("skill", "Python", name="Python")])
+    first = h.client.post("/v1/profile/resume?batch=true", files={"file": ("a.pdf", PDF.read_bytes(), "application/pdf")})
+    h.llm.response = tool_output([fact("skill", "Python", name="Python"), fact("skill", "Rust", name="Rust")])
+    second = h.client.post("/v1/profile/resume?batch=true", files={"file": ("b.pdf", PDF.read_bytes(), "application/pdf")})
+    assert second.json()["skipped_duplicates"] == 1  # Python came with the first resume
+    pending = h.client.get("/v1/profile").json()["pending_proposals"]
+    assert sorted(p["text"] for p in pending) == ["Go", "Python", "Rust"]
+    assert len(first.json()["proposals"]) == 2
+
+
+def test_a_newer_resume_lists_what_only_the_older_one_had_and_keeps_it(h):
+    approve(h, [p["id"] for p in upload(h).json()["proposals"]])
+    h.llm.response = tool_output([fact("skill", "Python", name="Python")])
+    body = upload(h).json()
+    kept = {k["kind"] for k in body["kept_from_before"]}
+    assert "experience" in kept and "skill" in kept  # Kafka, the roles: not in the new one
+    assert "Python" not in {k["text"] for k in body["kept_from_before"]}
+    # Kept means kept: still approved, still in the profile.
+    assert h.client.get("/v1/profile").json()["profile"]["experience"]
+
+
+def test_the_same_pointer_in_other_words_is_not_proposed_twice(h):
+    h.llm.response = tool_output([fact("achievement", "Built an order-batching service in Go that cut delivery time by 35%")])
+    h.client.post("/v1/profile/resume?batch=true", files={"file": ("a.pdf", PDF.read_bytes(), "application/pdf")})
+    h.llm.response = tool_output([
+        fact("achievement", "Built order-batching service in Go at Zepto that cut delivery time by 35%"),
+        fact("achievement", "Mentored two interns on testing"),
+    ])
+    second = h.client.post("/v1/profile/resume?batch=true", files={"file": ("b.pdf", PDF.read_bytes(), "application/pdf")}).json()
+    assert second["skipped_duplicates"] == 1
+    assert [p["text"] for p in second["proposals"]] == ["Mentored two interns on testing"]

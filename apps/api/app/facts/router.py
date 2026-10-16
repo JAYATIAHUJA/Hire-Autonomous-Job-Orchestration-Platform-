@@ -8,7 +8,7 @@ import hashlib
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, Response, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Response, UploadFile
 from sqlalchemy.orm import Session
 
 from ..auth.consents import require_resume_consent
@@ -17,13 +17,16 @@ from ..db import get_db
 from ..llm.client import LLMClient, LLMError, LLMRefusal, get_llm_client
 from . import repository
 from .documents import DOCX, MAX_RESUME_BYTES, UnsupportedDocument, extract_text, sniff_content_type
-from .extraction import extract_facts
+from .extraction import FACT_KINDS, extract_facts
 from .models import new_upload_id
 from .schemas import (
     AnswerBank,
     AnswerBankResponse,
     FactBatchResponse,
+    FactCreate,
     FactIdsRequest,
+    FactOut,
+    FactUpdate,
     ProfileResponse,
     ResumeUploadResponse,
 )
@@ -39,6 +42,7 @@ answer_bank_router = APIRouter(prefix="/v1/me/answer-bank", tags=["facts"])
 @router.post("/resume", response_model=ResumeUploadResponse)
 def upload_resume(
     file: UploadFile = File(...),
+    batch: bool = Query(default=False, description="One of several resumes uploaded together: keep earlier pending proposals"),
     account: Account = Depends(require_resume_consent),
     db: Session = Depends(get_db),
     llm: LLMClient = Depends(get_llm_client),
@@ -73,8 +77,10 @@ def upload_resume(
             text_source="pdf_document" if extracted.needs_pdf_fallback else "text_layer",
         )
         proposals, skipped = repository.create_proposals(
-            db, account_id=account.id, source="resume", source_ref=upload_id, candidates=result.facts
+            db, account_id=account.id, source="resume", source_ref=upload_id, candidates=result.facts,
+            keep_pending=batch,
         )
+        kept = repository.only_in_older(db, account.id, result.facts)
         db.commit()
     except Exception as exc:
         # Keep nothing we can't use: no orphaned file, no half-written proposals.
@@ -95,6 +101,7 @@ def upload_resume(
         proposals=[repository.to_out(f, approved) for f in proposals],
         skipped_duplicates=skipped,
         contains_instructions=result.contains_instructions,
+        kept_from_before=[repository.to_out(f, approved) for f in kept],
     )
 
 
@@ -112,6 +119,29 @@ def _set_status(payload: FactIdsRequest, status: str, account: Account, db: Sess
 def approve_facts(payload: FactIdsRequest, account: Account = Depends(get_current_user),
                   db: Session = Depends(get_db)):
     return _set_status(payload, "approved", account, db)
+
+
+@router.post("/facts", response_model=FactOut, status_code=201)
+def add_fact(payload: FactCreate, account: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Add something the resume missed: a project, an achievement under a role, a skill."""
+    if payload.kind not in FACT_KINDS:
+        raise HTTPException(status_code=422, detail=f"Unknown kind {payload.kind!r}.")
+    fact = repository.add_user_fact(db, account.id, payload.kind, payload.text, payload.structured)
+    db.commit()
+    return repository.to_out(fact)
+
+
+@router.patch("/facts/{fact_id}", response_model=FactOut)
+def edit_fact(fact_id: str, payload: FactUpdate, account: Account = Depends(get_current_user),
+              db: Session = Depends(get_db)):
+    """Fix the wording or fields of a proposed or approved fact (yours only)."""
+    try:
+        fact = repository.update_fact(db, account.id, fact_id, payload.text, payload.structured)
+    except repository.FactsNotFound as exc:
+        db.rollback()
+        raise HTTPException(status_code=404, detail="Fact not found.") from exc
+    db.commit()
+    return repository.to_out(fact)
 
 
 @router.post("/facts/reject", response_model=FactBatchResponse)

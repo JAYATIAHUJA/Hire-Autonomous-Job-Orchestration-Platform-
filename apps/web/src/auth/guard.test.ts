@@ -48,13 +48,13 @@ describe('decideRoute', () => {
 
   it('lets a finished user into the app and keeps them out of login and onboarding', () => {
     expect(decideRoute(authed(finished), 'app')).toEqual({ kind: 'allow' })
-    expect(decideRoute(authed(finished), 'onboarding')).toEqual({ kind: 'redirect', to: '/swipe' })
-    expect(decideRoute(authed(finished), 'login')).toEqual({ kind: 'redirect', to: '/swipe' })
+    expect(decideRoute(authed(finished), 'onboarding')).toEqual({ kind: 'redirect', to: '/' })
+    expect(decideRoute(authed(finished), 'login')).toEqual({ kind: 'redirect', to: '/' })
     expect(decideRoute(authed(finished), 'login', { next: '/pipeline' })).toEqual({ kind: 'redirect', to: '/pipeline' })
   })
 
   it('ignores an off-site ?next=', () => {
-    expect(decideRoute(authed(finished), 'login', { next: '//evil.example' })).toEqual({ kind: 'redirect', to: '/swipe' })
+    expect(decideRoute(authed(finished), 'login', { next: '//evil.example' })).toEqual({ kind: 'redirect', to: '/' })
   })
 })
 
