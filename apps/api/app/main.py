@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .applications.consent import ensure_signing_secret
 from .auth import router as auth_router
+from .auth.tokens import register_github_providers
 from .config import settings
 from .db import init_db
 from .mail.poller import poll_forever
@@ -20,6 +21,7 @@ async def lifespan(_: FastAPI):
     # Refuse to start without a real signing secret, rather than fail on the first swipe.
     ensure_signing_secret()
     init_db()
+    register_github_providers()
 
     # Objective 3: the recruiter mailbox reader runs alongside the API, moving
     # cards on the board as replies land. Opt in with IMAP_ENABLED.

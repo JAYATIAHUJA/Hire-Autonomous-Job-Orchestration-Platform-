@@ -120,7 +120,9 @@ async def execute(db: Session, run: PowRun, client_factory: Optional[ClientFacto
                                          include_private=run.include_private, progress=progress)
         if not data["projects"]:
             raise _RunFailed("No non-fork repositories or merged pull requests found.")
-        user = repository.save(db, builder.build_profile(run.github_username, _public_only(data)))
+        profile = builder.build_profile(run.github_username, _public_only(data))
+        profile.account_id = run.account_id  # profiles are owner-scoped (WP1)
+        user = repository.save(db, profile)
         _replace_evidence(db, run, data["contributions"])
     except (GitHubAPIError, _RunFailed) as e:
         db.rollback()

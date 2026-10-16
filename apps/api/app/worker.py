@@ -14,6 +14,7 @@ import logging
 import signal
 from typing import Optional
 
+from .auth.tokens import register_github_providers
 from .config import settings
 from .db import SessionLocal
 from .jobs.pipeline import run_discovery_cycle
@@ -76,6 +77,7 @@ async def main() -> None:
         except NotImplementedError:  # Windows event loops don't support signal handlers
             pass
 
+    register_github_providers()  # PoW runs use the account's own GitHub token when linked
     logger.info("worker started")
     await asyncio.gather(discovery_loop(stop), pow_loop(stop))
     logger.info("worker stopped")
