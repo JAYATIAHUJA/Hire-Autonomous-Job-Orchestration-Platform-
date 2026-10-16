@@ -12,7 +12,9 @@ class AnalysisLimits:
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env")
+    # The repo-root .env (written by scripts/dev.py) also carries keys for other
+    # services; ignore them rather than refusing to start from the repo root.
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     database_url: str = "sqlite:///./hire.db"
     github_api_base: str = "https://api.github.com"
