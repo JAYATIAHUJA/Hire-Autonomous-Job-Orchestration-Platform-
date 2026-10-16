@@ -18,7 +18,7 @@ def test_compute_description_hash_deterministic():
     hash1 = compute_description_hash(text1)
     hash2 = compute_description_hash(text2)
 
-    assert len(hash1) == 32
+    assert len(hash1) == 64  # SHA-256
     assert hash1 == hash2
 
     # Different text yields distinct hash

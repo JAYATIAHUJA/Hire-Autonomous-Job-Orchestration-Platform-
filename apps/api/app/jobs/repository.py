@@ -105,6 +105,17 @@ def get_jobs_feed(
     return [to_job_contract(j) for j in rows], total
 
 
+def find_cross_portal_duplicate(
+    db: Session, canonical_key: str, *, exclude_job_id: str
+) -> Optional[models.Job]:
+    """An already-stored copy of this job from a different source, if any."""
+    return (
+        db.query(models.Job)
+        .filter(models.Job.canonical_key == canonical_key, models.Job.job_id != exclude_job_id)
+        .first()
+    )
+
+
 def lookup_cache(db: Session, hash_val: str) -> Optional[models.JobDescriptionCache]:
     """Check if normalized JD hash exists in global cache."""
     return db.query(models.JobDescriptionCache).filter(models.JobDescriptionCache.hash == hash_val).first()
@@ -148,6 +159,7 @@ def save_job(
     primary_skills: list[str],
     raw_description_hash: str,
     raw_description: str,
+    canonical_key: Optional[str] = None,
     is_active: bool = True,
 ) -> models.Job:
     """Upsert Company and Job entities."""
@@ -183,6 +195,7 @@ def save_job(
             primary_skills_json=json.dumps(primary_skills),
             raw_description_hash=raw_description_hash,
             raw_description=raw_description,
+            canonical_key=canonical_key,
             is_active=is_active,
         )
         db.add(job)
@@ -196,6 +209,8 @@ def save_job(
         job.posting_age_days = posting_age_days
         job.repost_count = repost_count
         job.primary_skills_json = json.dumps(primary_skills)
+        if canonical_key:
+            job.canonical_key = canonical_key
         job.is_active = is_active
 
     db.commit()

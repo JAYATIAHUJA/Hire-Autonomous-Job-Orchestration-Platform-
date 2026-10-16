@@ -6,8 +6,9 @@ from sqlalchemy.orm import Session
 
 from .ghost_filter.scorer import score_job
 from .ingestion.feeds import fetch_public_feed_jobs
+from .ingestion.canonical_key import cross_portal_key
 from .ingestion.hasher import compute_description_hash
-from .repository import lookup_cache, save_cache_entry, save_job
+from .repository import find_cross_portal_duplicate, lookup_cache, save_cache_entry, save_job
 
 
 async def process_and_ingest_job_items(
@@ -17,15 +18,26 @@ async def process_and_ingest_job_items(
     """Process a batch of job items through the hashing, ghost filtering, and storage pipeline.
     
     Returns:
-        {"ingested_count": int, "purged_ghost_count": int, "cached_reused_count": int}
+        {"ingested_count": int, "purged_ghost_count": int, "cached_reused_count": int,
+         "duplicate_count": int}
     """
     ingested_count = 0
     purged_ghost_count = 0
     cached_reused_count = 0
+    duplicate_count = 0
 
     for item in raw_items:
         raw_desc = item.get("raw_description", "")
         desc_hash = compute_description_hash(raw_desc)
+        job_id = item.get("source_id") or f"job_{desc_hash[:10]}"
+        canonical_key = cross_portal_key(
+            item.get("company_name", ""), item.get("title", ""), item.get("location")
+        )
+
+        # 0. The same job already came in from another board: keep the first copy.
+        if find_cross_portal_duplicate(db, canonical_key, exclude_job_id=job_id):
+            duplicate_count += 1
+            continue
 
         # 1. Global JD Cache check (Token saving optimization)
         cache_entry = lookup_cache(db, desc_hash)
@@ -66,7 +78,6 @@ async def process_and_ingest_job_items(
             is_active = True
 
         # 4. Save normalized entity to database
-        job_id = item.get("source_id") or f"job_{desc_hash[:10]}"
         save_job(
             db,
             job_id=job_id,
@@ -85,6 +96,7 @@ async def process_and_ingest_job_items(
             primary_skills=primary_skills,
             raw_description_hash=desc_hash,
             raw_description=raw_desc,
+            canonical_key=canonical_key,
             is_active=is_active,
         )
 
@@ -92,6 +104,7 @@ async def process_and_ingest_job_items(
         "ingested_count": ingested_count,
         "purged_ghost_count": purged_ghost_count,
         "cached_reused_count": cached_reused_count,
+        "duplicate_count": duplicate_count,
     }
 
 

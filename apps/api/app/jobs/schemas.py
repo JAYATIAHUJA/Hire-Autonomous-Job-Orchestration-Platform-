@@ -84,3 +84,4 @@ class IngestResponse(BaseModel):
     ingested_count: int
     purged_ghost_count: int
     cached_reused_count: int
+    duplicate_count: int = 0  # same job already stored from another board

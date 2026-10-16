@@ -42,6 +42,8 @@ class Job(Base):
     primary_skills_json = Column(Text, nullable=False)  # JSON array of strings
     raw_description_hash = Column(String, nullable=False, index=True)
     raw_description = Column(Text, nullable=True)
+    # Same job on several boards -> same key (employer + title + city; see cross_portal_key).
+    canonical_key = Column(String, nullable=True, index=True)
 
     is_active = Column(Boolean, default=True, index=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
@@ -53,7 +55,7 @@ class JobDescriptionCache(Base):
     """Global JD hash cache to prevent duplicate NLP extraction and save LLM token spend."""
     __tablename__ = "jd_cache"
 
-    hash = Column(String, primary_key=True)  # MD5 or SHA-256
+    hash = Column(String, primary_key=True)  # SHA-256 (older rows: MD5)
     parsed_skills_json = Column(Text, nullable=False)
     experience_level = Column(String, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))

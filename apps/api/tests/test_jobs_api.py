@@ -72,7 +72,7 @@ def test_feed_and_ghost_purging_rule(client):
         assert "location" in job["role"]
         assert "primary_skills" in job["parsed_requirements"]
         assert "raw_description_hash" in job["parsed_requirements"]
-        assert len(job["parsed_requirements"]["raw_description_hash"]) == 32
+        assert len(job["parsed_requirements"]["raw_description_hash"]) == 64  # SHA-256
 
     # High-risk ghost jobs (e.g. apex-edtech-layoff and talentpool-harvest) must be purged from feed
     job_ids = {j["job_id"] for j in data["jobs"]}
@@ -103,4 +103,4 @@ def test_cache_check_endpoint(client):
     check_resp = client.post("/jobs/cache-check", json={"raw_description": desc})
     assert check_resp.status_code == 200
     assert check_resp.json()["cached"] is False
-    assert len(check_resp.json()["hash"]) == 32
+    assert len(check_resp.json()["hash"]) == 64  # SHA-256

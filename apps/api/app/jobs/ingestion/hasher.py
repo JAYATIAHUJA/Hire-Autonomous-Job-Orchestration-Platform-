@@ -26,12 +26,13 @@ def normalize_job_description(text: Optional[str]) -> str:
     return cleaned.strip()
 
 
-def compute_description_hash(text: Optional[str], algorithm: str = "md5") -> str:
+def compute_description_hash(text: Optional[str], algorithm: str = "sha256") -> str:
     """Calculate deterministic hex digest of normalized job description.
-    
-    Defaults to 32-character hex MD5 as required by the shared data contract.
+
+    Defaults to 64-character hex SHA-256, as the docs and UI have always said.
+    ``algorithm="md5"`` is kept only to read old cache keys.
     """
     normalized = normalize_job_description(text).lower()
-    if algorithm == "sha256":
-        return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
-    return hashlib.md5(normalized.encode("utf-8")).hexdigest()
+    if algorithm == "md5":
+        return hashlib.md5(normalized.encode("utf-8")).hexdigest()
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()

@@ -135,4 +135,5 @@ async def trigger_ingest(
         ingested_count=stats["ingested_count"],
         purged_ghost_count=stats["purged_ghost_count"],
         cached_reused_count=stats["cached_reused_count"],
+        duplicate_count=stats["duplicate_count"],
     )
