@@ -24,6 +24,14 @@ export class ApiError extends Error {
   }
 }
 
+// Every call carries the session cookie and the CSRF header the API checks on
+// state-changing requests (WP1); without them each route answers 401 or 403.
+export function apiFetch(input: string, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers)
+  headers.set('X-Requested-With', 'hire-web')
+  return fetch(input, { ...init, headers, credentials: 'include' })
+}
+
 async function handle<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
@@ -34,7 +42,7 @@ async function handle<T>(res: Response): Promise<T> {
 }
 
 export async function analyzeProfile(username: string, token?: string): Promise<AnalyzeResponse> {
-  const res = await fetch(`${BASE_URL}/analyze`, {
+  const res = await apiFetch(`${BASE_URL}/analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, token: token || null }),
@@ -43,7 +51,7 @@ export async function analyzeProfile(username: string, token?: string): Promise<
 }
 
 export async function getProfile(profileId: string): Promise<Profile> {
-  return handle<Profile>(await fetch(`${BASE_URL}/${encodeURIComponent(profileId)}`))
+  return handle<Profile>(await apiFetch(`${BASE_URL}/${encodeURIComponent(profileId)}`))
 }
 
 export async function getJobFeed(
@@ -56,17 +64,17 @@ export async function getJobFeed(
     page: String(page),
     min_legitimacy: String(minLegitimacy),
   })
-  return handle<import('../types').JobFeedResponse>(await fetch(url(`/api/jobs/feed?${params.toString()}`)))
+  return handle<import('../types').JobFeedResponse>(await apiFetch(url(`/api/jobs/feed?${params.toString()}`)))
 }
 
 export async function getJobDetail(jobId: string): Promise<import('../types').JobContract> {
-  return handle<import('../types').JobContract>(await fetch(url(`/api/jobs/${encodeURIComponent(jobId)}`)))
+  return handle<import('../types').JobContract>(await apiFetch(url(`/api/jobs/${encodeURIComponent(jobId)}`)))
 }
 
 export async function scoreJobOnDemand(
   payload: import('../types').ScoreJobRequest,
 ): Promise<import('../types').ScoreJobResponse> {
-  const res = await fetch(url('/api/jobs/score'), {
+  const res = await apiFetch(url('/api/jobs/score'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -82,7 +90,7 @@ export async function getDeck(candidateRef: string, limit = 20, minLegitimacy = 
     limit: String(limit),
     min_legitimacy: String(minLegitimacy),
   })
-  return handle<DeckResponse>(await fetch(url(`/api/applications/deck?${params.toString()}`)))
+  return handle<DeckResponse>(await apiFetch(url(`/api/applications/deck?${params.toString()}`)))
 }
 
 export async function swipeJob(
@@ -91,7 +99,7 @@ export async function swipeJob(
   candidateRef: string,
   purpose?: string,
 ): Promise<SwipeResponse> {
-  const res = await fetch(url('/api/applications/swipe'), {
+  const res = await apiFetch(url('/api/applications/swipe'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ job_id: jobId, direction, candidate_ref: candidateRef, purpose: purpose || null }),
@@ -101,11 +109,11 @@ export async function swipeJob(
 
 export async function getBoard(candidateRef: string): Promise<BoardResponse> {
   const params = new URLSearchParams({ candidate_ref: candidateRef })
-  return handle<BoardResponse>(await fetch(url(`/api/applications/board?${params.toString()}`)))
+  return handle<BoardResponse>(await apiFetch(url(`/api/applications/board?${params.toString()}`)))
 }
 
 export async function getConsentReceipt(applicationId: string): Promise<ConsentReceipt> {
-  return handle<ConsentReceipt>(await fetch(url(`/api/applications/${encodeURIComponent(applicationId)}/consent`)))
+  return handle<ConsentReceipt>(await apiFetch(url(`/api/applications/${encodeURIComponent(applicationId)}/consent`)))
 }
 
 export async function moveApplicationStage(
@@ -113,7 +121,7 @@ export async function moveApplicationStage(
   toStage: PipelineStage,
   detail?: string,
 ): Promise<ApplicationCard> {
-  const res = await fetch(url(`/api/applications/${encodeURIComponent(applicationId)}/stage`), {
+  const res = await apiFetch(url(`/api/applications/${encodeURIComponent(applicationId)}/stage`), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ to_stage: toStage, detail: detail || null }),
@@ -122,7 +130,7 @@ export async function moveApplicationStage(
 }
 
 export async function syncRecruiterMail(messages?: RecruiterMessage[]): Promise<MailSyncResponse> {
-  const res = await fetch(url('/api/mail/sync'), {
+  const res = await apiFetch(url('/api/mail/sync'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(messages && messages.length ? { messages } : {}),
