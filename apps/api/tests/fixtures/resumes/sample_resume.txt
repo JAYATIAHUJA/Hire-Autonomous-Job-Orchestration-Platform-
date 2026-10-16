@@ -1,0 +1,31 @@
+Priya Venkataraman
+Backend Engineer
+Pune, India | priya.v@example.com | +91 90000 00000 | github.com/priya-v-example
+
+SUMMARY
+Backend engineer with five years of experience building payment and logistics APIs in Python and Go.
+
+EXPERIENCE
+Senior Backend Engineer, Kestrel Logistics (fictional), Pune - Jan 2023 to Present
+- Led the migration of the shipment-tracking service from a monolith to three Go services, cutting p95 latency from 900 ms to 180 ms.
+- Designed the event pipeline on Kafka that processes 40 million tracking events per day.
+- Mentored four junior engineers.
+
+Backend Engineer, Tamarind Pay (fictional), Bengaluru - Jul 2020 to Dec 2022
+- Built the UPI refund reconciliation API in Python and FastAPI.
+- Reduced failed nightly settlement jobs by 70 percent by adding idempotency keys.
+
+EDUCATION
+B.Tech in Computer Science, Coastal Institute of Technology (fictional), 2016 to 2020
+
+SKILLS
+Python, Go, FastAPI, PostgreSQL, Kafka, Docker, Kubernetes, AWS
+
+LANGUAGES
+English (C1), Hindi (native), Marathi (B2)
+
+WORK AUTHORISATION
+India: citizen. Open to remote roles for employers outside India.
+
+PROJECTS
+parcelmap - an open-source CLI that geocodes Indian PIN codes (github.com/priya-v-example/parcelmap)
