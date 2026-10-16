@@ -10,6 +10,7 @@ from app.applications import models as application_models  # noqa: F401
 from app.auth import models as auth_models  # noqa: F401
 from app.config import settings
 from app.db import Base
+from app.facts import models as fact_models  # noqa: F401
 from app.jobs import models as job_models  # noqa: F401
 from app.profiles import pow_models  # noqa: F401
 
