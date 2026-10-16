@@ -11,6 +11,7 @@ from app.auth import models as auth_models  # noqa: F401
 from app.config import settings
 from app.db import Base
 from app.jobs import models as job_models  # noqa: F401
+from app.profiles import pow_models  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
