@@ -97,6 +97,19 @@ async def apply_loop(stop: asyncio.Event) -> None:
         await _sleep_or_stop(stop, 3.0)
 
 
+async def _sleep_or_stop(stop: asyncio.Event, seconds: float) -> None:
+    try:
+        await asyncio.wait_for(stop.wait(), timeout=seconds)
+    except asyncio.TimeoutError:
+        pass
+
+
+def run_worker_tasks(stop: asyncio.Event) -> asyncio.Task:
+    """The three loops as one task. Used by ``main`` and, on hosts that only run
+    one process (a free Render web service), by the API's own lifespan."""
+    return asyncio.create_task(asyncio.gather(discovery_loop(stop), pow_loop(stop), apply_loop(stop)))
+
+
 async def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     stop = asyncio.Event()
@@ -109,7 +122,9 @@ async def main() -> None:
 
     register_github_providers()  # PoW runs use the account's own GitHub token when linked
     logger.info("worker started")
-    await asyncio.gather(discovery_loop(stop), pow_loop(stop), apply_loop(stop))
+    worker = run_worker_tasks(stop)
+    await stop.wait()
+    worker.cancel()
     logger.info("worker stopped")
 
 

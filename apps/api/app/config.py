@@ -51,6 +51,10 @@ class Settings(BaseSettings):
 
     # Live job feeds (RemoteOK). Tests turn this off so they never touch the network.
     live_feeds_enabled: bool = True
+    # Run the worker loops (discovery, PoW, apply) inside the API process: for hosts
+    # that run one process only (a free Render web service). The separate
+    # `python -m app.worker` stays the default.
+    run_worker_in_process: bool = False
 
     # Background worker (python -m app.worker).
     discovery_interval_seconds: int = 1800

@@ -37,16 +37,24 @@ async def lifespan(_: FastAPI):
     else:
         logger.info("IMAP_ENABLED is off - recruiter replies only sync via POST /api/mail/sync.")
 
+    worker: asyncio.Task | None = None
+    if settings.run_worker_in_process:
+        from .worker import run_worker_tasks
+
+        logger.info("RUN_WORKER_IN_PROCESS is on - discovery, PoW and apply loops run here.")
+        worker = run_worker_tasks(stop_event)
+
     try:
         yield
     finally:
         stop_event.set()
-        if poller:
-            poller.cancel()
-            try:
-                await poller
-            except asyncio.CancelledError:
-                pass
+        for task in (poller, worker):
+            if task:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
 
 
 app = FastAPI(title="Hire-Unplug — Autonomous Job Orchestration Platform", lifespan=lifespan)
