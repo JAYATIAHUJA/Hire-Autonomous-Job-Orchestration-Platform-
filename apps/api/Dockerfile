@@ -28,4 +28,5 @@ RUN useradd --create-home --uid 10001 hire && chown -R hire /srv/api
 USER hire
 
 EXPOSE 8000
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+# Render passes $PORT (default 10000); locally nothing sets it, so 8000 stands.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
