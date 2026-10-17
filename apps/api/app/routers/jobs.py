@@ -66,7 +66,9 @@ async def get_feed(
     rank = None
     if sort == "match":
         prefs = facts_repository.get_preferences(db, account.id)
-        rank = (lambda job: matching.score(job, prefs)) if prefs and prefs.get("roles") else None
+        rank = (
+            lambda job, breaker_text: matching.score(job, prefs, breaker_text=breaker_text)
+        ) if prefs and prefs.get("roles") else None
     filters = dict(q=q, city=city, remote=remote, newest_first=sort == "newest", levels=levels,
                    salary_shown=salary_shown, posted_within_days=posted_within, rank=rank)
     jobs, total = get_jobs_feed(db, min_legitimacy=min_legitimacy, limit=limit, page=page, **filters)

@@ -37,6 +37,14 @@ class PipelineEventOut(BaseModel):
     occurred_at: Optional[str] = None
 
 
+class AutofillStatus(BaseModel):
+    """Where Hire's own filling of this application is, for pills on cards."""
+
+    run_id: int
+    status: str
+    step: Optional[str] = None
+
+
 class ApplicationCard(BaseModel):
     application_id: str
     job_id: str
@@ -59,6 +67,8 @@ class ApplicationCard(BaseModel):
     # The employer's posting, where the candidate applies; and whether Hire can fill it.
     apply_url: Optional[str] = None
     can_autofill: bool = False
+    # The latest fill run, when there is one.
+    autofill: Optional[AutofillStatus] = None
 
 
 class SubmissionRequest(BaseModel):
@@ -71,6 +81,8 @@ class SwipeResponse(BaseModel):
     application: ApplicationCard
     consent: Optional[ConsentReceipt] = None
     already_recorded: bool = False
+    # True when this swipe started a fill run on its own (the deck says so in its toast).
+    autofill_started: bool = False
 
 
 class BoardColumn(BaseModel):
@@ -83,6 +95,8 @@ class BoardColumn(BaseModel):
 class BoardResponse(BaseModel):
     candidate_ref: str
     total: int
+    # Applications whose fill run is waiting on the user: the dashboard's tile.
+    needs_you: int = 0
     columns: list[BoardColumn]
 
 
@@ -92,6 +106,13 @@ class DeckResponse(BaseModel):
     min_legitimacy: float
     jobs: list[JobContract]
     # Jobs this account has already swiped either way (for "applied / passed" counts).
+    swiped_total: int = 0
+
+
+class DeckCountResponse(BaseModel):
+    """Just the deck sizes, counted in SQL, for dashboards that don't need the cards."""
+
+    total: int
     swiped_total: int = 0
 
 

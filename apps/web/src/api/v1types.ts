@@ -135,11 +135,24 @@ export type Preferences = {
   experience_band: ExperienceBand | null
   salary_floor: { amount: number; currency: 'INR' | 'USD'; period: 'year' } | null
   deal_breakers: string[]
+  // A right swipe on a fillable job starts the fill on its own (sending still
+  // needs the typed confirmation).
+  autofill_on_swipe?: boolean
 }
 
 // GET/PUT /v1/me/answer-bank. The answer bank is key/value (WP6 answer_bank);
 // the wire shape {answers: {key: value}} is not agreed.
 export type AnswerBank = Record<string, string>
+
+// GET/PATCH/DELETE /v1/me/answer-memory: answers remembered from application forms,
+// reused when a later form asks the same question in other words.
+export type AnswerMemoryEntry = {
+  id: number
+  question: string
+  answer: string
+  uses: number
+  updated_at: string | null
+}
 
 // GET/PUT /v1/me/online-presence. The GitHub token is write-only: the API only says
 // whether one is saved.

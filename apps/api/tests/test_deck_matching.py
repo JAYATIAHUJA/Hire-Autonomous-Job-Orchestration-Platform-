@@ -57,3 +57,53 @@ def test_remote_from_india_beats_remote_from_abroad_and_percent_is_bounded():
     abroad = score(job("Backend Engineer", "Remote", remote=True), {**PREFS, "locations": []})
     assert india[0] > abroad[0] and "Remote, India" in india[1]
     assert percent(7) == 100 and percent(-3) == 0 and 0 < percent(4) < 100
+
+
+def test_breaker_text_overrides_the_searched_text():
+    # The deck scores thousands of rows with the description deferred; the caller
+    # passes cheap text so deal-breakers still bite on the title and skills.
+    clean = score(job("Backend Engineer", "Bengaluru"), PREFS, breaker_text="Backend Engineer []")[0]
+    assert score(job("Backend Engineer", "Bengaluru"), PREFS, breaker_text="Backend Engineer night shift")[0] < clean
+    # without an override the description is still searched, as single-job scoring relies on
+    assert score(job("Backend Engineer", "Bengaluru", desc="Rotational night shift"), PREFS)[0] < clean
+
+
+def test_deck_count_endpoint_counts_without_dealing_cards():
+    from auth_helpers import create_account, login_as, memory_client
+
+    with memory_client() as client:
+        login_as(client, create_account(client, "count@example.com"))
+        deck = client.get("/api/applications/deck?limit=5").json()
+        counted = client.get("/api/applications/deck/count").json()
+        assert counted["total"] == deck["total"] and counted["swiped_total"] == 0
+
+        client.post("/api/applications/swipe", json={"job_id": deck["jobs"][0]["job_id"], "direction": "left"})
+        after = client.get("/api/applications/deck/count").json()
+        assert after["total"] == counted["total"] - 1 and after["swiped_total"] == 1
+
+
+def test_ranked_deck_scores_on_cheap_columns_but_returns_descriptions():
+    from datetime import datetime, timedelta, timezone
+
+    from auth_helpers import app_db, create_account, login_as, memory_client
+    from app.jobs import models as job_models
+
+    with memory_client() as client:
+        login_as(client, create_account(client, "desc@example.com"))
+        client.patch("/v1/me/preferences", json={"roles": ["Backend engineer"], "locations": ["Bengaluru"]})
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        with app_db(client) as db:
+            db.add(job_models.Company(id=88001, name="Deferred Co"))
+            db.add(job_models.Job(
+                job_id="deferred-1", company_id=88001, title="Backend Engineer", location="Bengaluru, India",
+                experience_level="Mid-Level (2-5 yrs)", ghost_score=10, risk_band="Low",
+                legitimacy_probability=0.95, primary_skills_json='["python"]', raw_description_hash="dh",
+                raw_description="Build payments APIs in Python. " * 40, source="greenhouse", is_active=True,
+                posted_at=now - timedelta(days=1),
+            ))
+            db.commit()
+        deck = client.get("/api/applications/deck?limit=50").json()
+        card = next(j for j in deck["jobs"] if j["job_id"] == "deferred-1")
+        # the page is re-fetched with its description and company after scoring on deferred rows
+        assert "payments APIs" in (card["description"] or "")
+        assert card["company"]["name"] == "Deferred Co"

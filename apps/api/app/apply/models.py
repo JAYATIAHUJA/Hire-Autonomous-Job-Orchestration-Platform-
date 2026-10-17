@@ -8,7 +8,7 @@ profile (never guessed), and ends at failed / captcha / cancelled otherwise.
 
 import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text, UniqueConstraint
 
 from ..db import Base
 from ..facts.models import JSONType
@@ -39,4 +39,43 @@ class ApplyRun(Base):
     screenshot_key = Column(String, nullable=True)
     error = Column(Text, nullable=True)
     created_at = Column(DateTime, default=_utcnow)
+    updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)
+
+
+class ApplyRunEvent(Base):
+    """One visible step of a run, in order: what a live progress list shows.
+
+    ``seq`` is gap-free per run so the client can ask for "everything after N".
+    """
+
+    __tablename__ = "apply_run_events"
+    __table_args__ = (UniqueConstraint("run_id", "seq", name="uq_apply_run_events_run_seq"),)
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    run_id = Column(Integer, ForeignKey("apply_runs.id"), nullable=False, index=True)
+    seq = Column(Integer, nullable=False)
+    kind = Column(String, nullable=False)  # queued|step|filled|fill_error|needs_answers|ready|sent|captcha|failed
+    label = Column(Text, nullable=False)  # the human line: "Filled email", "Ready for your review"...
+    field_name = Column(String, nullable=True)
+    shown_value = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=_utcnow)
+
+
+class AnswerMemory(Base):
+    """One answer the user gave on a form, remembered for later forms.
+
+    Keyed by the normalised question, so the same question asked in other words can
+    reuse it. The planner never uses it for free-text questions and, unless the
+    wording is identical, for sensitive ones (pay, legal, EEO).
+    """
+
+    __tablename__ = "answer_memory"
+    __table_args__ = (UniqueConstraint("account_id", "question_norm", name="uq_answer_memory_account_question"),)
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False, index=True)
+    question_norm = Column(String, nullable=False)
+    question_text = Column(Text, nullable=False)  # the wording the user actually answered
+    answer = Column(Text, nullable=False)
+    uses = Column(Integer, nullable=False, default=0)
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow)

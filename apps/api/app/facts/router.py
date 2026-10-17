@@ -18,10 +18,12 @@ from ..llm.client import LLMClient, LLMError, LLMRefusal, get_llm_client
 from . import repository
 from .documents import DOCX, MAX_RESUME_BYTES, UnsupportedDocument, extract_text, sniff_content_type
 from .extraction import FACT_KINDS, extract_facts
-from .models import new_upload_id
+from .models import ResumeUpload, new_upload_id
 from .schemas import (
     AnswerBank,
     AnswerBankResponse,
+    AnswerMemoryOut,
+    AnswerMemoryUpdate,
     FactBatchResponse,
     FactCreate,
     FactIdsRequest,
@@ -37,6 +39,8 @@ logger = logging.getLogger("hire.facts")
 router = APIRouter(prefix="/v1/profile", tags=["facts"])
 # Its own router: WP1 owns GET /v1/me, so the answer bank mounts beside it, not inside it.
 answer_bank_router = APIRouter(prefix="/v1/me/answer-bank", tags=["facts"])
+# Remembered form answers (asked once, reused later): managed beside the answer bank.
+answer_memory_router = APIRouter(prefix="/v1/me/answer-memory", tags=["facts"])
 
 
 @router.post("/resume", response_model=ResumeUploadResponse)
@@ -164,6 +168,28 @@ def get_profile(account: Account = Depends(get_current_user), db: Session = Depe
     )
 
 
+@router.get("/resume/latest")
+def download_latest_resume(
+    account: Account = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    store: Optional[ObjectStore] = Depends(get_object_store),
+):
+    """The newest stored resume file. For finishing an application by hand when a
+    form stops Hire (a CAPTCHA, say): the answers copy over, the file downloads."""
+    upload = (db.query(ResumeUpload).filter(ResumeUpload.account_id == account.id)
+              .order_by(ResumeUpload.created_at.desc(), ResumeUpload.id.desc()).first())
+    if upload is None:
+        raise HTTPException(status_code=404, detail="No resume uploaded yet.")
+    if store is None:
+        raise HTTPException(status_code=503, detail="File storage is not configured.")
+    ext = ".docx" if "word" in upload.content_type else ".pdf"
+    return Response(
+        content=store.get(upload.object_key),
+        media_type=upload.content_type,
+        headers={"Content-Disposition": f'attachment; filename="resume{ext}"'},
+    )
+
+
 @router.delete("", status_code=204)
 def delete_profile(
     account: Account = Depends(get_current_user),
@@ -200,3 +226,43 @@ def put_answer_bank(payload: AnswerBank, account: Account = Depends(get_current_
     entries = repository.replace_answer_bank(db, account.id, payload.answers)
     db.commit()
     return _answer_bank_response(entries)
+
+
+@answer_memory_router.get("", response_model=list[AnswerMemoryOut])
+def list_answer_memory(account: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Answers remembered from earlier forms, reused when a form asks the same thing."""
+    from ..apply.models import AnswerMemory
+
+    rows = (db.query(AnswerMemory).filter(AnswerMemory.account_id == account.id)
+            .order_by(AnswerMemory.updated_at.desc()).all())
+    return [AnswerMemoryOut(id=r.id, question=r.question_text, answer=r.answer, uses=r.uses,
+                            updated_at=r.updated_at) for r in rows]
+
+
+@answer_memory_router.patch("/{memory_id}", response_model=AnswerMemoryOut)
+def edit_answer_memory(memory_id: int, payload: AnswerMemoryUpdate,
+                       account: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    from ..apply.models import AnswerMemory
+
+    row = (db.query(AnswerMemory).filter(AnswerMemory.id == memory_id,
+                                         AnswerMemory.account_id == account.id).first())
+    if row is None:
+        raise HTTPException(status_code=404, detail="Remembered answer not found.")
+    row.answer = payload.answer.strip()
+    db.commit()
+    return AnswerMemoryOut(id=row.id, question=row.question_text, answer=row.answer, uses=row.uses,
+                           updated_at=row.updated_at)
+
+
+@answer_memory_router.delete("/{memory_id}", status_code=204)
+def delete_answer_memory(memory_id: int, account: Account = Depends(get_current_user),
+                         db: Session = Depends(get_db)):
+    from ..apply.models import AnswerMemory
+
+    row = (db.query(AnswerMemory).filter(AnswerMemory.id == memory_id,
+                                         AnswerMemory.account_id == account.id).first())
+    if row is None:
+        raise HTTPException(status_code=404, detail="Remembered answer not found.")
+    db.delete(row)
+    db.commit()
+    return Response(status_code=204)

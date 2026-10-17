@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
 
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload, object_session
 
@@ -71,12 +72,16 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
-def to_card(app: models.Application, job: Optional[Any] = None) -> ApplicationCard:
-    """``job`` (the Job row) adds the posting link; looked up when not given."""
+def to_card(app: models.Application, job: Optional[Any] = None, run: Optional[Any] = None) -> ApplicationCard:
+    """``job`` (the Job row) adds the posting link; ``run`` (the latest ApplyRun) adds
+    the fill status. Both are looked up when not given."""
     if job is None:
         from ..jobs.models import Job
 
         job = object_session(app).query(Job).filter(Job.job_id == app.job_id).first() if object_session(app) else None
+    autofill = None
+    if run is not None:
+        autofill = {"run_id": run.id, "status": run.status, "step": run.step}
     return ApplicationCard(
         application_id=app.application_id,
         job_id=app.job_id,
@@ -107,6 +112,7 @@ def to_card(app: models.Application, job: Optional[Any] = None) -> ApplicationCa
         submit_method=app.submit_method,
         apply_url=getattr(job, "apply_url", None),
         can_autofill=bool(job is not None and job.source in AUTOFILL_SOURCES and job.apply_url),
+        autofill=autofill,
     )
 
 
@@ -310,6 +316,21 @@ def move_stage(
     return app
 
 
+def latest_runs_by_application(db: Session, account_id: int) -> dict[str, Any]:
+    """The newest fill run per application, for status pills on cards (one query)."""
+    from ..apply.models import ApplyRun
+
+    app_ids = [r[0] for r in db.query(models.Application.application_id)
+               .filter(models.Application.account_id == account_id).all()]
+    if not app_ids:
+        return {}
+    newest = [r[0] for r in db.query(func.max(ApplyRun.id)).filter(
+        ApplyRun.account_id == account_id, ApplyRun.application_id.in_(app_ids)
+    ).group_by(ApplyRun.application_id).all()]
+    runs = db.query(ApplyRun).filter(ApplyRun.id.in_(newest or [0])).all()
+    return {run.application_id: run for run in runs}
+
+
 def get_board(db: Session, account_id: int, candidate_ref: str) -> BoardResponse:
     """The account's Kanban board, one column per tracked stage."""
     apps = (
@@ -326,13 +347,18 @@ def get_board(db: Session, account_id: int, candidate_ref: str) -> BoardResponse
     from ..jobs.models import Job
 
     jobs = {j.job_id: j for j in db.query(Job).filter(Job.job_id.in_([a.job_id for a in apps] or [""]))}
+    runs = latest_runs_by_application(db, account_id)
     by_stage: dict[str, list[ApplicationCard]] = {stage: [] for stage in BOARD_STAGES}
     for app in apps:
-        by_stage[app.stage].append(to_card(app, jobs.get(app.job_id)))
+        by_stage[app.stage].append(to_card(app, jobs.get(app.job_id), runs.get(app.application_id)))
+    needs_you = sum(
+        1 for run in runs.values() if run.status == "needs_answers"
+    )
 
     return BoardResponse(
         candidate_ref=candidate_ref,
         total=len(apps),
+        needs_you=needs_you,
         columns=[
             BoardColumn(stage=stage, label=label_for(stage), count=len(by_stage[stage]), cards=by_stage[stage])
             for stage in BOARD_STAGES

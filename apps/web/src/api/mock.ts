@@ -241,4 +241,10 @@ export const mockAccountApi: AccountApi = {
     })
     await delay(null)
   },
+
+  listAnswerMemory: async () => delay([]),
+
+  async deleteAnswerMemory() {
+    await delay(null)
+  },
 }

@@ -20,8 +20,10 @@ from typing import Any, Optional
 from urllib.parse import parse_qs, urlparse
 
 GREENHOUSE_API = "https://boards-api.greenhouse.io/v1"
-GREENHOUSE_HOSTS = {"boards.greenhouse.io", "job-boards.greenhouse.io"}
-LOCAL_HOSTS = {"127.0.0.1", "localhost"}
+GREENHOUSE_HOSTS = {"boards.greenhouse.io", "job-boards.greenhouse.io", "job-boards.eu.greenhouse.io"}
+# The mock ATS is reachable as 127.0.0.1:8180 from the host and as mock-ats:8000
+# from inside compose (the worker), so both spellings are accepted.
+LOCAL_HOSTS = {"127.0.0.1", "localhost", "mock-ats"}
 
 # Decision 6 (ADR-008): disclosure on by default, the user may turn it off.
 DISCLOSURE = "Submitted with the help of Hire. The candidate reviewed this application."
@@ -40,12 +42,17 @@ class JobRef:
         return f"{self.api_base}/boards/{self.board}/jobs/{self.job_id}?questions=true"
 
 
-def parse_job_url(url: str) -> JobRef:
+def parse_job_url(url: str, job_id: Optional[str] = None) -> JobRef:
     """Accept the job links people actually paste.
 
-    boards.greenhouse.io/{board}/jobs/{id}, job-boards.greenhouse.io/{board}/jobs/{id},
-    .../embed/job_app?for={board}&token={id}, and the local mock ATS
+    boards.greenhouse.io/{board}/jobs/{id}, job-boards.greenhouse.io/{board}/jobs/{id}
+    (and its EU twin), .../embed/job_app?for={board}&token={id}, and the local mock ATS
     http://127.0.0.1:8180/boards/{board}/jobs/{id}.
+
+    Many employers wrap the form in their own careers domain
+    (www.payoneer.com/careers/job/?gh_jid=…) - the host says nothing, but ingestion
+    recorded which board the job came from, so ``job_id`` ("greenhouse_{board}_{id}")
+    resolves it when the URL alone can't.
     """
     parsed = urlparse(url.strip())
     host = (parsed.hostname or "").lower()
@@ -56,24 +63,32 @@ def parse_job_url(url: str) -> JobRef:
         if not m:
             raise ValueError(f"not a mock ATS job link: {url}")
         origin = f"{parsed.scheme}://{parsed.netloc}"
-        board, job_id = m.group(1), int(m.group(2))
-        return JobRef(board, job_id, f"{origin}/v1", f"{origin}/boards/{board}/jobs/{job_id}", True)
+        board, job_num = m.group(1), int(m.group(2))
+        return JobRef(board, job_num, f"{origin}/v1", f"{origin}/boards/{board}/jobs/{job_num}", True)
 
-    if host not in GREENHOUSE_HOSTS:
-        raise ValueError(f"only Greenhouse job links are supported for now, got {host or url!r}")
+    if host in GREENHOUSE_HOSTS:
+        if path.endswith("/embed/job_app"):
+            qs = parse_qs(parsed.query)
+            board, token = (qs.get("for") or [""])[0], (qs.get("token") or [""])[0]
+            if not board or not token.isdigit():
+                raise ValueError(f"embed link without for=/token=: {url}")
+            board, job_num = board.lower(), int(token)
+        else:
+            m = re.search(r"^/([^/]+)/jobs/(\d+)$", path)
+            if not m:
+                raise ValueError(f"not a Greenhouse job link: {url}")
+            board, job_num = m.group(1).lower(), int(m.group(2))
+        return JobRef(board, job_num, GREENHOUSE_API, f"https://job-boards.greenhouse.io/{board}/jobs/{job_num}", False)
 
-    if path.endswith("/embed/job_app"):
-        qs = parse_qs(parsed.query)
-        board, token = (qs.get("for") or [""])[0], (qs.get("token") or [""])[0]
-        if not board or not token.isdigit():
-            raise ValueError(f"embed link without for=/token=: {url}")
-        board, job_id = board.lower(), int(token)
-    else:
-        m = re.search(r"^/([^/]+)/jobs/(\d+)$", path)
-        if not m:
-            raise ValueError(f"not a Greenhouse job link: {url}")
-        board, job_id = m.group(1).lower(), int(m.group(2))
-    return JobRef(board, job_id, GREENHOUSE_API, f"https://job-boards.greenhouse.io/{board}/jobs/{job_id}", False)
+    # A careers-domain wrapper: the board is in our own job id.
+    if job_id:
+        m = re.fullmatch(r"greenhouse_([a-z0-9_-]+)_(\d+)", job_id.lower())
+        if m:
+            board, job_num = m.group(1), int(m.group(2))
+            return JobRef(board, job_num, GREENHOUSE_API,
+                          f"https://job-boards.greenhouse.io/{board}/jobs/{job_num}", False)
+
+    raise ValueError(f"only Greenhouse job links are supported for now, got {host or url!r}")
 
 
 # --- the applicant ------------------------------------------------------------
@@ -96,6 +111,10 @@ class Applicant:
     # Answers to common questions however a form words them: regex on the label -> value
     # (notice period, CTC, relocation...). Checked after ``answers``.
     topic_answers: dict[str, Any] = field(default_factory=dict)
+    # Answers the user gave on earlier forms, keyed by the normalised question. Only
+    # reused for the same question in other words - never for free-text or, unless the
+    # wording is identical, sensitive ones (see ``remembered_match``).
+    remembered: dict[str, str] = field(default_factory=dict)
     disclosure: bool = True
 
     @classmethod
@@ -123,12 +142,49 @@ def _norm(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
 
 
+# Free-text a candidate writes per job ("why us", essays): remembered answers never fill these.
+_FREE_TEXT_QUESTION = re.compile(
+    r"\b(why|describe|tell|explain|motivat|cover|essay|anything else|additional)\b", re.IGNORECASE
+)
+# Legal, pay and EEO questions: only an exactly-identical remembered question may answer.
+_SENSITIVE_QUESTION = re.compile(
+    r"\b(gender|race|ethnic|veteran|disab|diversit|eeo|authori[sz]|sponsor|visa|salary|compensation|ctc|pay)\b",
+    re.IGNORECASE,
+)
+
+
+def remembered_match(remembered: dict[str, str], label: str) -> Optional[tuple[str, str]]:
+    """The (normalised question, answer) this form's label can reuse, if any.
+
+    A match needs most of the remembered question's words in the new label, so the
+    same question asked in other words counts while a different one does not.
+    """
+    if not remembered:
+        return None
+    if _FREE_TEXT_QUESTION.search(label):
+        return None
+    key = _norm(label)
+    if key in remembered:
+        return key, remembered[key]
+    if _SENSITIVE_QUESTION.search(label):
+        return None  # near-miss wording is not good enough here
+    label_tokens = set(key.split())
+    if len(label_tokens) < 2:
+        return None
+    for norm, value in remembered.items():
+        tokens = set(norm.split())
+        if len(tokens) >= 2 and len(tokens & label_tokens) / len(tokens) >= 0.8:
+            return norm, value
+    return None
+
+
 # Common questions answered straight from profile fields. Matched on the label.
+# Checked after the topics, so "preferred location" beats the plain city fact.
 _LABEL_TO_PROFILE = [
     (re.compile(r"\blinked ?in\b"), "linkedin"),
     (re.compile(r"\bgit ?hub\b"), "github"),
     (re.compile(r"\b(website|portfolio|personal site)\b"), "website"),
-    (re.compile(r"^(current )?(location|city)\b"), "city"),
+    (re.compile(r"\b(location|city)\b"), "city"),
 ]
 _STANDARD_FIELDS = {
     "first_name": "first_name",
@@ -208,6 +264,9 @@ def _profile_value(applicant: Applicant, label: str, field_name: str) -> tuple[A
     for pattern, value in applicant.topic_answers.items():
         if re.search(pattern, key):
             return value, "answer bank"
+    remembered = remembered_match(applicant.remembered, label)
+    if remembered is not None:
+        return remembered[1], "remembered"
     for pattern, attr in _LABEL_TO_PROFILE:
         if pattern.search(key):
             return getattr(applicant, attr), attr
@@ -226,7 +285,11 @@ def plan_application(job: JobRef, schema: dict[str, Any], applicant: Applicant) 
     for q in questions:
         label = (q.get("label") or "").strip()
         required = bool(q.get("required"))
-        fields = q.get("fields") or []
+        # Greenhouse geo questions (latitude/longitude) carry only hidden fields: the
+        # page fills them itself, a person never types them, so neither do we.
+        fields = [f for f in (q.get("fields") or []) if f.get("type") != "input_hidden"]
+        if not fields:
+            continue
         # Greenhouse offers "attach a file" or "type it" for resume and cover letter;
         # we answer the first kind the profile can fill.
         filled = False

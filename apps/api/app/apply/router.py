@@ -2,7 +2,7 @@
 
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -13,7 +13,8 @@ from ..auth.models import Account
 from ..db import get_db
 from ..facts.storage import ObjectStore, get_object_store
 from ..jobs.models import Job
-from .models import ACTIVE, ApplyRun
+from . import service
+from .models import ApplyRun, ApplyRunEvent
 
 router = APIRouter(prefix="/api/applications/{application_id}/autofill", tags=["apply"])
 
@@ -28,6 +29,22 @@ class RunOut(BaseModel):
     has_screenshot: bool = False
     company: str
     role: str
+
+
+class RunEventOut(BaseModel):
+    seq: int
+    kind: str
+    label: str
+    field: Optional[str] = None
+    shown: Optional[str] = None
+    at: Optional[str] = None
+
+
+class RunEventsOut(BaseModel):
+    run_id: int
+    status: str
+    step: Optional[str] = None
+    events: list[RunEventOut] = []
 
 
 class AnswersIn(BaseModel):
@@ -47,8 +64,7 @@ def _app(db: Session, account: Account, application_id: str):
 
 
 def _latest(db: Session, account: Account, application_id: str) -> Optional[ApplyRun]:
-    return (db.query(ApplyRun).filter(ApplyRun.account_id == account.id, ApplyRun.application_id == application_id)
-            .order_by(ApplyRun.id.desc()).first())
+    return service.latest_run(db, account.id, application_id)
 
 
 def _out(run: ApplyRun, app) -> RunOut:
@@ -64,15 +80,11 @@ def start(application_id: str, account: Account = Depends(get_current_user), db:
     if app.submission_status == "sent":
         raise HTTPException(status_code=409, detail="This application was already sent.")
     job = db.query(Job).filter(Job.job_id == app.job_id).first()
-    if job is None or job.source not in AUTOFILL_SOURCES or not job.apply_url:
-        raise HTTPException(status_code=422, detail="Hire can only fill Greenhouse forms for now. Apply on the company’s site.")
-    run = _latest(db, account, application_id)
-    if run is not None and run.status in ACTIVE + ("needs_answers", "ready_to_submit"):
-        return _out(run, app)
-    run = ApplyRun(account_id=account.id, application_id=application_id, job_id=app.job_id, status="queued",
-                   step="Waiting for a browser", filled=[], missing=[], extra_answers={})
-    db.add(run)
-    app.submission_status = "filling"
+    run = service.start_run(db, app, job)
+    if run is None:
+        if job is None or job.source not in AUTOFILL_SOURCES or not job.apply_url:
+            raise HTTPException(status_code=422, detail="Hire can only fill Greenhouse forms for now. Apply on the company’s site.")
+        raise HTTPException(status_code=409, detail="This run can’t be restarted now.")
     db.commit()
     return _out(run, app)
 
@@ -84,10 +96,31 @@ def latest(application_id: str, account: Account = Depends(get_current_user), db
     return _out(run, app) if run else None
 
 
+@router.get("/events", response_model=RunEventsOut)
+def events(application_id: str, after: int = Query(default=0, ge=0),
+           account: Account = Depends(get_current_user), db: Session = Depends(get_db)):
+    """The run's visible steps after ``seq`` - one row per thing Hire did, so the sheet
+    can follow along instead of polling the whole run."""
+    app = _app(db, account, application_id)
+    run = _latest(db, account, application_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No run yet.")
+    rows = (db.query(ApplyRunEvent).filter(ApplyRunEvent.run_id == run.id, ApplyRunEvent.seq > after)
+            .order_by(ApplyRunEvent.seq.asc()).all())
+    return RunEventsOut(
+        run_id=run.id, status=run.status, step=run.step,
+        events=[RunEventOut(seq=e.seq, kind=e.kind, label=e.label, field=e.field_name, shown=e.shown_value,
+                            at=e.created_at.isoformat() + "Z" if e.created_at else None) for e in rows],
+    )
+
+
 @router.post("/answers", response_model=RunOut)
 def answer(application_id: str, payload: AnswersIn, account: Account = Depends(get_current_user),
            db: Session = Depends(get_db)):
-    """Answer the questions the profile couldn't, then fill again."""
+    """Answer the questions the profile couldn't, then fill again.
+
+    Each answer is remembered under its normalised question, so a later form that
+    asks the same thing in other words fills itself (never for free-text)."""
     app = _app(db, account, application_id)
     run = _latest(db, account, application_id)
     if run is None or run.status != "needs_answers":
@@ -96,6 +129,9 @@ def answer(application_id: str, payload: AnswersIn, account: Account = Depends(g
     run.extra_answers = {**(run.extra_answers or {}), **cleaned}
     run.status, run.step, run.error = "queued", "Waiting for a browser", None
     app.submission_status = "filling"
+    for question, value in cleaned.items():
+        service.remember_answer(db, account.id, question, value)
+        service.emit(db, run, "answered", f"You answered: {question}")
     db.commit()
     return _out(run, app)
 

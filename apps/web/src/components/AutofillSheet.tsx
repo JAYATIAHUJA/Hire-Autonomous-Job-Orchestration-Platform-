@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   answerAutofill,
@@ -6,8 +6,11 @@ import {
   cancelAutofill,
   confirmAutofill,
   getAutofill,
+  getAutofillEvents,
+  latestResumeUrl,
   startAutofill,
   type ApplyRun,
+  type ApplyRunEvent,
 } from '../api/client'
 import Icon from '../ui/Icon'
 import { Alert, errorMessage } from '../ui/kit'
@@ -41,10 +44,26 @@ function stepIndex(run: ApplyRun | null): number {
 
 export default function AutofillSheet({ applicationId, company, role, applyUrl, onClose, onChanged }: Props) {
   const [run, setRun] = useState<ApplyRun | null>(null)
+  const [events, setEvents] = useState<ApplyRunEvent[]>([])
   const [error, setError] = useState<string | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [typed, setTyped] = useState('')
   const [busy, setBusy] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const feedRef = useRef<HTMLDivElement | null>(null)
+
+  // The CAPTCHA hand-off: every planned answer as plain text, one per line.
+  async function copyAnswers() {
+    if (!run) return
+    const text = run.filled.map((f) => `${f.label}: ${f.shown}`).join('\n')
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2500)
+    } catch {
+      /* clipboard needs a gesture and a secure context; localhost qualifies */
+    }
+  }
 
   // Start (or rejoin) the run when the sheet opens.
   useEffect(() => {
@@ -62,20 +81,32 @@ export default function AutofillSheet({ applicationId, company, role, applyUrl, 
     }
   }, [applicationId, onChanged])
 
-  // Follow it while the worker is busy.
+  // Follow it while the worker is busy: only new steps come over the wire.
   useEffect(() => {
     if (!run || !WORKING.has(run.status)) return
+    const after = events.length ? events[events.length - 1].seq : 0
     const id = window.setTimeout(async () => {
       try {
-        const next = await getAutofill(applicationId)
-        setRun(next)
-        if (next && !WORKING.has(next.status)) onChanged()
+        const feed = await getAutofillEvents(applicationId, after)
+        if (feed.events.length) setEvents((prev) => [...prev, ...feed.events])
+        if (feed.status !== run.status || feed.step !== run.step) {
+          setRun((prev) => (prev ? { ...prev, status: feed.status, step: feed.step } : prev))
+        }
+        if (!WORKING.has(feed.status)) {
+          setRun(await getAutofill(applicationId))
+          onChanged()
+        }
       } catch {
         /* keep polling */
       }
-    }, 2000)
+    }, 1200)
     return () => window.clearTimeout(id)
-  }, [run, applicationId, onChanged])
+  }, [run, events, applicationId, onChanged])
+
+  // Keep the newest step in view.
+  useEffect(() => {
+    feedRef.current?.scrollTo({ top: feedRef.current.scrollHeight })
+  }, [events])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -133,11 +164,29 @@ export default function AutofillSheet({ applicationId, company, role, applyUrl, 
 
           {!run || WORKING.has(run.status) ? (
             <div className="af-working" aria-live="polite">
-              <span className="spinner" />
-              <div>
-                <strong>{run?.step ?? 'Starting…'}</strong>
-                <p className="muted small">This usually takes under a minute. You can close this; it keeps going.</p>
-              </div>
+              <p>
+                <span className="spinner" /> <strong>{run?.step ?? 'Starting…'}</strong>
+              </p>
+              {events.length > 0 && (
+                <div className="af-feed" ref={feedRef}>
+                  {events.map((e) => (
+                    <p key={e.seq} className={e.kind === 'fill_error' ? 'af-feed-bad' : ''}>
+                      {e.kind === 'ready' || e.kind === 'sent' ? <Icon name="check" size={11} /> : <span className="af-feed-dot" />}
+                      {e.label}
+                      {e.shown && e.kind === 'filled' ? <span className="muted"> — {e.shown.length > 60 ? e.shown.slice(0, 60) + '…' : e.shown}</span> : null}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {events.some((e) => e.kind === 'filled') && (
+                <img
+                  className="af-shot"
+                  src={autofillScreenshotUrl(applicationId, events[events.length - 1].seq)}
+                  alt="The form as Hire is filling it"
+                  onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+                />
+              )}
+              <p className="muted small">This usually takes under a minute. You can close this; it keeps going.</p>
             </div>
           ) : run.status === 'needs_answers' ? (
             <form
@@ -237,20 +286,48 @@ export default function AutofillSheet({ applicationId, company, role, applyUrl, 
             <>
               <Alert tone={run.status === 'cancelled' ? 'info' : 'warn'}>
                 {run.status === 'captcha'
-                  ? `${company}’s site asked for a CAPTCHA. Hire never solves those: finish on their site.`
+                  ? `${company}’s site asked for a CAPTCHA. Hire never solves those — but everything it filled is saved below, so you can finish by hand in about a minute.`
                   : run.status === 'cancelled'
                     ? 'Stopped. Nothing was sent.'
                     : run.status === 'unconfirmed'
                       ? 'We clicked send but saw no confirmation. Check your email before trying again.'
                       : `Filling stopped: ${run.error ?? 'something went wrong'}. Nothing was sent.`}
               </Alert>
+              {run.status !== 'cancelled' && (
+                <section className="source-box" aria-label="Finish in your browser">
+                  <h4 style={{ marginBottom: 4 }}>Finish in your browser</h4>
+                  <p className="muted small" style={{ marginBottom: 10 }}>
+                    Copy the answers, download your resume, then paste them into {company}’s form.
+                  </p>
+                  <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+                    <button type="button" className="btn btn-accent btn-sm" onClick={copyAnswers}>
+                      <Icon name={copied ? 'check' : 'copy'} size={14} />
+                      {copied ? 'Copied!' : 'Copy all answers'}
+                    </button>
+                    <a href={latestResumeUrl()} className="btn btn-secondary btn-sm" download>
+                      <Icon name="download" size={14} />
+                      Download resume
+                    </a>
+                    {applyUrl && (
+                      <a href={applyUrl} target="_blank" rel="noreferrer" className="btn btn-primary btn-sm">
+                        Open {company}’s form
+                        <Icon name="external" size={12} />
+                      </a>
+                    )}
+                  </div>
+                </section>
+              )}
+              {run.filled.length > 0 && (
+                <section>
+                  <h4 style={{ marginBottom: 8 }}>What Hire filled in</h4>
+                  <dl className="kv">
+                    {run.filled.map((f) => (
+                      <FilledRow key={f.label} label={f.label} value={f.shown} />
+                    ))}
+                  </dl>
+                </section>
+              )}
               <div className="row" style={{ gap: 8 }}>
-                {applyUrl && (
-                  <a href={applyUrl} target="_blank" rel="noreferrer" className="btn btn-primary">
-                    Apply on their site
-                    <Icon name="external" size={13} />
-                  </a>
-                )}
                 {run.status !== 'unconfirmed' && (
                   <button type="button" className="btn btn-secondary" onClick={() => act(() => startAutofill(applicationId))} disabled={busy}>
                     <Icon name="refresh" size={14} />

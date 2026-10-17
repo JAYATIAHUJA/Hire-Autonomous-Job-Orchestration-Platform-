@@ -84,6 +84,13 @@ export default function SwipePage() {
       swipeJob(job.job_id, dir)
         .then((res) => {
           if (dir !== 'right') return
+          if (res.autofill_started) {
+            toast.show(
+              `Hire is filling ${job.company.name}’s form`,
+              'Keep swiping. You review it before anything is sent.',
+            )
+            return
+          }
           const link = job.source?.apply_url
           toast.show(
             res.already_recorded ? `${job.company.name} is already on your list` : `Saved: ${job.role.title}`,

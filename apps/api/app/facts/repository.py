@@ -48,9 +48,55 @@ def _similar(a: set[str], b: set[str]) -> bool:
     return len(a & b) / min(len(a), len(b)) >= 0.75
 
 
+# The same skill is written many ways across resumes ("JS", "JavaScript"; "Postgres",
+# "PostgreSQL"). Mapping every spelling to one canonical name lets the dedupe key
+# recognise repeats instead of showing the skill twice.
+_SKILL_ALIASES = {
+    "js": "javascript", "java script": "javascript", "es6": "javascript",
+    "ts": "typescript",
+    "node": "node.js", "nodejs": "node.js", "node js": "node.js",
+    "postgres": "postgresql", "psql": "postgresql",
+    "mongo": "mongodb",
+    "reactjs": "react", "react js": "react",
+    "vuejs": "vue", "vue js": "vue",
+    "angularjs": "angular",
+    "nextjs": "next.js",
+    "nuxtjs": "nuxt.js",
+    "golang": "go",
+    "k8s": "kubernetes",
+    "cpp": "c++", "c cpp": "c++",
+    "aws": "aws", "amazon web services": "aws",
+    "gcp": "google cloud", "google cloud platform": "google cloud",
+    "html5": "html", "css3": "css",
+    "ml": "machine learning",
+    "rest": "rest apis", "rest api": "rest apis", "restful": "rest apis",
+}
+
+
+def _canonical_skill(name: str) -> str:
+    return _SKILL_ALIASES.get(_norm(name), _norm(name))
+
+
+# Company names carry legal and marketing noise ("Zepto (KiranaKart)", "Razorpay
+# Software Pvt Ltd"); stripping it gives one key per employer.
+_ORG_PARENS = re.compile(r"\([^)]*\)")
+_ORG_NOISE = {
+    "software", "technologies", "technology", "tech", "labs", "lab", "digital", "solutions",
+    "services", "systems", "pvt", "private", "ltd", "limited", "inc", "llc", "corp",
+    "corporation", "co", "company", "group", "india", "ind", "bangalore", "bengaluru",
+}
+
+
+def _org_key(value: Optional[str]) -> str:
+    text = _ORG_PARENS.sub(" ", (value or "").casefold())
+    return " ".join(w for w in re.split(r"[^\w]+", text) if w and w not in _ORG_NOISE)
+
+
 def dedupe_key(kind: str, text: str, structured: dict[str, Any]) -> tuple:
     """Two facts with the same key say the same thing."""
-    if kind in {"skill", "language", "certification", "project"} and structured.get("name"):
+    if kind == "skill" and structured.get("name"):
+        return (kind, _canonical_skill(structured["name"]))
+    if kind in {"language", "certification", "project"} and structured.get("name"):
         base = (kind, _norm(structured["name"]))
         return base + ((_norm(structured.get("level")),) if kind == "language" else ())
     if kind in {"experience", "education"}:
@@ -70,9 +116,9 @@ def identity_key(kind: str, structured: dict[str, Any]) -> Optional[tuple]:
     if kind == "language" and s.get("name"):
         return (kind, _norm(s.get("name")))
     if kind == "experience" and s.get("company"):
-        return (kind, _norm(s.get("company")), _norm(s.get("title")))
+        return (kind, _org_key(s.get("company")), _norm(s.get("title")))
     if kind == "education" and s.get("institution"):
-        return (kind, _norm(s.get("institution")), _norm(s.get("degree")))
+        return (kind, _org_key(s.get("institution")), _norm(s.get("degree")))
     return None
 
 
@@ -322,7 +368,7 @@ def assemble(facts: list[ProfileFact], preferences: dict[str, Any]) -> dict[str,
                 "text": fact.text, "fact_id": fact.id, "inferred": bool(fact.inferred), "bullets": [],
             }
             data["experience"].append(entry)
-            experience_by_key.setdefault((_field(fact, "company"), _field(fact, "title")), entry)
+            experience_by_key.setdefault((_org_key(s.get("company")), _norm(s.get("title"))), entry)
         elif fact.kind == "achievement":
             achievements.append(fact)
         elif fact.kind == "project":
@@ -337,10 +383,11 @@ def assemble(facts: list[ProfileFact], preferences: dict[str, Any]) -> dict[str,
 
     for fact in achievements:
         bullet = {"text": fact.text, "fact_id": fact.id, "inferred": bool(fact.inferred)}
-        role = experience_by_key.get((_field(fact, "company"), _field(fact, "title")))
+        s = fact.structured or {}
+        role = experience_by_key.get((_org_key(s.get("company")), _norm(s.get("title"))))
         if role is None:  # title wording often differs; fall back to the company alone
-            role = next((e for (company, _), e in experience_by_key.items()
-                         if company and company == _field(fact, "company")), None)
+            company = _org_key(s.get("company"))
+            role = next((e for (org, _), e in experience_by_key.items() if org and org == company), None)
         if role is None and _field(fact, "name"):  # a bullet under a project
             name = _field(fact, "name")
             role = project_by_name.get(name) or next(
@@ -417,6 +464,8 @@ def erase_account_data(db: Session, account_id: int, store: Optional[ObjectStore
     db.query(ProfileFact).filter(ProfileFact.account_id == account_id).update(
         {ProfileFact.conflict_with_fact_id: None}, synchronize_session=False
     )
-    for model in (ProfileVersion, ProfileFact, ResumeUpload, AnswerBankEntry, CandidateProfile):
+    from ..apply.models import AnswerMemory  # remembered form answers are personal data too
+
+    for model in (ProfileVersion, ProfileFact, ResumeUpload, AnswerBankEntry, AnswerMemory, CandidateProfile):
         db.query(model).filter(model.account_id == account_id).delete(synchronize_session=False)
     db.flush()

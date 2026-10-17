@@ -82,3 +82,15 @@ class AnswerBank(BaseModel):
 
 class AnswerBankResponse(AnswerBank):
     updated_at: Optional[datetime] = None
+
+
+class AnswerMemoryOut(BaseModel):
+    id: int
+    question: str
+    answer: str
+    uses: int = 0
+    updated_at: Optional[datetime] = None
+
+
+class AnswerMemoryUpdate(BaseModel):
+    answer: str = Field(min_length=1, max_length=MAX_ANSWER_CHARS)
