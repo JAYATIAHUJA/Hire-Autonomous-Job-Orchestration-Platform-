@@ -1,6 +1,8 @@
 from dataclasses import dataclass
+from typing import Annotated
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 @dataclass(frozen=True)
@@ -42,7 +44,16 @@ class Settings(BaseSettings):
     limited_commits_per_repo: int = 8
     limited_external_prs: int = 5
 
-    cors_origins: list[str] = ["*"]
+    # NoDecode: hosts pass a plain comma-separated string (Render env vars);
+    # pydantic-settings would otherwise try to JSON-parse it before any validator.
+    cors_origins: Annotated[list[str], NoDecode] = ["*"]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _origins_from_env(cls, value):
+        if isinstance(value, str):
+            return [origin.strip() for origin in value.split(",") if origin.strip()]
+        return value
 
     # Signs the consent receipt written on every swipe right. There is no default:
     # a known secret lets anyone forge receipts. Rotating it invalidates verification
