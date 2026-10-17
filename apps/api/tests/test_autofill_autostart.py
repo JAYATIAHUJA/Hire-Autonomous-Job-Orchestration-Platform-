@@ -248,3 +248,27 @@ def test_no_resume_uploaded_answers_404_cleanly(env):
         db.query(ResumeUpload).filter(ResumeUpload.account_id == env.alice.id).delete()
         db.commit()
     assert env.get("/v1/profile/resume/latest").status_code == 404
+
+
+def test_run_worker_tasks_is_an_awaitable_future_that_stops_cleanly(monkeypatch):
+    """RUN_WORKER_IN_PROCESS boots the loops from the API's lifespan; gather()
+    returns a future, not a coroutine (create_task crashed startup when it wasn't)."""
+    import asyncio
+
+    from app import worker as worker_mod
+
+    async def fake_loop(stop):
+        while not stop.is_set():
+            await asyncio.sleep(0.01)
+
+    for name in ("discovery_loop", "pow_loop", "apply_loop"):
+        monkeypatch.setattr(worker_mod, name, fake_loop)
+
+    async def go():
+        stop = asyncio.Event()
+        fut = worker_mod.run_worker_tasks(stop)
+        assert asyncio.isfuture(fut)
+        stop.set()
+        await asyncio.wait_for(fut, timeout=5)
+
+    asyncio.run(go())

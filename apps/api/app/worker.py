@@ -104,10 +104,10 @@ async def _sleep_or_stop(stop: asyncio.Event, seconds: float) -> None:
         pass
 
 
-def run_worker_tasks(stop: asyncio.Event) -> asyncio.Task:
-    """The three loops as one task. Used by ``main`` and, on hosts that only run
-    one process (a free Render web service), by the API's own lifespan."""
-    return asyncio.create_task(asyncio.gather(discovery_loop(stop), pow_loop(stop), apply_loop(stop)))
+def run_worker_tasks(stop: asyncio.Event) -> asyncio.Future:
+    """The three loops as one awaitable future. Used by ``main`` and, on hosts that
+    only run one process (a free Render web service), by the API's lifespan."""
+    return asyncio.gather(discovery_loop(stop), pow_loop(stop), apply_loop(stop))
 
 
 async def main() -> None:
