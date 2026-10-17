@@ -74,6 +74,7 @@ app.include_router(applications.router)
 app.include_router(profile_versions.router)
 app.include_router(facts.router)
 app.include_router(facts.answer_bank_router)
+app.include_router(facts.answer_memory_router)
 
 
 @app.get("/health")

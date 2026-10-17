@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from typing import Any, Iterable, Optional
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, load_only
 
 from . import models
 from .schemas import (
@@ -96,6 +96,23 @@ def get_job_by_description_hash(db: Session, hash_val: str) -> Optional[JobContr
     return to_job_contract(job) if job else None
 
 
+def hydrate_jobs(db: Session, job_ids: list[str]) -> dict[str, models.Job]:
+    """Full Job rows (description included), keyed by job_id, in one query.
+
+    Ranking paths score thousands of rows with ``raw_description`` deferred; this
+    re-fetches just the page they actually serialize.
+    """
+    if not job_ids:
+        return {}
+    rows = (
+        db.query(models.Job)
+        .options(joinedload(models.Job.company))
+        .filter(models.Job.job_id.in_(job_ids))
+        .all()
+    )
+    return {job.job_id: job for job in rows}
+
+
 def get_jobs_feed(
     db: Session,
     min_legitimacy: float = 0.60,
@@ -143,13 +160,37 @@ def get_jobs_feed(
     if posted_within_days:
         since = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=posted_within_days)
         query = query.filter(func.coalesce(models.Job.posted_at, models.Job.created_at) >= since)
+    excluded = set(exclude_job_ids or ())
+    if excluded:
+        query = query.filter(~models.Job.job_id.in_(excluded))
     if rank is not None:
-        # Best match first: score every match in Python (a few thousand rows at most).
-        scored = sorted(((rank(job), job) for job in query.all()),
-                        key=lambda t: (t[0][0], t[1].posted_at or t[1].created_at or datetime.min), reverse=True)
+        # Best match first: score every match in Python (a few thousand rows at
+        # most), on the scoring columns only - raw_description is deferred and
+        # just the returned page is re-fetched with its descriptions.
+        query = query.options(load_only(
+            models.Job.job_id,
+            models.Job.title,
+            models.Job.location,
+            models.Job.is_remote,
+            models.Job.experience_level,
+            models.Job.primary_skills_json,
+            models.Job.posted_at,
+            models.Job.created_at,
+        ))
+        scored = []
+        for job in query.all():
+            cheap_text = f"{job.title} {job.primary_skills_json or ''}"
+            points, reasons = rank(job, cheap_text)
+            scored.append((points, job.posted_at or job.created_at or datetime.min, job.job_id, reasons))
+        scored.sort(key=lambda t: (t[0], t[1]), reverse=True)
         total = len(scored)
+        page = scored[offset:offset + limit]
+        by_id = hydrate_jobs(db, [job_id for _, _, job_id, _ in page])
         out = []
-        for (points, reasons), job in scored[offset:offset + limit]:
+        for points, _, job_id, reasons in page:
+            job = by_id.get(job_id)
+            if job is None:
+                continue
             contract = to_job_contract(job)
             contract.match = MatchContract(score=points, percent=max(0, min(100, round(points / 7 * 100))), reasons=reasons)
             out.append(contract)
@@ -158,10 +199,6 @@ def get_jobs_feed(
         query = query.order_by(models.Job.posted_at.desc().nullslast(), models.Job.created_at.desc())
     else:
         query = query.order_by(models.Job.ghost_score.asc(), models.Job.created_at.desc())
-
-    excluded = set(exclude_job_ids or ())
-    if excluded:
-        query = query.filter(~models.Job.job_id.in_(excluded))
 
     total = query.count()
     rows = query.offset(offset).limit(limit).all()

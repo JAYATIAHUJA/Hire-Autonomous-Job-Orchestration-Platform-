@@ -70,6 +70,9 @@ class Preferences(BaseModel):
     experience_band: Optional[Literal["0-1", "1-3", "3-5", "5-8", "8-12", "12+"]] = None
     salary_floor: Optional[SalaryFloor] = None
     deal_breakers: list[str] = Field(default_factory=list, max_length=20)
+    # A right swipe on a job Hire can fill starts the fill on its own. Sending still
+    # needs the typed confirmation (ADR-005).
+    autofill_on_swipe: bool = True
 
     @field_validator("roles", "locations", "deal_breakers")
     @classmethod

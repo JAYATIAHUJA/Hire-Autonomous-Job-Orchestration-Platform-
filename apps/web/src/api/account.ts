@@ -2,6 +2,7 @@ import { ApiError } from './client'
 import { mockAccountApi } from './mock'
 import type {
   AnswerBank,
+  AnswerMemoryEntry,
   CandidateProfile,
   ConsentRecord,
   ConsentRequest,
@@ -47,6 +48,8 @@ export interface AccountApi {
   savePreferences(prefs: Preferences): Promise<void>
   getAnswerBank(): Promise<AnswerBank>
   saveAnswerBank(answers: AnswerBank): Promise<void>
+  listAnswerMemory(): Promise<AnswerMemoryEntry[]>
+  deleteAnswerMemory(id: number): Promise<void>
 }
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '')
@@ -115,6 +118,8 @@ export const httpAccountApi: AccountApi = {
     return body?.answers ?? {}
   },
   saveAnswerBank: (answers) => request('/me/answer-bank', json('PUT', { answers })),
+  listAnswerMemory: () => request('/me/answer-memory'),
+  deleteAnswerMemory: (id) => request(`/me/answer-memory/${id}`, { method: 'DELETE' }),
 }
 
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === '1'

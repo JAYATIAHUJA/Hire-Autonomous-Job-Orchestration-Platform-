@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { accountApi } from '../api/account'
 import { getProfile as getAnalysis } from '../api/client'
-import type { AnswerBank, CandidateProfile, ConsentPurposes, FactProposal, Me, OnlinePresence, PowRun, Preferences, ResumeMerge } from '../api/v1types'
+import type { AnswerBank, AnswerMemoryEntry, CandidateProfile, ConsentPurposes, FactProposal, Me, OnlinePresence, PowRun, Preferences, ResumeMerge } from '../api/v1types'
 import { useAuth } from '../auth/AuthContext'
 import PresenceForm from '../components/PresenceForm'
 import ProfileEditor from '../components/ProfileEditor'
@@ -488,7 +488,56 @@ function AnswersTab() {
           <FragmentRow key={f.key} label={f.label} value={answers[f.key] ? answerLabel(f.key, answers[f.key]) : null} />
         ))}
       </dl>
+      <RememberedAnswers />
     </div>
+  )
+}
+
+/* Answers given on a form once, reused next time a form asks the same thing. */
+function RememberedAnswers() {
+  const [memory, setMemory] = useState<AnswerMemoryEntry[] | null>(null)
+
+  const load = useCallback(() => {
+    accountApi
+      .listAnswerMemory()
+      .then(setMemory)
+      .catch(() => setMemory([]))
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  if (memory === null) return null
+  return (
+    <section style={{ marginTop: 28 }}>
+      <h3 style={{ marginBottom: 4 }}>Remembered answers</h3>
+      <p className="muted small" style={{ marginBottom: 12 }}>
+        When a form asks something your profile can’t answer and you reply, we remember it. The next form that asks the
+        same thing — even in other words — fills it in for you to review.
+      </p>
+      {memory.length === 0 ? (
+        <p className="muted small">Nothing remembered yet.</p>
+      ) : (
+        <dl className="kv">
+          {memory.map((m) => (
+            <div key={m.id} className="row-between" style={{ alignItems: 'flex-start', gap: 8 }}>
+              <FragmentRow label={m.question} value={m.answer + (m.uses ? ` · used on ${m.uses} form${m.uses > 1 ? 's' : ''}` : '')} />
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                aria-label={`Forget the answer to ${m.question}`}
+                onClick={() => {
+                  accountApi.deleteAnswerMemory(m.id).then(load).catch(() => undefined)
+                }}
+              >
+                Forget
+              </button>
+            </div>
+          ))}
+        </dl>
+      )}
+    </section>
   )
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { accountApi } from '../api/account'
-import { getBoard, getDeck, getDiscovery } from '../api/client'
+import { getBoard, getDeckCount, getDiscovery } from '../api/client'
 import type { CandidateProfile, Me, OnlinePresence, PowRun, Preferences } from '../api/v1types'
 import { useAuth } from '../auth/AuthContext'
 import FlowChart from '../components/FlowChart'
@@ -49,7 +49,7 @@ export default function HomePage() {
   useEffect(() => {
     let cancelled = false
     Promise.all([
-      safe(getDeck(1)),
+      safe(getDeckCount()),
       safe(getBoard()),
       safe(getDiscovery()),
       safe(accountApi.getProfile()),
@@ -96,6 +96,9 @@ export default function HomePage() {
         <div className="stat-row">
           <StatCard tone="lilac" label="In your deck" value={data?.deckTotal} to="/swipe" cta="Swipe" />
           <StatCard tone="peach" label="Ready to apply" value={data ? toApply : undefined} to="/pipeline" cta="Apply" />
+          {!!data?.board?.needs_you && (
+            <StatCard tone="rose" label="Need your answer" value={data.board.needs_you} to="/pipeline" cta="Answer" />
+          )}
           <StatCard tone="sky" label="Applied" value={data ? sent : undefined} to="/pipeline" cta="Track" />
           <StatCard tone="butter" label="Interviews" value={data ? interviews : undefined} to="/pipeline" cta="Prepare" />
         </div>
@@ -232,7 +235,11 @@ function ProfilePanel({ data, me }: { data: Data | null; me: Me | null }) {
   const presence = data?.presence
   const purposes = grantedPurposes(me?.consent ?? null)
   const skills = (data?.profile?.profile.skills ?? [])
-    .map((s) => (typeof s.text === 'string' ? s.text.replace(/^skill:\s*/i, '').replace(/\.$/, '') : ''))
+    // The structured name is the chip ("Python"); the sentence is only a fallback,
+    // capped so one long coursework line can't stretch the card.
+    .map((s) => String(s.name ?? '')
+      .trim() || (typeof s.text === 'string' ? s.text.replace(/^skill:\s*/i, '').replace(/\.$/, '').trim() : ''))
+    .map((s) => (s.length > 42 ? s.slice(0, 41).trimEnd() + '…' : s))
     .filter(Boolean)
 
   const p = data?.profile?.profile

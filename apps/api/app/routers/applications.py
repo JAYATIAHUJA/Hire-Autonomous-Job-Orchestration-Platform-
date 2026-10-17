@@ -13,7 +13,8 @@ import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload, load_only
 
 from ..applications import repository
 from ..applications.board import BOARD_STAGES, is_valid_stage
@@ -23,6 +24,7 @@ from ..applications.schemas import (
     ApplicationCard,
     BoardResponse,
     ConsentReceipt,
+    DeckCountResponse,
     DeckResponse,
     MailSyncRequest,
     MailSyncResponse,
@@ -32,13 +34,14 @@ from ..applications.schemas import (
 )
 from ..auth.deps import get_current_user
 from ..auth.models import Account
+from ..apply import service as apply_service
 from ..config import settings
 from ..db import get_db
 from ..facts import repository as facts_repository
 from ..jobs import matching
 from ..jobs import models as job_models
 from ..jobs.pipeline import run_discovery_cycle
-from ..jobs.repository import get_job_by_id, get_jobs_feed, to_job_contract
+from ..jobs.repository import get_job_by_id, get_jobs_feed, hydrate_jobs, to_job_contract
 from ..jobs.schemas import MatchContract
 from ..mail.imap_client import ImapNotConfigured, fetch_recruiter_messages
 from ..mail.sync import mailbox_account_id, sync_messages
@@ -47,10 +50,26 @@ router = APIRouter(prefix="/api", tags=["applications"], dependencies=[Depends(g
 
 
 def ranked_deck(db: Session, prefs: dict, min_legitimacy: float, limit: int, seen: set[str]):
-    """Every unswiped live job, scored against the preferences; matches first, then the rest."""
+    """Every unswiped live job, scored against the preferences; matches first, then the rest.
+
+    Scoring reads only small columns (deal-breakers are checked against the title
+    and skill list); ``raw_description`` stays deferred so a deal never hauls every
+    job's 20 KB description into memory. Just the returned page is re-fetched.
+    """
     rows = (
         db.query(job_models.Job)
-        .options(joinedload(job_models.Job.company))
+        .options(
+            load_only(
+                job_models.Job.job_id,
+                job_models.Job.title,
+                job_models.Job.location,
+                job_models.Job.is_remote,
+                job_models.Job.experience_level,
+                job_models.Job.primary_skills_json,
+                job_models.Job.posted_at,
+                job_models.Job.created_at,
+            )
+        )
         .filter(job_models.Job.is_active.is_(True), job_models.Job.legitimacy_probability >= min_legitimacy,
                 job_models.Job.ghost_score < 700)
         .all()
@@ -59,11 +78,17 @@ def ranked_deck(db: Session, prefs: dict, min_legitimacy: float, limit: int, see
     for job in rows:
         if job.job_id in seen:
             continue
-        points, reasons = matching.score(job, prefs)
-        scored.append((points, job.posted_at or job.created_at, job, reasons))
+        cheap_text = f"{job.title} {job.primary_skills_json or ''}"
+        points, reasons = matching.score(job, prefs, breaker_text=cheap_text)
+        scored.append((points, job.posted_at or job.created_at, job.job_id, reasons))
     scored.sort(key=lambda t: (t[0], t[1] or datetime.datetime.min), reverse=True)
+    page = scored[:limit]
+    by_id = hydrate_jobs(db, [job_id for _, _, job_id, _ in page])
     out = []
-    for points, _, job, reasons in scored[:limit]:
+    for points, _, job_id, reasons in page:
+        job = by_id.get(job_id)
+        if job is None:
+            continue
         contract = to_job_contract(job)
         contract.match = MatchContract(score=points, percent=matching.percent(points), reasons=reasons)
         out.append(contract)
@@ -106,9 +131,31 @@ async def get_deck(
     )
 
 
+@router.get("/applications/deck/count", response_model=DeckCountResponse)
+def get_deck_count(
+    min_legitimacy: float = Query(default=0.60, ge=0.0, le=1.0),
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_user),
+):
+    """The deck's sizes only, counted in SQL - dashboards no longer pull a deck page for a number."""
+    seen = repository.swiped_job_ids(db, account.id)
+    query = db.query(func.count(job_models.Job.job_id)).filter(
+        job_models.Job.is_active.is_(True),
+        job_models.Job.legitimacy_probability >= min_legitimacy,
+        job_models.Job.ghost_score < 700,
+    )
+    if seen:
+        query = query.filter(~job_models.Job.job_id.in_(seen))
+    return DeckCountResponse(total=query.scalar() or 0, swiped_total=len(seen))
+
+
 @router.post("/applications/swipe", response_model=SwipeResponse)
 def swipe(payload: SwipeRequest, db: Session = Depends(get_db), account: Account = Depends(get_current_user)):
-    """Record a swipe. Right is the affirmative action and writes a signed consent log."""
+    """Record a swipe. Right is the affirmative action and writes a signed consent log.
+
+    A right swipe on a job Hire can fill also queues the fill run on its own, unless
+    the account turned "start filling when I swipe right" off. Sending still waits
+    for the typed confirmation."""
     direction = payload.direction.strip().lower()
     if direction not in {"left", "right"}:
         raise HTTPException(status_code=422, detail="Direction must be 'left' or 'right'.")
@@ -130,8 +177,18 @@ def swipe(payload: SwipeRequest, db: Session = Depends(get_db), account: Account
         purpose=payload.purpose,
     )
 
-    card = repository.to_card(app)
-    return SwipeResponse(application=card, consent=card.consent, already_recorded=already)
+    autofill_started = False
+    job_row = db.query(job_models.Job).filter(job_models.Job.job_id == job.job_id).first()
+    prefs = facts_repository.get_preferences(db, account.id)
+    if direction == "right" and not already and prefs.get("autofill_on_swipe", True):
+        if apply_service.start_run(db, app, job_row) is not None:
+            autofill_started = True
+            db.commit()
+
+    run = apply_service.latest_run(db, account.id, app.application_id) if autofill_started else None
+    card = repository.to_card(app, job_row, run)
+    return SwipeResponse(application=card, consent=card.consent, already_recorded=already,
+                         autofill_started=autofill_started)
 
 
 @router.get("/applications/board", response_model=BoardResponse)

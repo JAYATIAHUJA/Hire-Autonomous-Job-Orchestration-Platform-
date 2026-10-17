@@ -3,6 +3,7 @@ import type {
   ApplicationCard,
   BoardResponse,
   ConsentReceipt,
+  DeckCountResponse,
   DeckResponse,
   MailSyncResponse,
   PipelineStage,
@@ -118,6 +119,12 @@ export async function getDeck(limit = 20, minLegitimacy = 0.6): Promise<DeckResp
   return handle<DeckResponse>(await apiFetch(url(`/api/applications/deck?${params.toString()}`)))
 }
 
+/* The deck's sizes only, counted in SQL - dashboards use this instead of pulling a deck page. */
+export async function getDeckCount(minLegitimacy = 0.6): Promise<DeckCountResponse> {
+  const params = new URLSearchParams({ min_legitimacy: String(minLegitimacy) })
+  return handle<DeckCountResponse>(await apiFetch(url(`/api/applications/deck/count?${params.toString()}`)))
+}
+
 export async function swipeJob(jobId: string, direction: 'left' | 'right', purpose?: string): Promise<SwipeResponse> {
   const res = await apiFetch(url('/api/applications/swipe'), {
     method: 'POST',
@@ -204,6 +211,30 @@ export interface ApplyRun {
   company: string
   role: string
 }
+
+export interface ApplyRunEvent {
+  seq: number
+  kind: string
+  label: string
+  field: string | null
+  shown: string | null
+  at: string | null
+}
+
+export interface ApplyRunEvents {
+  run_id: number
+  status: ApplyRun['status']
+  step: string | null
+  events: ApplyRunEvent[]
+}
+
+/* The run's live progress list - only the steps after `after` come back. */
+export async function getAutofillEvents(id: string, after = 0): Promise<ApplyRunEvents> {
+  return handle<ApplyRunEvents>(await apiFetch(`${autofill(id, '/events')}?after=${after}`))
+}
+
+/* The newest stored resume, as a download: the hand-off's "attach your resume" step. */
+export const latestResumeUrl = () => url('/v1/profile/resume/latest')
 
 const autofill = (id: string, path = '') => url(`/api/applications/${encodeURIComponent(id)}/autofill${path}`)
 

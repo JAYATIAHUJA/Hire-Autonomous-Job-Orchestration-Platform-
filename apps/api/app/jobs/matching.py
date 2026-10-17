@@ -39,8 +39,15 @@ def percent(points: int) -> int:
     return max(0, min(100, round(points / MAX_POINTS * 100)))
 
 
-def score(job: Any, prefs: Optional[dict[str, Any]]) -> tuple[int, list[str]]:
-    """(score, reasons) for a Job row. Higher is a better fit; 0 means no signal."""
+def score(
+    job: Any, prefs: Optional[dict[str, Any]], *, breaker_text: Optional[str] = None
+) -> tuple[int, list[str]]:
+    """(score, reasons) for a Job row. Higher is a better fit; 0 means no signal.
+
+    ``breaker_text`` overrides the text deal-breakers are matched against (title
+    plus description by default), so bulk ranking can pass cheap columns instead
+    of loading every job's 20 KB description.
+    """
     if not prefs:
         return 0, []
     points, reasons = 0, []
@@ -82,7 +89,7 @@ def score(job: Any, prefs: Optional[dict[str, Any]]) -> tuple[int, list[str]]:
             points -= 4  # a staff role is noise for a fresher
 
     breakers = [b.lower() for b in prefs.get("deal_breakers") or [] if b.strip()]
-    text = f"{job.title} {job.raw_description or ''}".lower()
-    if any(b in text for b in breakers if len(b) > 3):
+    text = breaker_text if breaker_text is not None else f"{job.title} {job.raw_description or ''}"
+    if any(b in text.lower() for b in breakers if len(b) > 3):
         points -= 5
     return points, reasons

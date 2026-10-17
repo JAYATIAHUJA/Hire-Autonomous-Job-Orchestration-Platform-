@@ -237,12 +237,14 @@ export interface ApplicationCard {
   submit_method?: 'self' | 'auto' | null
   apply_url?: string | null
   can_autofill?: boolean
+  autofill?: { run_id: number; status: string; step: string | null } | null
 }
 
 export interface SwipeResponse {
   application: ApplicationCard
   consent: ConsentReceipt | null
   already_recorded: boolean
+  autofill_started?: boolean
 }
 
 export interface BoardColumn {
@@ -255,6 +257,7 @@ export interface BoardColumn {
 export interface BoardResponse {
   candidate_ref: string
   total: number
+  needs_you?: number
   columns: BoardColumn[]
 }
 
@@ -263,6 +266,11 @@ export interface DeckResponse {
   total: number
   min_legitimacy: number
   jobs: JobContract[]
+  swiped_total?: number
+}
+
+export interface DeckCountResponse {
+  total: number
   swiped_total?: number
 }
 

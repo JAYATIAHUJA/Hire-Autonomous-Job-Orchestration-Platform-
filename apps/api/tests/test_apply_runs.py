@@ -26,8 +26,11 @@ class FakeBrowser:
     def __init__(self, status="filled"):
         self.calls, self.status = [], status
 
-    def __call__(self, form_url, answers, *, submit):
+    def __call__(self, form_url, answers, *, submit, on_action=None, screenshot_every=0, on_screenshot=None):
         self.calls.append({"url": form_url, "fields": {a.field_name: a.shown for a in answers}, "submit": submit})
+        if on_action is not None:  # the real browser reports every field it fills
+            for a in answers:
+                on_action(a, True)
         status = ("submitted" if self.status == "filled" else self.status) if submit else "filled"
         return FormResult(status, [] if status in ("filled", "submitted") else ["blocked"], b"PNG")
 
@@ -151,3 +154,42 @@ def test_cancel_puts_the_card_back(env):
 def test_nothing_waiting_means_no_work():
     with memory_client() as c:
         assert runner.process_next(_session_factory(c), None, schema_fetcher=lambda u: SCHEMA, form_runner=FakeBrowser()) is None
+
+
+def test_hidden_geo_fields_never_block_a_plan():
+    """Real Greenhouse forms carry required latitude/longitude hidden fields; a person
+    never types them, so they must not stop the plan (found on live GitLab/Capco runs)."""
+    from app.apply.greenhouse import Applicant, JobRef, plan_application
+
+    schema = {"title": "X", "company_name": "Acme", "questions": [
+        {"label": "First Name", "required": True, "fields": [{"name": "first_name", "type": "input_text"}]},
+        {"label": "Latitude", "required": True, "fields": [{"name": "lat", "type": "input_hidden"}]},
+        {"label": "Longitude", "required": True, "fields": [{"name": "lng", "type": "input_hidden"}]},
+    ]}
+    ref = JobRef("acme", 1, "http://x/v1", "http://x/boards/acme/jobs/1", True)
+    plan = plan_application(ref, schema, Applicant(first_name="A", last_name="B", email="a@b.co"))
+    assert plan.ready and not plan.missing and not plan.unsupported
+
+
+def test_careers_domain_links_resolve_from_the_job_id():
+    """Employers wrap the Greenhouse form in their own domain (payoneer.com?gh_jid=);
+    the board we ingested the job from still resolves it."""
+    from app.apply.greenhouse import parse_job_url
+
+    ref = parse_job_url("https://www.payoneer.com/careers/job/?gh_jid=8255852",
+                        job_id="greenhouse_payoneer_8255852")
+    assert (ref.board, ref.job_id, ref.is_mock) == ("payoneer", 8255852, False)
+    with pytest.raises(ValueError):
+        parse_job_url("https://www.payoneer.com/careers/job/?gh_jid=8255852")
+
+
+def test_notice_period_topic_matches_the_wordings_real_forms_use():
+    import re
+
+    from app.apply.greenhouse import _norm
+    from app.apply.runner import _TOPICS
+
+    pattern = dict(_TOPICS)["notice_period"]
+    for label in ("Notice period (days)", "How soon you can join us?", "How soon can you join?",
+                  "Earliest start date?", "When can you start?"):
+        assert re.search(pattern, _norm(label)), label

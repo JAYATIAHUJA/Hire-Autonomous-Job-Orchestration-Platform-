@@ -299,10 +299,11 @@ export default function PipelinePage() {
 /* What to do with a card you chose but have not sent yet. */
 function ApplySteps({ card, onApplied, onAutofill }: { card: ApplicationCard; onApplied: () => void; onAutofill: () => void }) {
   const status = card.submission_status ?? 'not_sent'
+  const run = card.autofill
   if (status === 'filling')
     return (
       <button type="button" className="apply-steps apply-live" onClick={onAutofill}>
-        <span className="spinner" /> Hire is filling the form… <span className="text-link">watch</span>
+        <span className="spinner" /> {run?.step || 'Hire is filling the form…'} <span className="text-link">watch</span>
       </button>
     )
   if (status === 'needs_review')
@@ -310,7 +311,7 @@ function ApplySteps({ card, onApplied, onAutofill }: { card: ApplicationCard; on
       <div className="apply-steps">
         <p className="apply-status">
           <Icon name="info" size={13} />
-          Waiting for you: check the form or answer a question
+          {run?.status === 'needs_answers' ? 'Needs your answer: open the form and reply' : 'Waiting for you: check the form or answer a question'}
         </p>
         <button type="button" className="btn btn-accent btn-sm" onClick={onAutofill}>
           Review &amp; send
@@ -321,7 +322,7 @@ function ApplySteps({ card, onApplied, onAutofill }: { card: ApplicationCard; on
     <div className="apply-steps">
       <p className="apply-status">
         <Icon name="clock" size={13} />
-        {status === 'failed' ? 'Auto-fill stopped. Apply on the company’s site instead.' : 'Not sent yet'}
+        {status === 'failed' ? 'Auto-fill stopped. Open the card to copy your answers and finish on their site.' : 'Not sent yet'}
       </p>
       <div className="row" style={{ gap: 6 }}>
         {card.can_autofill && (
