@@ -1,30 +1,63 @@
+# Render infrastructure for Hire (the API + worker; the web app deploys to Vercel).
+#
+# Deployed via the Render CLI from this branch; this file documents the same shape
+# for dashboard Blueprint use later. The Postgres instance is shared with another
+# project: Hire gets its own `hire` role and database inside it, so there is no
+# database service here - set DATABASE_URL to
+#   postgresql+psycopg://hire:<password>@dpg-xxxx.render.internal/hire
+# Secrets (sync: false) are set in the dashboard or via `render services update`.
 services:
-  # Python / FastAPI Backend Web Service
   - type: web
-    name: hire-backend
-    env: python
-    region: oregon
-    plan: free
+    name: hire-api
+    runtime: docker
     rootDir: apps/api
-    buildCommand: pip install -r requirements.txt
-    startCommand: alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    dockerCommand: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
       - key: DATABASE_URL
-        value: sqlite:///./hire.db
-      # Required: the API refuses to start without a real signing secret (bug B4).
+        sync: false
       - key: CONSENT_SIGNING_SECRET
         generateValue: true
+      - key: TOKEN_ENCRYPTION_KEY
+        generateValue: true
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_BASE_URL
+        value: https://api.z.ai/api/anthropic
+      - key: LLM_MODEL
+        value: glm-5.1
+      # The Vercel origin, set once the web app's domain is known.
+      - key: CORS_ORIGINS
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+      # Cross-site cookies (web on Vercel, API here) need SameSite=None + Secure.
+      - key: SESSION_COOKIE_SAMESITE
+        value: none
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      # Optional: any S3-compatible store for resumes and apply screenshots.
+      - key: S3_ENDPOINT
+        sync: false
+      - key: S3_BUCKET
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
 
-  # React / Vite Static Frontend
-  - type: web
-    name: hire-frontend
-    env: static
-    rootDir: apps/web
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+  - type: worker
+    name: hire-worker
+    runtime: docker
+    rootDir: apps/api
+    region: oregon
+    dockerCommand: python -m app.worker
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: LIVE_FEEDS_ENABLED
+        value: "true"

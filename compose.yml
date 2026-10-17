@@ -104,7 +104,10 @@ services:
     restart: "no"
 
   api:
-    build: ./apps/api
+    build:
+      context: ./apps/api
+      args:
+        WITH_BROWSER: "false"  # the API never opens a browser; keep its image small
     environment: *api-env
     # The verified employer boards the worker reads jobs from (data/ats-registry).
     volumes: ["./data/ats-registry:/srv/data/ats-registry:ro"]

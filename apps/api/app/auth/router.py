@@ -144,7 +144,7 @@ def oauth_start(provider: str):
         path="/v1/auth",
         httponly=True,
         secure=settings.session_cookie_secure,
-        samesite="lax",
+        samesite=settings.session_cookie_samesite,
     )
     return response
 

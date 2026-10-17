@@ -87,6 +87,9 @@ class Settings(BaseSettings):
     session_ttl_days: int = 30
     # Browsers treat http://localhost as a secure context, so this stays on in dev too.
     session_cookie_secure: bool = True
+    # "lax" for same-origin deployments; "none" when the web app is served from
+    # another domain (Vercel) than the API (Render) - those cookies need Secure too.
+    session_cookie_samesite: str = "lax"
     # Fernet key that encrypts stored OAuth tokens. Required for GitHub login.
     token_encryption_key: str = ""
     # Where OAuth providers send the browser back to (this API, or the web app's proxy to it).

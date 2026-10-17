@@ -10,8 +10,10 @@ COPY requirements.txt .
 # api and worker from this file in parallel, and two pips sharing one cache read half-written wheels.
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked pip install -r requirements.txt
 
-# Only the worker gets a browser (it fills application forms); the API image stays small.
-ARG WITH_BROWSER=false
+# Only the worker needs a browser (it fills forms). Hosts that can't pass build
+# args (Render builds straight from the repo) get it by default; compose passes
+# false explicitly to keep the API image small.
+ARG WITH_BROWSER=true
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     if [ "$WITH_BROWSER" = "true" ]; then \

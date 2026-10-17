@@ -63,7 +63,7 @@ def set_session_cookie(response: Response, token: str) -> None:
         path="/",
         httponly=True,
         secure=settings.session_cookie_secure,
-        samesite="lax",
+        samesite=settings.session_cookie_samesite,
     )
 
 
@@ -73,5 +73,5 @@ def clear_session_cookie(response: Response) -> None:
         path="/",
         httponly=True,
         secure=settings.session_cookie_secure,
-        samesite="lax",
+        samesite=settings.session_cookie_samesite,
     )
